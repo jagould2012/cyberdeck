@@ -1,0 +1,64 @@
+Quantity,Description,Link,Notes
+,,,
+,Computers,,
+,,,
+2,Raspberry Pi 5 16GB Single Board Computers,https://www.amazon.com/dp/B0DY7MWDF9?linkCode=ll1&tag=jagould2012-20&linkId=0729d799dd504df3d4454b081bc47bf8&language=en_US&ref_=as_li_ss_tl,16GB version to allow for Kubernetes and containers
+1,"GeeekPi 3U 9"" LCD display",https://www.amazon.com/dp/B0FZQGN2FS?coliid=I2SMGGHY26APN1&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=45af344763cc0ff389bafea75b350623&language=en_US&ref_=as_li_ss_tl,
+1,"GeeekPi 1U 6.9"" LCD display",https://www.amazon.com/dp/B0G337KQS6?coliid=I3IXGO8OB1Q1II&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=8b4cbab3c91a4e72b3747fbd775b85ad&language=en_US&ref_=as_li_ss_tl,
+,,,
+,Radios,,
+,,,
+1,Waveshare SX1262 LoRaWAN module,https://www.amazon.com/dp/B0C61VK6WQ?linkCode=ll1&tag=jagould2012-20&linkId=bf6145f00626d97987aac0f0b1e21b07&language=en_US&ref_=as_li_ss_tl,
+1,Alfa Network AXE3000 WiFi adapter,https://www.amazon.com/dp/B0BY8GMW32?linkCode=ll1&tag=jagould2012-20&linkId=b222d3e9adbca0991b7ad75ab9622bba&language=en_US&ref_=as_li_ss_tl,
+1,Clifford Heath HackRF One with Mayhem Signature-Edition Portapack H4M,https://opensourcesdrlab.com/products/clifford-heath-hackrf-one-with-portapack-h4m?VariantsId=10177,
+1,RTL-SDR Blog V4 R828D RTL2832U Software Defined Radio ,https://www.amazon.com/RTL-SDR-Blog-RTL2832U-Software-Defined/dp/B0CD7558GT?crid=AEFL7KH87XT1&dib=eyJ2IjoiMSJ9.sfbFJPG624K7g9NEHFje-esjliMDA3Uezj2mX7RxyGwKhZNR3BQUKjZ1aH-J1Te7HgSiyykU7JUXL4fbQ60HgmDJlcon4nvlV4n2QuzDRujdsgMDa7b9obtb9HtdA0Dzh53Ib811JdDkKd8qRcq3dsKZFoudFjioML9PgLk9QN_PdS2kv6OC__GDA9gc1PHCeW5exw6pnlQyFJhuAjm5Fl_ascU4OOrn89OPGVuts4Y.SeH0Y-1jFsRcyr61RajUfKxD9oK59pk1ILuq11CmfJw&dib_tag=se&keywords=rtl+sdr+v4&qid=1766052171&sprefix=rtl%3Ds%2Caps%2C125&sr=8-1&linkCode=ll1&tag=jagould2012-20&linkId=dc96f0e9203818eb76a0b6f7d01c1658&language=en_US&ref_=as_li_ss_tl,
+1,HackRF One clock module,https://opensourcesdrlab.com/products/external-high-precision-tcxo-clock-module-ppm01-for-hackrf,
+,,,
+,Power,,
+,,,
+1,Mean Well RSD-60G-5 DC to DC power supplies,https://www.amazon.com/dp/B07BTK94W2?linkCode=ll1&tag=jagould2012-20&linkId=4942f2dda7032ff47ff2c3d6e985c77a&language=en_US&ref_=as_li_ss_tl,
+1,Mean Well LRS-350–24 DC power supply,https://www.amazon.com/dp/B07VRK86SP?linkCode=ll1&tag=jagould2012-20&linkId=80ef2383d3ab9bfcb08e79d1e220cccd&language=en_US&ref_=as_li_ss_tl,
+1,Apiele 3 position power selector switch,https://www.amazon.com/dp/B07L5C96K9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=33712ead656fab04a347692eac6e55f0&language=en_US&ref_=as_li_ss_tl,
+1,XT90 panel mount DC input,https://www.amazon.com/dp/B0F6YH61JR?linkCode=ll1&tag=jagould2012-20&linkId=da2184e3afff963d3b9a519059c251fd&language=en_US&ref_=as_li_ss_tl,
+1,24VDC 6 pin DPST NO relay,https://www.amazon.com/dp/B0D9RTDQ5H?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9d9cccd13d026f527c9b52b82b7f68d0&language=en_US&ref_=as_li_ss_tl,
+,,,
+,Case,,
+,,,
+1,Pelican Protector 1500 case,https://www.amazon.com/dp/B0000DYV9H?th=1&linkCode=ll1&tag=jagould2012-20&linkId=000cd1fb6d050174b3d86df524f25cd5&language=en_US&ref_=as_li_ss_tl,
+1,Pelican 1500PF frame,https://www.bhphotovideo.com/c/product/688576-REG/Pelican_1500_300_110_1500PF_Special_Application_Panel.html,
+1,GeeekPi 1U mount for Raspberry Pi,https://www.amazon.com/dp/B0F7XBVV4D?linkCode=ll1&tag=jagould2012-20&linkId=b8ac03b1ecf525a0adfd638ab41b795e&language=en_US&ref_=as_li_ss_tl,
+1,Custom aluminum plate for Pelican 1500,https://www.datapro.net/cgi-bin/plate-designer-pro,
+,,,
+,"Misc Hardware, Cables, and Accessories",,
+,,,
+1,USB mini keyboard with trackpad,https://www.amazon.com/dp/B0DKPHX18V?th=1&linkCode=ll1&tag=jagould2012-20&linkId=dbd6d2a9c0762135fc0b0d7c9ecfa8df&language=en_US&ref_=as_li_ss_tl,
+1,Neoprene case,https://www.amazon.com/dp/B071WC3KXP?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eb1d78b43e4a5638ad9a36ff3697c99c&language=en_US&ref_=as_li_ss_tl,For keyboad
+,,,
+1,"IPEX-1 to RP-SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B0CSSPJ8S2?th=1&linkCode=ll1&tag=jagould2012-20&linkId=3f6cbb67ad07f45b41f3c1c29e66d432&language=en_US&ref_=as_li_ss_tl,For LoRa antenna
+1,"RPI-SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B07MT3VZXZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=0a91d0981ef509d0fd28ccbb86958586&language=en_US&ref_=as_li_ss_tl,For AXE3000 WiFi antenna
+1,"SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B08139CQLG?th=1&linkCode=ll1&tag=jagould2012-20&linkId=08997393fe479e61210564a2a0ecdeac&language=en_US&ref_=as_li_ss_tl,For RTL-SDR antenna
+1,SMA right angle adapter - 4 pack,https://www.amazon.com/dp/B07YW3M4GB?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eca363638807b23059ca236a42444385&language=en_US&ref_=as_li_ss_tl,
+1,ANT 500 antenna,https://www.amazon.com/dp/B01CQYZJV2?&linkCode=ll1&tag=jagould2012-20&linkId=e2eaf07828a5be26dfec1e001170f75b&language=en_US&ref_=as_li_ss_tl,For RTL-SDR
+1,Meshtasic 5dBi antenna,https://www.amazon.com/dp/B0FT8HKKBN?&linkCode=ll1&tag=jagould2012-20&linkId=3840764c16c918d228075aa9fc518fd6&language=en_US&ref_=as_li_ss_tl,For LoRa
+,,,
+1,XT90 panel mount cable,https://www.amazon.com/dp/B0F6YH61JR?&linkCode=ll1&tag=jagould2012-20&linkId=6134446057f0f53a3daadad3e1e30464&language=en_US&ref_=as_li_ss_tl,External DC input
+1,XT90 extension cable,https://www.amazon.com/dp/B0BWYTGMJH?th=1&linkCode=ll1&tag=jagould2012-20&linkId=4f4cdd02279c4f3be6feb8295d74396a&language=en_US&ref_=as_li_ss_tl,
+1,XT90 alligator clamps,https://www.amazon.com/dp/B0BJ8VXTWR?&linkCode=ll1&tag=jagould2012-20&linkId=fc10867998fdfe6c6c3cf3c75bfa1f27&language=en_US&ref_=as_li_ss_tl,
+,,,
+1,Heat shrink tubing,https://www.amazon.com/dp/B0BVVMCY86?th=1&linkCode=ll1&tag=jagould2012-20&linkId=2e46068b8e6c4abb1e24180654371b31&language=en_US&ref_=as_li_ss_tl,
+1,Heat shrink terminal kit,https://www.amazon.com/dp/B0C2CBM2YS?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9877c2b1b1108b66da7233dfbe5a4588&language=en_US&ref_=as_li_ss_tl,
+,,,
+1,USB-C pigtail power cables - 5 pack,https://www.amazon.com/dp/B0BFHXWCS9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=5a9b90fdd67263b50550c6f52fc52b03&language=en_US&ref_=as_li_ss_tl,
+2,Right angle USB extension,https://www.amazon.com/dp/B0793P8XJK?&linkCode=ll1&tag=jagould2012-20&linkId=e8e6c236726e3d53504d852c3f57c5dc&language=en_US&ref_=as_li_ss_tl,Bring one USB 3.0 port to rear of plate
+2,Cable Matters USB / Gigabit Ethernet hub,https://www.amazon.com/dp/B073X66DFN?&linkCode=ll1&tag=jagould2012-20&linkId=0d9157ec0c3c05b20712ae016dbedc3c&language=en_US&ref_=as_li_ss_tl,Second ethernet port and USB ports behind plate
+1,1' Cat6 Ethernet cable - 5 pack,https://www.amazon.com/dp/B00C4U030G?th=1&linkCode=ll1&tag=jagould2012-20&linkId=30acc1c0e6354878147cd26dc6b32913&language=en_US&ref_=as_li_ss_tl,
+1,Right angle USB C cable,https://www.amazon.com/dp/B0DFC3F315?th=1&linkCode=ll1&tag=jagould2012-20&linkId=ebe477914631332b99af5805d7a2fe30&language=en_US&ref_=as_li_ss_tl,HackRF One
+,,,
+1,ML1220 rechargeable battery,https://www.amazon.com/dp/B088KT9HB9?&linkCode=ll1&tag=jagould2012-20&linkId=9cfda5ba75d47e04493bda0ed495a981&language=en_US&ref_=as_li_ss_tl,For Waveshare LoRa radio
+,,,
+1,Assorted M3 button head screws,https://www.amazon.com/dp/B0D5YYH5ZZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=f354e612ee2c74fac6f0b3996b4262c9&language=en_US&ref_=as_li_ss_tl,
+1,Assorted M3 standoff kit,https://www.amazon.com/dp/B0F297R23T?&linkCode=ll1&tag=jagould2012-20&linkId=38ef20a6e39a8115416d2fa35d6c8a26&language=en_US&ref_=as_li_ss_tl,
+1,10-32 rack screws,https://www.amazon.com/dp/B0D5HZ63Y9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=04b6702c01b9d75971e3d1ab6ecfede7&language=en_US&ref_=as_li_ss_tl,
+1,10-32 lock nuts,https://www.amazon.com/dp/B0F8H5QM28?th=1&linkCode=ll1&tag=jagould2012-20&linkId=7ee86ae5b803837a83192ced3454be49&language=en_US&ref_=as_li_ss_tl,
+,,,
+1,"1/8"" ABS plastic sheet 8"" x 12"" - 2 pack",https://www.amazon.com/dp/B0FJFFH7Z9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=1029d95ab8f9d28ab42d2653db07312e&language=en_US&ref_=as_li_ss_tl,Custom mounting plates behind aluminum plate
