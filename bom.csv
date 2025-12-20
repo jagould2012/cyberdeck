@@ -6,6 +6,7 @@ Quantity,Description,Link,Notes
 2,Transcent 256GB M.2 2242 SSD module,https://www.amazon.com/dp/B07KG2KFSX?th=1&linkCode=ll1&tag=jagould2012-20&linkId=fb514042f6681917c59dabc4e3bfedde&language=en_US&ref_=as_li_ss_tl,
 1,"GeeekPi 3U 9"" LCD display",https://www.amazon.com/dp/B0FZQGN2FS?coliid=I2SMGGHY26APN1&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=45af344763cc0ff389bafea75b350623&language=en_US&ref_=as_li_ss_tl,
 1,"GeeekPi 1U 6.9"" LCD display",https://www.amazon.com/dp/B0G337KQS6?coliid=I3IXGO8OB1Q1II&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=8b4cbab3c91a4e72b3747fbd775b85ad&language=en_US&ref_=as_li_ss_tl,
+1,BotBlox Gigabit Ethernet Switch,https://botblox.io/products/gigablox-small-gigabit-switch,Necessary if you want Gigabit between Raspberry Pi SBCs
 ,,,
 ,Radios,,
 ,,,
