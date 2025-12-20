@@ -3,6 +3,7 @@ Quantity,Description,Link,Notes
 ,Computers,,
 ,,,
 2,Raspberry Pi 5 16GB Single Board Computers,https://www.amazon.com/dp/B0DY7MWDF9?linkCode=ll1&tag=jagould2012-20&linkId=0729d799dd504df3d4454b081bc47bf8&language=en_US&ref_=as_li_ss_tl,16GB version to allow for Kubernetes and containers
+2,Transcent 256GB M.2 2242 SSD module,https://www.amazon.com/dp/B07KG2KFSX?th=1&linkCode=ll1&tag=jagould2012-20&linkId=fb514042f6681917c59dabc4e3bfedde&language=en_US&ref_=as_li_ss_tl,
 1,"GeeekPi 3U 9"" LCD display",https://www.amazon.com/dp/B0FZQGN2FS?coliid=I2SMGGHY26APN1&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=45af344763cc0ff389bafea75b350623&language=en_US&ref_=as_li_ss_tl,
 1,"GeeekPi 1U 6.9"" LCD display",https://www.amazon.com/dp/B0G337KQS6?coliid=I3IXGO8OB1Q1II&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=8b4cbab3c91a4e72b3747fbd775b85ad&language=en_US&ref_=as_li_ss_tl,
 ,,,
@@ -13,10 +14,12 @@ Quantity,Description,Link,Notes
 1,Clifford Heath HackRF One with Mayhem Signature-Edition Portapack H4M,https://opensourcesdrlab.com/products/clifford-heath-hackrf-one-with-portapack-h4m?VariantsId=10177,
 1,RTL-SDR Blog V4 R828D RTL2832U Software Defined Radio ,https://www.amazon.com/RTL-SDR-Blog-RTL2832U-Software-Defined/dp/B0CD7558GT?crid=AEFL7KH87XT1&dib=eyJ2IjoiMSJ9.sfbFJPG624K7g9NEHFje-esjliMDA3Uezj2mX7RxyGwKhZNR3BQUKjZ1aH-J1Te7HgSiyykU7JUXL4fbQ60HgmDJlcon4nvlV4n2QuzDRujdsgMDa7b9obtb9HtdA0Dzh53Ib811JdDkKd8qRcq3dsKZFoudFjioML9PgLk9QN_PdS2kv6OC__GDA9gc1PHCeW5exw6pnlQyFJhuAjm5Fl_ascU4OOrn89OPGVuts4Y.SeH0Y-1jFsRcyr61RajUfKxD9oK59pk1ILuq11CmfJw&dib_tag=se&keywords=rtl+sdr+v4&qid=1766052171&sprefix=rtl%3Ds%2Caps%2C125&sr=8-1&linkCode=ll1&tag=jagould2012-20&linkId=dc96f0e9203818eb76a0b6f7d01c1658&language=en_US&ref_=as_li_ss_tl,
 1,HackRF One clock module,https://opensourcesdrlab.com/products/external-high-precision-tcxo-clock-module-ppm01-for-hackrf,
+1,PepWave MAX BR1 Mini,,
 ,,,
 ,Power,,
 ,,,
-1,Mean Well RSD-60G-5 DC to DC power supplies,https://www.amazon.com/dp/B07BTK94W2?linkCode=ll1&tag=jagould2012-20&linkId=4942f2dda7032ff47ff2c3d6e985c77a&language=en_US&ref_=as_li_ss_tl,
+2,Mean Well RSD-60G-5 DC to DC power supplies,https://www.amazon.com/dp/B07BTK94W2?linkCode=ll1&tag=jagould2012-20&linkId=4942f2dda7032ff47ff2c3d6e985c77a&language=en_US&ref_=as_li_ss_tl,
+1,Mean Well RSD-60G-12 DC to DC power supplies,https://www.amazon.com/dp/B0748MLBYJ?&linkCode=ll1&tag=jagould2012-20&linkId=7f7d304ba9be40efec150acd49fa43d6&language=en_US&ref_=as_li_ss_tl,
 1,Mean Well LRS-350–24 DC power supply,https://www.amazon.com/dp/B07VRK86SP?linkCode=ll1&tag=jagould2012-20&linkId=80ef2383d3ab9bfcb08e79d1e220cccd&language=en_US&ref_=as_li_ss_tl,
 1,Apiele 3 position power selector switch,https://www.amazon.com/dp/B07L5C96K9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=33712ead656fab04a347692eac6e55f0&language=en_US&ref_=as_li_ss_tl,
 1,XT90 panel mount DC input,https://www.amazon.com/dp/B0F6YH61JR?linkCode=ll1&tag=jagould2012-20&linkId=da2184e3afff963d3b9a519059c251fd&language=en_US&ref_=as_li_ss_tl,
@@ -34,9 +37,9 @@ Quantity,Description,Link,Notes
 1,USB mini keyboard with trackpad,https://www.amazon.com/dp/B0DKPHX18V?th=1&linkCode=ll1&tag=jagould2012-20&linkId=dbd6d2a9c0762135fc0b0d7c9ecfa8df&language=en_US&ref_=as_li_ss_tl,
 1,Neoprene case,https://www.amazon.com/dp/B071WC3KXP?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eb1d78b43e4a5638ad9a36ff3697c99c&language=en_US&ref_=as_li_ss_tl,For keyboad
 ,,,
-1,"IPEX-1 to RP-SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B0CSSPJ8S2?th=1&linkCode=ll1&tag=jagould2012-20&linkId=3f6cbb67ad07f45b41f3c1c29e66d432&language=en_US&ref_=as_li_ss_tl,For LoRa antenna
-1,"RPI-SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B07MT3VZXZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=0a91d0981ef509d0fd28ccbb86958586&language=en_US&ref_=as_li_ss_tl,For AXE3000 WiFi antenna
-1,"SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B08139CQLG?th=1&linkCode=ll1&tag=jagould2012-20&linkId=08997393fe479e61210564a2a0ecdeac&language=en_US&ref_=as_li_ss_tl,For RTL-SDR antenna
+1,"N-Type 12"" extension cable",https://www.amazon.com/dp/B0B93BM8PK?th=1&linkCode=ll1&tag=jagould2012-20&linkId=c98bc5940087793822f0c227f186e9a9&language=en_US&ref_=as_li_ss_tl,For LoRa antenna
+2,"RPI-SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B07MT3VZXZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=0a91d0981ef509d0fd28ccbb86958586&language=en_US&ref_=as_li_ss_tl,For AXE3000 WiFi antenna
+2,"SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B08139CQLG?th=1&linkCode=ll1&tag=jagould2012-20&linkId=08997393fe479e61210564a2a0ecdeac&language=en_US&ref_=as_li_ss_tl,For RTL-SDR antenna
 1,SMA right angle adapter - 4 pack,https://www.amazon.com/dp/B07YW3M4GB?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eca363638807b23059ca236a42444385&language=en_US&ref_=as_li_ss_tl,
 1,ANT 500 antenna,https://www.amazon.com/dp/B01CQYZJV2?&linkCode=ll1&tag=jagould2012-20&linkId=e2eaf07828a5be26dfec1e001170f75b&language=en_US&ref_=as_li_ss_tl,For RTL-SDR
 1,Meshtasic 5dBi antenna,https://www.amazon.com/dp/B0FT8HKKBN?&linkCode=ll1&tag=jagould2012-20&linkId=3840764c16c918d228075aa9fc518fd6&language=en_US&ref_=as_li_ss_tl,For LoRa
@@ -53,6 +56,8 @@ Quantity,Description,Link,Notes
 2,Cable Matters USB / Gigabit Ethernet hub,https://www.amazon.com/dp/B073X66DFN?&linkCode=ll1&tag=jagould2012-20&linkId=0d9157ec0c3c05b20712ae016dbedc3c&language=en_US&ref_=as_li_ss_tl,Second ethernet port and USB ports behind plate
 1,1' Cat6 Ethernet cable - 5 pack,https://www.amazon.com/dp/B00C4U030G?th=1&linkCode=ll1&tag=jagould2012-20&linkId=30acc1c0e6354878147cd26dc6b32913&language=en_US&ref_=as_li_ss_tl,
 1,Right angle USB C cable,https://www.amazon.com/dp/B0DFC3F315?th=1&linkCode=ll1&tag=jagould2012-20&linkId=ebe477914631332b99af5805d7a2fe30&language=en_US&ref_=as_li_ss_tl,HackRF One
+1,Micro HDMI to HDMI 1' Angle Up - 2 pack,https://www.amazon.com/dp/B07DZY2D4D?th=1&linkCode=ll1&tag=jagould2012-20&linkId=a902bb0f5837d3c0dafbdda1832de5d4&language=en_US&ref_=as_li_ss_tl,
+1,Micro HDMI to HDMI 1' Angle Down - 2 pack,https://www.amazon.com/dp/B07FT1Z3PM?th=1&linkCode=ll1&tag=jagould2012-20&linkId=20cb610c81bcf0546a5e8f187c6e658f&language=en_US&ref_=as_li_ss_tl,
 ,,,
 1,ML1220 rechargeable battery,https://www.amazon.com/dp/B088KT9HB9?&linkCode=ll1&tag=jagould2012-20&linkId=9cfda5ba75d47e04493bda0ed495a981&language=en_US&ref_=as_li_ss_tl,For Waveshare LoRa radio
 ,,,

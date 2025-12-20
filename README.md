@@ -12,6 +12,12 @@ The custom plate was manufactured by DataPro using their online [designer](https
 
 ![](https://github.com/jagould2012/cyberdeck/blob/main/images/panel.png)
 
+Dxf file is available [here](https://github.com/jagould2012/cyberdeck/blob/main/dxf/Panel.dxf).
+
 ### Power
 
 Wiring diagram for the power supplies, switches, and relays can be found [here](https://github.com/jagould2012/cyberdeck/blob/main/images/power.png).
+
+### Internal Panels
+
+Power supplies and USB devices are mounted to 1/8" ABS panels. Dxf files for the panels can be found [here](https://github.com/jagould2012/cyberdeck/blob/main/dxf/).
