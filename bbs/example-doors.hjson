@@ -1,0 +1,52 @@
+{
+    menus: {
+        doorsMainMenu: {
+            desc: Doors Menu
+            art: DOORMNU
+            prompt: menuCommand
+            config: {
+                interrupt: realtime
+            }
+            submit: [
+                {
+                    value: { command: "Q" }
+                    action: @systemMethod:prevMenu
+                }
+                {
+                    value: { command: "L" }
+                    action: @menu:doorLord
+                }
+                {
+                    value: { command: "T" }
+                    action: @menu:doorTradeWars
+                }
+            ]
+        }
+
+        doorLord: {
+            desc: Legend of the Red Dragon
+            module: abracadabra
+            config: {
+                name: LORD
+                dropFileType: DOOR
+                cmd: /enigma-bbs/doors/lord.sh
+                args: [ "{node}" ]
+                nodeMax: 10
+                io: stdio
+            }
+        }
+
+        doorTradeWars: {
+            desc: TradeWars 2002
+            module: abracadabra
+            config: {
+                name: TW2002
+                dropFileType: DOOR
+                cmd: /enigma-bbs/doors/tw2002.sh
+                args: [ "{node}" ]
+                nodeMax: 10
+                io: stdio
+            }
+        }
+    }
+}

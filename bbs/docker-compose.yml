@@ -1,0 +1,17 @@
+services:
+  enigma-bbs:
+    build: .
+    container_name: ENiGMABBS
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config:/enigma-bbs/config
+      - ./db:/enigma-bbs/db
+      - ./logs:/enigma-bbs/logs
+      - ./filebase:/enigma-bbs/filebase
+      - ./art:/enigma-bbs/art
+      - ./mods:/enigma-bbs/mods
+      - ./mail:/enigma-bbs/mail
+      - ./doors:/enigma-bbs/doors

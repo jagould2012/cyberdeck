@@ -1,0 +1,38 @@
+# ENiGMA BBS sensitive data
+config/
+
+# User database
+db/
+
+# Logs
+logs/
+*.log
+
+# Private mail
+mail/
+
+# Door game user/session data
+doors/
+
+# Runtime files
+*.pid
+*.sock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Node (if running locally)
+node_modules/
+
+# Other files created on initial
+mods/
+filebase/
+art/
