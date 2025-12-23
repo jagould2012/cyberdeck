@@ -64,6 +64,9 @@ COPY scripts/lord.sh /usr/local/bin/lord.sh
 COPY scripts/tw2002.sh /usr/local/bin/tw2002.sh
 RUN chmod +x /usr/local/bin/*.sh
 
+# Install xvfb for headless DOSBox-X
+RUN apt-get update && apt-get install -y xvfb && rm -rf /var/lib/apt/lists/*
+
 # Save defaults before volumes mount over them
 RUN mkdir -p /enigma-bbs-defaults && \
     cp -r /enigma-bbs/mods /enigma-bbs-defaults/mods && \

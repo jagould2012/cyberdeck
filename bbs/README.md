@@ -119,13 +119,32 @@ bbs/
 ### Download Games
 
 - **LORD (Legend of the Red Dragon):** https://www.gameport.com/bbs/lord.html
-- **TradeWars 2002:** https://www.eisonline.com/downloads/
+- **TradeWars 2002:** https://www.myabandonware.com/game/trade-wars-2002-30u#download
 
 ### Install Games
 
 1. Extract LORD to `doors/lord/` (ensure `LORD.EXE` is present)
-2. Extract TradeWars to `doors/tw2002/` (ensure `TW2002.EXE` is present)
-3. Rebuild the container:
+2. Extract TradeWars to `doors/tw2002/` (ensure `TWGS220B.EXE` is present)
+
+```
+cd ~/bbs/doors/tw2002
+mkdir -p tradewar
+cd tradewar
+7z x ../TWSUPP.EXE
+7z x ../TWDATA.EXE
+7z x ../TWPGM.EXE
+ls
+```
+
+3. Copy the config file
+
+```
+cp dosbox/dosbox.conf doors/lord
+cp dosbox/dosbox.conf doors/tw2002
+chmod +x scripts/*.sh
+```
+
+4. Rebuild the container:
    ```bash
    docker compose build
    docker compose up -d
