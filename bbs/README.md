@@ -15,7 +15,17 @@ docker compose build
 
 The first time you run ENiGMA½, you need to run it interactively to complete the setup wizard:
 ```bash
-docker compose run -it --rm enigma-bbs ./oputil.js config new
+docker run -it --rm \
+  -v $(pwd)/config:/enigma-bbs/config \
+  -v $(pwd)/db:/enigma-bbs/db \
+  -v $(pwd)/logs:/enigma-bbs/logs \
+  -v $(pwd)/filebase:/enigma-bbs/filebase \
+  -v $(pwd)/art:/enigma-bbs/art \
+  -v $(pwd)/mods:/enigma-bbs/mods \
+  -v $(pwd)/mail:/enigma-bbs/mail \
+  -v $(pwd)/doors:/enigma-bbs/doors \
+  bbs-enigma-bbs \
+  node oputil.js config new
 ```
 
 When prompted "Create a new configuration? (y/N)", type **y** and press Enter.
@@ -132,7 +142,7 @@ doorLord: {
     config: {
         name: LORD
         dropFileType: DOOR
-        cmd: /enigma-bbs/doors/lord.sh
+        cmd: /usr/local/bin/lord.sh
         args: [ "{node}" ]
         nodeMax: 10
         io: stdio
@@ -145,12 +155,13 @@ doorTradeWars: {
     config: {
         name: TW2002
         dropFileType: DOOR
-        cmd: /enigma-bbs/doors/tw2002.sh
+        cmd: /usr/local/bin/tw2002.sh
         args: [ "{node}" ]
         nodeMax: 10
         io: stdio
     }
 }
+
 ```
 
 ### Add a Door Menu

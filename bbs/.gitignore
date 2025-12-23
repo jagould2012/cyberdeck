@@ -11,8 +11,6 @@ logs/
 # Private mail
 mail/
 
-# Door game user/session data
-doors/
 
 # Runtime files
 *.pid

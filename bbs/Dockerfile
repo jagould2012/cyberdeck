@@ -1,10 +1,9 @@
-FROM arm64v8/debian:bookworm
+FROM arm64v8/node:22-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Node.js and dependencies
+# Install dependencies for ENiGMA and DOSBox-X build
 RUN apt-get update && apt-get install -y \
-    curl \
     python3 \
     build-essential \
     dos2unix \
@@ -12,39 +11,30 @@ RUN apt-get update && apt-get install -y \
     wget \
     git \
     libvips-dev \
-    cmake \
-    gcc-arm-linux-gnueabihf \
-    libc6-armhf-cross \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs \
+    automake \
+    libncurses-dev \
+    nasm \
+    libsdl2-dev \
+    libsdl2-net-dev \
+    libpcap-dev \
+    libslirp-dev \
+    libfluidsynth-dev \
+    libavformat-dev \
+    libavcodec-dev \
+    libswscale-dev \
+    libfreetype-dev \
+    libxkbfile-dev \
+    libxrandr-dev \
+    libglu1-mesa-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Box86 (x86 emulator for ARM)
-RUN git clone https://github.com/ptitSeb/box86.git /tmp/box86 \
-    && cd /tmp/box86 \
-    && mkdir build && cd build \
-    && cmake .. -DARM64=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    && make -j$(nproc) \
+# Build DOSBox-X from source (ARM64 native)
+RUN git clone https://github.com/joncampbell123/dosbox-x.git /tmp/dosbox-x \
+    && cd /tmp/dosbox-x \
+    && ./build-debug \
     && make install \
-    && rm -rf /tmp/box86
-
-# Install 32-bit x86 libraries for Box86
-RUN dpkg --add-architecture armhf \
-    && apt-get update \
-    && apt-get install -y libc6:armhf libstdc++6:armhf \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Download x86 DOSBox-X for doors
-RUN wget -O /tmp/dosbox-x.tar.xz https://github.com/joncampbell123/dosbox-x/releases/download/dosbox-x-v2024.10.01/dosbox-x-linux-x86-2024.10.01.tar.xz \
-    && mkdir -p /opt/dosbox-x \
-    && tar -xf /tmp/dosbox-x.tar.xz -C /opt/dosbox-x --strip-components=1 \
-    && rm /tmp/dosbox-x.tar.xz \
-    && ln -s /opt/dosbox-x/bin/x86/dosbox-x /usr/local/bin/dosbox-x
-
-# Create bbs user
-RUN useradd -m -s /bin/bash bbs
+    && rm -rf /tmp/dosbox-x
 
 # Clone ENiGMA BBS
 RUN git clone https://github.com/NuSkooler/enigma-bbs.git /enigma-bbs
@@ -62,18 +52,17 @@ RUN mkdir -p /enigma-bbs/doors/lord \
     && mkdir -p /enigma-bbs/doors/tw2002 \
     && mkdir -p /enigma-bbs/doors/dropfiles
 
-# Create node directories for dropfiles
 RUN for i in 1 2 3 4 5 6 7 8 9 10; do \
     mkdir -p /enigma-bbs/doors/dropfiles/node$i; \
     done
 
-# Copy door scripts
-COPY scripts/lord.sh /enigma-bbs/doors/lord.sh
-COPY scripts/tw2002.sh /enigma-bbs/doors/tw2002.sh
-RUN chmod +x /enigma-bbs/doors/*.sh
+# Create bbs user for door games
+RUN useradd -m -s /bin/bash bbs
 
-# Set ownership
-RUN chown -R bbs:bbs /enigma-bbs/doors
+# Copy door scripts to a separate location (not in the volume mount)
+COPY scripts/lord.sh /usr/local/bin/lord.sh
+COPY scripts/tw2002.sh /usr/local/bin/tw2002.sh
+RUN chmod +x /usr/local/bin/*.sh
 
 WORKDIR /enigma-bbs
 CMD ["node", "main.js"]
