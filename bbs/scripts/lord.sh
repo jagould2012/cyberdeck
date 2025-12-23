@@ -1,16 +1,14 @@
 #!/bin/bash
 NODE=$1
-
 DOORS_DIR=/enigma-bbs/doors
+GAME_DIR=$DOORS_DIR/lord
 DROPFILE_DIR=$DOORS_DIR/dropfiles/node$NODE
 
-mkdir -p $DROPFILE_DIR
+mkdir -p "$DROPFILE_DIR"
 
 if [ -f "$DROPFILE_DIR/DOOR.SYS" ]; then
-    unix2dos -n "$DROPFILE_DIR/DOOR.SYS" "$DOORS_DIR/lord/DOOR.SYS" 2>/dev/null
+    unix2dos -n "$DROPFILE_DIR/DOOR.SYS" "$GAME_DIR/DOOR.SYS" 2>/dev/null
 fi
 
-cd $DOORS_DIR/lord
-su - bbs -c "dosemu -dumb -E 'LREDIR D: LINUX\FS$DOORS_DIR' -E 'D:' -E 'CD LORD' -E 'LORD.EXE' -E 'exitemu'"
-
-exit 0
+cd "$GAME_DIR"
+exec box86 /usr/local/bin/dosbox-x -conf /enigma-bbs/doors/dosbox.conf -c "MOUNT D $DOORS_DIR" -c "D:" -c "CD LORD" -c "LORD.EXE" -c "EXIT"
