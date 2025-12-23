@@ -64,5 +64,15 @@ COPY scripts/lord.sh /usr/local/bin/lord.sh
 COPY scripts/tw2002.sh /usr/local/bin/tw2002.sh
 RUN chmod +x /usr/local/bin/*.sh
 
+# Save defaults before volumes mount over them
+RUN mkdir -p /enigma-bbs-defaults && \
+    cp -r /enigma-bbs/mods /enigma-bbs-defaults/mods && \
+    cp -r /enigma-bbs/art /enigma-bbs-defaults/art
+
+# Copy entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 WORKDIR /enigma-bbs
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "main.js"]
