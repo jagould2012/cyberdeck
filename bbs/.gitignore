@@ -1,21 +1,3 @@
-# ENiGMA BBS sensitive data
-config/
-
-# User database
-db/
-
-# Logs
-logs/
-*.log
-
-# Private mail
-mail/
-
-
-# Runtime files
-*.pid
-*.sock
-
 # OS files
 .DS_Store
 Thumbs.db
@@ -27,10 +9,9 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Node (if running locally)
-node_modules/
-
-# Other files created on initial
+# Mounted volumes
+ctrl/
+data/
 mods/
-filebase/
-art/
+
+.env

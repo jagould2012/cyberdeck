@@ -1,81 +1,110 @@
-FROM arm64v8/node:22-bookworm
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV SBBSCTRL=/sbbs/ctrl
+ENV SBBSEXEC=/sbbs/exec
+ENV SBBSDIR=/sbbs
+ENV TERM=ansi-bbs
+ENV LANG=en_US.UTF-8
+ENV LD_LIBRARY_PATH="/sbbs/exec:${LD_LIBRARY_PATH}"
 
-# Install dependencies for ENiGMA and DOSBox-X build
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    python3 \
     build-essential \
-    dos2unix \
-    unzip \
-    wget \
     git \
-    libvips-dev \
-    automake \
+    pkg-config \
+    patch \
+    perl \
+    python3 \
+    wget \
+    curl \
+    gnupg \
+    software-properties-common \
     libncurses-dev \
-    nasm \
-    libsdl2-dev \
-    libsdl2-net-dev \
-    libpcap-dev \
-    libslirp-dev \
-    libfluidsynth-dev \
-    libavformat-dev \
-    libavcodec-dev \
-    libswscale-dev \
-    libfreetype-dev \
-    libxkbfile-dev \
-    libxrandr-dev \
-    libglu1-mesa-dev \
-    && apt-get clean \
+    libncursesw5-dev \
+    libnspr4-dev \
+    libcap-dev \
+    libarchive-dev \
+    zip \
+    unzip \
+    ncurses-term \
+    locales \
     && rm -rf /var/lib/apt/lists/*
 
-# Build DOSBox-X from source (ARM64 native)
-RUN git clone https://github.com/joncampbell123/dosbox-x.git /tmp/dosbox-x \
-    && cd /tmp/dosbox-x \
-    && ./build-debug \
-    && make install \
-    && rm -rf /tmp/dosbox-x
+# Generate locale (fixes perl warnings)
+RUN locale-gen en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
 
-# Clone ENiGMA BBS
-RUN git clone https://github.com/NuSkooler/enigma-bbs.git /enigma-bbs
+# Add DOSEMU2 PPA and install (for DOS doors)
+RUN curl -fsSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xebe1b5ded2ad45d6' | \
+    gpg --dearmor -o /etc/apt/trusted.gpg.d/ubuntu-dosemu2-ppa.gpg && \
+    echo "deb https://ppa.launchpadcontent.net/dosemu2/ppa/ubuntu noble main" > /etc/apt/sources.list.d/dosemu2.list && \
+    apt-get update && apt-get install -y dosemu2 && rm -rf /var/lib/apt/lists/*
 
-# Apply sharp fix - load sharp before sqlite3 to prevent ARM64 segfault
-RUN sed -i '2a\\n// WORKAROUND: Load sharp before sqlite3 to prevent ARM64 segfault\ntry { require('\''sharp'\''); } catch(e) { /* sharp is optional */ }\n' /enigma-bbs/main.js
+# Download Nelgin's DOSEMU2 config (optional, for DOS doors)
+RUN mkdir -p /tmp/dosemu2-config && \
+    cd /tmp/dosemu2-config && \
+    wget -q https://www.endofthelinebbs.com/dosemu2.tar.gz && \
+    tar xzf dosemu2.tar.gz && rm dosemu2.tar.gz || true
 
-# Install ENiGMA dependencies
-RUN cd /enigma-bbs && \
-    npm pkg delete scripts.prepare && \
-    npm install --omit=dev
+# Create directory structure (MUST include /sbbs/exec before make install)
+RUN mkdir -p /sbbs/repo /sbbs/ctrl /sbbs/data /sbbs/mods /sbbs/temp \
+    /sbbs/node1 /sbbs/node2 /sbbs/node3 /sbbs/node4 /sbbs/exec
 
-# Create directory structure for doors
-RUN mkdir -p /enigma-bbs/doors/lord \
-    && mkdir -p /enigma-bbs/doors/tw2002 \
-    && mkdir -p /enigma-bbs/doors/dropfiles
+# Clone Synchronet
+WORKDIR /sbbs
+RUN git clone https://gitlab.synchro.net/main/sbbs.git /sbbs/repo
 
-RUN for i in 1 2 3 4 5 6 7 8 9 10; do \
-    mkdir -p /enigma-bbs/doors/dropfiles/node$i; \
-    done
+# Build Synchronet
+WORKDIR /sbbs/repo/src/sbbs3
+RUN make RELEASE=1 SBBSDIR=/sbbs NOCAP=1 2>&1
+RUN make RELEASE=1 SBBSDIR=/sbbs NOCAP=1 install 2>&1
 
-# Create bbs user for door games
-RUN useradd -m -s /bin/bash bbs
+# Set up directory structure with symlinks to repo
+WORKDIR /sbbs
+RUN ln -sf /sbbs/repo/docs /sbbs/docs && \
+    ln -sf /sbbs/repo/text /sbbs/text && \
+    ln -sf /sbbs/repo/web /sbbs/web && \
+    ln -sf /sbbs/repo/webv4 /sbbs/webv4 && \
+    ln -sf /sbbs/repo/xtrn /sbbs/xtrn
 
-# Install xvfb for headless DOSBox-X
-RUN apt-get update && apt-get install -y xvfb socat && rm -rf /var/lib/apt/lists/*
+# Copy ctrl (writable config)
+RUN cp -r /sbbs/repo/ctrl/* /sbbs/ctrl/
+RUN cp -r /sbbs/repo/node1/* /sbbs/node1/ 2>/dev/null || true
 
-# Copy door scripts to a separate location (not in the volume mount)
-COPY scripts/lord.sh /usr/local/bin/lord.sh
-COPY scripts/tw2002.sh /usr/local/bin/tw2002.sh
-RUN chmod +x /usr/local/bin/*.sh
+# Ensure JavaScript files in exec
+RUN if [ -d /sbbs/exec ] && [ ! -L /sbbs/exec ]; then \
+        cp -rn /sbbs/repo/exec/* /sbbs/exec/ 2>/dev/null || true; \
+    fi
 
-# Save defaults before volumes mount over them
-RUN mkdir -p /enigma-bbs-defaults && \
-    cp -r /enigma-bbs/mods /enigma-bbs-defaults/mods && \
-    cp -r /enigma-bbs/art /enigma-bbs-defaults/art
+# Copy shared libraries
+RUN find /sbbs/repo/src -name "*.so*" -path "*/gcc.linux.*.release/*" \
+    -exec cp {} /sbbs/exec/ \; 2>/dev/null || true
 
-# Copy entrypoint
+# Enable DOSEMU
+RUN if [ -f /sbbs/ctrl/sbbs.ini ]; then \
+        sed -i 's/^;*UseDOSemu=.*/UseDOSemu=true/' /sbbs/ctrl/sbbs.ini 2>/dev/null || true; \
+    fi
+
+# Compile terminfo
+RUN if [ -f /sbbs/repo/install/terminfo/ansi-bbs.src ]; then \
+        tic /sbbs/repo/install/terminfo/ansi-bbs.src 2>/dev/null || true; \
+    fi
+
+RUN chmod -R 755 /sbbs/exec 2>/dev/null || true
+
+# Verify installation
+RUN echo "=== Verifying Synchronet installation ===" && \
+    ls -la /sbbs/exec/sbbs && \
+    echo "=== DOSEMU2 version ===" && \
+    (dosemu --version 2>/dev/null || echo "DOSEMU2 not available")
+
+# Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-WORKDIR /enigma-bbs
+EXPOSE 23 22 80 443 513 21 25 110 119
+
+WORKDIR /sbbs
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["node", "main.js"]
+CMD []

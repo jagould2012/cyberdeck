@@ -1,37 +1,33 @@
 services:
-  enigma-bbs:
+  synchronet:
     build: .
-    container_name: ENiGMABBS
+    container_name: SynchronetBBS
+    hostname: synchronet
     tty: true
     restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
     ports:
-      - "8888:8888"
+      - "10023:23"       # Telnet
+      - "10022:22"       # SSH (Synchronet's built-in SSH)
+      - "10080:80"       # HTTP web interface
+      - "10443:443"      # HTTPS
+      - "10513:513"      # RLogin
+      - "10021:21"       # FTP
+      # Uncomment if needed:
+      # - "25:25"        # SMTP
+      # - "110:110"      # POP3
+      # - "119:119"      # NNTP
     volumes:
-      - ./config:/enigma-bbs/config
-      - ./db:/enigma-bbs/db
-      - ./logs:/enigma-bbs/logs
-      - ./filebase:/enigma-bbs/filebase
-      - ./art:/enigma-bbs/art
-      - ./mods:/enigma-bbs/mods
-      - ./mail:/enigma-bbs/mail
-      - ./doors:/enigma-bbs/doors
-    networks:
-      - bbsnet
-    depends_on:
-      - gameserver
-
-  gameserver:
-    build: ./gameserver
-    container_name: GameServer
-    hostname: gameserver
-    tty: true
-    restart: unless-stopped
-    networks:
-      - bbsnet
-    ports:
-      - "10513:513"
-      - "10023:23"
-
-networks:
-  bbsnet:
-    driver: bridge
+      - ./ctrl:/sbbs/ctrl
+      - ./data:/sbbs/data
+      - ./mods:/sbbs/mods
+      # Optional: mount these if you want to customize
+      # - ./text:/sbbs/text
+      # - ./xtrn:/sbbs/xtrn
+    environment:
+      - SBBSCTRL=/sbbs/ctrl
+      - SBBSEXEC=/sbbs/exec
+      - TERM=ansi-bbs
+      - SYSOP_PASSWORD=${SYSOP_PASSWORD}
+      - BBS_NAME=${BBS_NAME}

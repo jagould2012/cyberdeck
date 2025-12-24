@@ -1,58 +1,183 @@
-# ENiGMA½ BBS with DOS Door Games
+# Synchronet BBS
 
-A Docker-based ENiGMA½ BBS setup with DOS door game support via dosemu2.
+Based on: https://wiki.synchro.net/howto:raspbian_install
 
-## First-Time Setup
+## Files Included
 
-### Step 1: Build the Container
+- `Dockerfile` - Dockerfile for ARM64 Synchronet BBS with DOSEMU2 support
+- `docker-compose.yml` - Docker Compose configuration
+- `entrypoint.sh` - Startup script that injects environment variables
+- `install.sh` - Installation script
+- `README.md` - This file
+
+## Base Image
+
+Uses **Ubuntu 24.04 LTS (Noble)** because:
+- It's the current Ubuntu LTS release
+- The DOSEMU2 PPA has ARM64 packages available for Noble
+- Better compatibility than Debian for the DOSEMU2 PPA
+
+## Quick Start
+
 ```bash
-docker compose build
+# Run the installer
+chmod +x install.sh
+./install.sh
+
+# The installer will:
+# 1. Build the Docker image
+# 2. Extract default config files
+# 3. Launch scfg for initial configuration
+# 4. Sanitize passwords from config files
+# 5. Start the container
 ```
 
-> **Note:** The Dockerfile includes a patch to fix the ARM64 segfault [issue](https://github.com/NuSkooler/enigma-bbs/issues/620) discovered during testing. This fix loads `sharp` before `sqlite3` to prevent a native module conflict on ARM64 Linux systems.
+## Environment Variables
 
-### Step 2: Run Initial Configuration
+The following environment variables can be configured (e.g., in Portainer):
 
-The first time you run ENiGMA½, you need to run it interactively to complete the setup wizard:
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `SYSOP_PASSWORD` | Sysop/admin password | `changeme` |
+| `BBS_NAME` | Name of your BBS | `My BBS` |
+
+### How It Works
+
+1. The `install.sh` script removes passwords from config files after running scfg
+2. Config files are safe to commit to git with placeholder values
+3. At container startup, `entrypoint.sh` injects the real values from environment variables
+4. Set the actual password in Portainer or your deployment environment
+
+### Setting in Portainer
+
+1. Go to your stack/container settings
+2. Add environment variables:
+   ```
+   SYSOP_PASSWORD=your_secure_password
+   BBS_NAME=Your Awesome BBS
+   ```
+3. Redeploy the container
+
+### Setting via .env file (local development)
+
+Create a `.env` file (add to .gitignore!):
 ```bash
-docker run -it --rm \
-  -v $(pwd)/config:/enigma-bbs/config \
-  -v $(pwd)/db:/enigma-bbs/db \
-  -v $(pwd)/logs:/enigma-bbs/logs \
-  -v $(pwd)/filebase:/enigma-bbs/filebase \
-  -v $(pwd)/art:/enigma-bbs/art \
-  -v $(pwd)/mods:/enigma-bbs/mods \
-  -v $(pwd)/mail:/enigma-bbs/mail \
-  -v $(pwd)/doors:/enigma-bbs/doors \
-  bbs-enigma-bbs \
-  node oputil.js config new
+SYSOP_PASSWORD=your_secure_password
+BBS_NAME=Your Awesome BBS
 ```
 
-When prompted "Create a new configuration? (y/N)", type **y** and press Enter.
+---
 
-Follow the prompts to configure:
-- BBS name
-- Sysop (your) name  
-- Message conferences and areas
-- Other settings
+## Directory Structure
 
-This creates your config files in the `./config` volume.
+The official Synchronet installation creates this directory structure:
+```
+/sbbs/
+├── ctrl/     # Configuration files (copied, not symlinked - runtime writable)
+├── data/     # User data, messages, etc. (runtime writable)
+├── docs/     # Documentation (symlink to repo)
+├── exec/     # Executables AND JavaScript runtime files
+├── mods/     # Custom modifications
+├── node1-4/  # Node directories
+├── repo/     # The git repository
+├── text/     # Menu files, ANSI art, themes (symlink to repo)
+├── web/      # Legacy web interface (symlink to repo)
+├── webv4/    # Modern web interface (symlink to repo)
+└── xtrn/     # External programs/doors (symlink to repo)
+```
 
-### Step 3: Start the BBS
+## Dockerfile
 
-After initial setup, start normally:
+1. Clones the full repository to `/sbbs/repo`
+2. Builds using `make RELEASE=1 NOCAP=1 install` (NOCAP=1 for Docker)
+3. Creates symlinks for read-only directories (text, xtrn, web, docs, webv4)
+4. Copies ctrl/ (needs to be writable for config changes)
+5. Ensures JavaScript files from repo/exec are available
+6. Sets proper environment variables including LD_LIBRARY_PATH
+7. Sets TERM=ansi-bbs for proper terminal handling
+8. Compiles the ansi-bbs terminfo entry
+9. Uses entrypoint.sh to inject environment variables at startup
+
+## Building
+
+```bash
+./install.sh
+```
+
+## Running With Persistent Data
+
 ```bash
 docker compose up -d
 ```
 
-### Step 4: Create Your SysOp Account
+## Reconfiguring
 
-1. Connect to your BBS using SyncTERM (see below)
-2. At the welcome screen, select **"Apply"** (not "Login")
-3. Fill out the new user application
-4. **The first user created automatically becomes the SysOp** with full admin privileges
+```bash
+docker exec -it SynchronetBBS /sbbs/exec/scfg
+```
 
-> **Important:** Create your admin account before anyone else connects!
+---
+
+## DOSEMU2 for DOS Doors (ARM64)
+
+The Dockerfile uses Ubuntu 24.04 (Noble) and installs DOSEMU2 directly from the official PPA:
+
+```dockerfile
+# Add DOSEMU2 PPA
+curl -fsSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xebe1b5ded2ad45d6' | \
+    gpg --dearmor -o /etc/apt/trusted.gpg.d/ubuntu-dosemu2-ppa.gpg
+echo "deb https://ppa.launchpadcontent.net/dosemu2/ppa/ubuntu noble main" > /etc/apt/sources.list.d/dosemu2.list
+apt-get update && apt-get install -y dosemu2
+```
+
+The Dockerfile also downloads Nelgin's pre-configured DOSEMU2 settings from:
+- https://www.endofthelinebbs.com/dosemu2.tar.gz
+
+### Configuring DOS Doors
+
+1. In `sbbs.ini`, ensure `UseDOSemu=true` is set in the `[bbs]` section (the Dockerfile does this automatically)
+2. Configure doors in SCFG under External Programs
+3. DOS doors use these drive mappings:
+   - D: = /sbbs/node1 (or current node)
+   - E: = /sbbs/xtrn
+   - F: = /sbbs/ctrl
+   - G: = /sbbs/data
+   - H: = /sbbs/exec
+
+For more details, see: https://wiki.synchro.net/howto:raspbian_install
+
+---
+
+## Key Directories Explained
+
+| Directory | Purpose | Mount as Volume? |
+|-----------|---------|------------------|
+| ctrl/ | Config files (sbbs.ini, etc.) | Yes - persists config |
+| data/ | User data, messages, files | Yes - persists data |
+| text/ | Menus, ANSI art, themes | Optional - if customizing |
+| xtrn/ | Doors/external programs | Optional - if adding custom doors |
+| mods/ | Custom JavaScript mods | Optional - for customizations |
+| exec/ | Binaries + JS runtime | No - part of image |
+
+## Ports
+
+Default port mappings in docker-compose.yml:
+
+| Host Port | Container Port | Service |
+|-----------|----------------|---------|
+| 10023 | 23 | Telnet |
+| 10022 | 22 | SSH (Synchronet's built-in, not system SSH) |
+| 10080 | 80 | HTTP Web Interface |
+| 10443 | 443 | HTTPS |
+| 10513 | 513 | RLogin |
+| 10021 | 21 | FTP |
+
+Additional ports (uncomment in docker-compose.yml if needed):
+| Port | Service |
+|------|---------|
+| 25 | SMTP |
+| 110 | POP3 |
+| 119 | NNTP |
 
 ---
 
@@ -74,151 +199,17 @@ SyncTERM is the recommended terminal for connecting to BBS systems. It properly 
 2. Press **D** for Dialing Directory, then **E** to edit/add entry
 3. Create a new entry:
    - **Name:** My BBS
-   - **Address:** `localhost:8888` (or your server's IP)
+   - **Address:** `localhost:10023` (or your server's IP)
    - **Connection Type:** Telnet
    - **Screen Mode:** 80x25
 4. Press **Escape** to save, select your entry and press **Enter**
 
-**Quick connect:** Type the address directly: `localhost:8888`
+**Quick connect:** Type the address directly: `localhost:10023`
 
 ### Tips
 - Press **Alt+Enter** for fullscreen
 - Use **80x25** screen mode for door games
 - SyncTERM supports ANSI music!
-
-
-## Adding Door Games
-
-### Hosting Door Games
-
-Configuring Dosemu, QEMU, etc to run dos based doors on ARM64 Linux turned into a couple of long nights with no success. However, Synchronet BBS has ported many classic doors (Lord, Tradewars) to Javascript. It can be used as a standalone game server with Enigma in front using rlogin.
-
-The game server Dockerfile is included to build Synchronet for ARM64.
-
-To customize the configuration:
-
-```
-docker compose up -d gameserver
-docker exec -it GameServer /sbbs/exec/scfg
-```
-
-Recommended config:
-
-* External Programs → Online Programs (Doors) - LORD and others should already be there
-* System → Toggle Options:
-	* Set "Allow Login by User Number" = Yes
-* Networks → RLogin (or in sbbs.ini):
-	* Enable RLogin server
-	* Set to allow passwordless login from trusted hosts
-* System → New User Options:
-	* Auto-create users from RLogin
-
-### Configure Doors in ENiGMA
-
-Add door definitions to your menu file (e.g., `config/menus/<bbsname>-doors.hjson`):
-
-```
-cat > ~/bbs/config/menus/cyberdeck-doors.hjson << 'EOF'
-{
-	menus: {
-		doorsMainMenu: {
-            desc: Doors Menu
-            art: DOORMNU
-            prompt: menuCommand
-            config: {
-                interrupt: realtime
-            }
-            submit: [
-                {
-                    value: { command: "G" }
-                    action: @menu:fullLogoffSequence
-                }
-                {
-                    value: { command: "Q" }
-                    action: @systemMethod:prevMenu
-                }
-                {
-                    value: { command: "L" }
-                    action: @menu:doorLORD
-                }
-                {
-                    value: { command: "T" }
-                    action: @menu:doorTradeWars
-                }
-            ]
-        }
-
-        doorLORD: {
-            desc: Legend of the Red Dragon
-            module: abracadabra
-            config: {
-                name: LORD
-                dropFileType: DOOR
-                cmd: /usr/local/bin/lord.sh
-                args: [
-                    "{node}"
-                ]
-                nodeMax: 1
-                tooManyArt: DOORMANY
-                io: stdio
-            }
-        }
-
-        doorTradeWars: {
-            desc: Trade Wars 2002
-            module: abracadabra
-            config: {
-                name: Trade Wars 2002
-                dropFileType: DOOR
-                cmd: /usr/local/bin/tw2002.sh
-                args: [
-                    "{node}"
-                ]
-                nodeMax: 1
-                tooManyArt: DOORMANY
-                io: stdio
-            }
-        }
-	}
-}
-EOF
-
-```
-
-### Add a Door Menu
-
-Create a menu for users to select door games:
-
-```hjson
-doorMenu: {
-    desc: Door Games
-    art: DOORMENU
-    form: {
-        0: {
-            mci: {
-                VM1: {
-                    items: [
-                        { text: "Legend of the Red Dragon", data: "lord" }
-                        { text: "Trade Wars 2002", data: "tw2002" }
-                    ]
-                }
-            }
-            submit: {
-                *: [
-                    {
-                        value: { "1": "lord" }
-                        action: @menu:doorLord
-                    }
-                    {
-                        value: { "1": "tw2002" }
-                        action: @menu:doorTradeWars
-                    }
-                ]
-            }
-        }
-    }
-}
-```
 
 ---
 
@@ -233,93 +224,53 @@ doorMenu: {
 
 Basic telnet (no ANSI graphics):
 ```bash
-telnet localhost 8888
+telnet localhost 10023
 ```
-
----
-
-## Volumes & Ports
-
-### Mounted Volumes
-| Volume | Purpose |
-|--------|---------|
-| `./config` | BBS configuration files |
-| `./db` | Database files |
-| `./logs` | Log files |
-| `./filebase` | File area storage |
-| `./art` | ANSI art files |
-| `./mods` | Custom modules |
-| `./mail` | Message networks |
-| `./doors` | Door game files |
-
-### Ports
-| Port | Protocol | Purpose |
-|------|----------|---------|
-| 8888 | Telnet | Default BBS access |
-
-Add more ports in `docker-compose.yml` for SSH or other protocols.
 
 ---
 
 ## Troubleshooting
 
-### Container keeps exiting with code 130
-Run interactively first to complete setup:
-```bash
-docker compose run -it enigma-bbs
-```
+### "DOS programs not supported" error
+- Ensure `UseDOSemu=true` in `/sbbs/ctrl/sbbs.ini` under `[bbs]`
+- DOSEMU2 must be installed for DOS doors
 
-### Container exits with code 139 (Segfault)
-This is the sharp/sqlite3 conflict on ARM64. The Dockerfile should already include the fix, but if running natively (not in Docker), apply manually:
-```bash
-sed -i '2a\\n// WORKAROUND: Load sharp before sqlite3 to prevent ARM64 segfault\ntry { require('\''sharp'\''); } catch(e) {}\n' main.js
-```
+### Missing themes/menus
+- Check that `/sbbs/text` is properly symlinked to `/sbbs/repo/text`
+- Run `ls -la /sbbs/text/` to verify contents
 
-### Can't connect to BBS
-- Verify container is running: `docker compose ps`
-- Check logs: `docker compose logs -f`
-- Ensure port 8888 is not blocked by firewall
+### Doors not showing
+- Check that `/sbbs/xtrn` is properly symlinked to `/sbbs/repo/xtrn`
+- Configure doors in SCFG → External Programs
 
-### ANSI graphics look wrong
-- Use SyncTERM or another BBS terminal (not regular telnet)
-- Set screen mode to 80x25
-- Ensure terminal character set is CP437
+### Libraries not found
+- Ensure `LD_LIBRARY_PATH` includes `/sbbs/exec`
+- Check that `.so` files exist in `/sbbs/exec/`
 
-### Door display issues
-- Ensure your terminal supports CP437 character set
-- Use 80x25 screen mode
-- SyncTERM handles DOS door output best
+### Container keeps restarting
+- Run scfg to generate initial configuration: `./install.sh`
+- Check logs: `docker logs SynchronetBBS`
+
+### SSH key errors
+- The entrypoint script handles SSH key generation
+- If issues persist: `docker exec SynchronetBBS rm -f /sbbs/ctrl/cryptlib.key` then restart
 
 ---
 
-## Useful Commands
+## Security Notes
 
-```bash
-# View logs
-docker compose logs -f
-
-# Enter container shell
-docker compose exec enigma-bbs bash
-
-# Restart BBS
-docker compose restart
-
-# Stop BBS
-docker compose down
-
-# Rebuild after changes
-docker compose build && docker compose up -d
-
-# Run oputil (user management, etc.)
-docker compose exec enigma-bbs ./oputil.js user list
-docker compose exec enigma-bbs ./oputil.js user pw <username>
-```
+- **Never commit real passwords to git** - The install script sanitizes passwords automatically
+- **Use environment variables** for sensitive data (SYSOP_PASSWORD)
+- **The .gitignore** excludes sensitive files like `*.key`, `*.pem`, and data directories
+- **Set strong passwords** in your production environment (Portainer, etc.)
 
 ---
 
-## Resources
+## References
 
-- **ENiGMA½ Documentation:** https://nuskooler.github.io/enigma-bbs/
-- **ENiGMA½ GitHub:** https://github.com/NuSkooler/enigma-bbs
-- **DOS Game Archives:** https://www.bbsarchive.org/
-- **BBS Documentary:** https://www.bbsdocumentary.com/
+- Synchronet Wiki: http://wiki.synchro.net
+- Raspberry Pi Install: https://wiki.synchro.net/howto:raspbian_install
+- UNIX Installation: http://wiki.synchro.net/install:nix
+- Prerequisites: http://wiki.synchro.net/install:nix:prerequisites
+
+---
