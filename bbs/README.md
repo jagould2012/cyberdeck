@@ -43,10 +43,16 @@ The following environment variables can be configured (e.g., in Portainer):
 
 ### How It Works
 
-1. The `install.sh` script removes passwords from config files after running scfg
+1. The `install.sh` script removes passwords from config files after running scfg, replacing them with `SET_VIA_ENV`
 2. Config files are safe to commit to git with placeholder values
-3. At container startup, `entrypoint.sh` injects the real values from environment variables
+3. At container startup, `entrypoint.sh`:
+   - Copies `main.ini` to `/tmp/main.ini`
+   - Injects the real password from `SYSOP_PASSWORD` environment variable
+   - Uses a bind mount to overlay the modified file over the original
+   - The host volume remains untouched with the placeholder value
 4. Set the actual password in Portainer or your deployment environment
+
+> **Note:** The container requires `SYS_ADMIN` capability for the bind mount. This is already configured in `docker-compose.yml`.
 
 ### Setting in Portainer
 
