@@ -86,100 +86,102 @@ SyncTERM is the recommended terminal for connecting to BBS systems. It properly 
 - Use **80x25** screen mode for door games
 - SyncTERM supports ANSI music!
 
----
-
-## Directory Structure
-```
-bbs/
-├── Dockerfile
-├── docker-compose.yml
-├── dosemu/
-│   ├── dosemu.conf
-│   └── autoexec.bat
-├── scripts/
-│   ├── lord.sh
-│   └── tw2002.sh
-├── config/              <- BBS configuration (mounted volume)
-├── db/                  <- Database files (mounted volume)
-├── logs/                <- Log files (mounted volume)
-├── art/                 <- ANSI art files (mounted volume)
-├── filebase/            <- File area storage (mounted volume)
-├── mods/                <- Custom modules (mounted volume)
-├── mail/                <- Message networks (mounted volume)
-└── doors/
-    ├── lord/            <- Put LORD game files here
-    ├── tw2002/          <- Put TradeWars 2002 files here
-    └── dropfiles/       <- Auto-created for door communication
-```
-
----
 
 ## Adding Door Games
 
-### Download Games
+### Hosting Door Games
 
-- **LORD (Legend of the Red Dragon):** https://www.gameport.com/bbs/lord.html
-- **TradeWars 2002:** https://www.myabandonware.com/game/trade-wars-2002-30u#download
+Configuring Dosemu, QEMU, etc to run dos based doors on ARM64 Linux turned into a couple of long nights with no success. However, Synchronet BBS has ported many classic doors (Lord, Tradewars) to Javascript. It can be used as a standalone game server with Enigma in front using rlogin.
 
-### Install Games
+The game server Dockerfile is included to build Synchronet for ARM64.
 
-1. Extract LORD to `doors/lord/` (ensure `LORD.EXE` is present)
-2. Extract TradeWars to `doors/tw2002/` (ensure `TWGS220B.EXE` is present)
+To customize the configuration:
 
 ```
-cd ~/bbs/doors/tw2002
-mkdir -p tradewar
-cd tradewar
-7z x ../TWSUPP.EXE
-7z x ../TWDATA.EXE
-7z x ../TWPGM.EXE
-ls
+docker compose up -d gameserver
+docker exec -it GameServer /sbbs/exec/scfg
 ```
 
-3. Copy the config file
+Recommended config:
 
-```
-cp dosbox/dosbox.conf doors/lord
-cp dosbox/dosbox.conf doors/tw2002
-chmod +x scripts/*.sh
-```
-
-4. Rebuild the container:
-   ```bash
-   docker compose build
-   docker compose up -d
-   ```
+* External Programs → Online Programs (Doors) - LORD and others should already be there
+* System → Toggle Options:
+	* Set "Allow Login by User Number" = Yes
+* Networks → RLogin (or in sbbs.ini):
+	* Enable RLogin server
+	* Set to allow passwordless login from trusted hosts
+* System → New User Options:
+	* Auto-create users from RLogin
 
 ### Configure Doors in ENiGMA
 
 Add door definitions to your menu file (e.g., `config/menus/<bbsname>-doors.hjson`):
 
-```hjson
-doorLord: {
-    desc: Legend of the Red Dragon
-    module: abracadabra
-    config: {
-        name: LORD
-        dropFileType: DOOR
-        cmd: /usr/local/bin/lord.sh
-        args: [ "{node}" ]
-        nodeMax: 10
-        io: stdio
-    }
-}
+```
+cat > ~/bbs/config/menus/cyberdeck-doors.hjson << 'EOF'
+{
+	menus: {
+		doorsMainMenu: {
+            desc: Doors Menu
+            art: DOORMNU
+            prompt: menuCommand
+            config: {
+                interrupt: realtime
+            }
+            submit: [
+                {
+                    value: { command: "G" }
+                    action: @menu:fullLogoffSequence
+                }
+                {
+                    value: { command: "Q" }
+                    action: @systemMethod:prevMenu
+                }
+                {
+                    value: { command: "L" }
+                    action: @menu:doorLORD
+                }
+                {
+                    value: { command: "T" }
+                    action: @menu:doorTradeWars
+                }
+            ]
+        }
 
-doorTradeWars: {
-    desc: TradeWars 2002
-    module: abracadabra
-    config: {
-        name: TW2002
-        dropFileType: DOOR
-        cmd: /usr/local/bin/tw2002.sh
-        args: [ "{node}" ]
-        nodeMax: 10
-        io: stdio
-    }
+        doorLORD: {
+            desc: Legend of the Red Dragon
+            module: abracadabra
+            config: {
+                name: LORD
+                dropFileType: DOOR
+                cmd: /usr/local/bin/lord.sh
+                args: [
+                    "{node}"
+                ]
+                nodeMax: 1
+                tooManyArt: DOORMANY
+                io: stdio
+            }
+        }
+
+        doorTradeWars: {
+            desc: Trade Wars 2002
+            module: abracadabra
+            config: {
+                name: Trade Wars 2002
+                dropFileType: DOOR
+                cmd: /usr/local/bin/tw2002.sh
+                args: [
+                    "{node}"
+                ]
+                nodeMax: 1
+                tooManyArt: DOORMANY
+                io: stdio
+            }
+        }
+	}
 }
+EOF
 
 ```
 
@@ -217,49 +219,6 @@ doorMenu: {
     }
 }
 ```
-
----
-
-## Adding More Door Games
-
-To add additional DOS door games:
-
-1. **Create directory:** `mkdir doors/yourgame`
-
-2. **Copy game files** to the new directory
-
-3. **Create a door script** (`doors/yourgame.sh`):
-   ```bash
-   #!/bin/bash
-   NODE=$1
-   DOORS_DIR=/enigma-bbs/doors
-   GAME_DIR=$DOORS_DIR/yourgame
-   DROPFILE_DIR=$DOORS_DIR/dropfiles/node$NODE
-
-   mkdir -p "$DROPFILE_DIR"
-
-   if [ -f "$DROPFILE_DIR/DOOR.SYS" ]; then
-       unix2dos -n "$DROPFILE_DIR/DOOR.SYS" "$GAME_DIR/DOOR.SYS" 2>/dev/null
-   fi
-
-   cd "$GAME_DIR"
-   exec su -s /bin/bash bbs -c "dosemu -dumb \
-       -E 'LREDIR D: LINUX\\FS$DOORS_DIR' \
-       -E 'D:' \
-       -E 'CD YOURGAME' \
-       -E 'GAME.EXE' \
-       -E 'exitemu'" 2>/dev/null
-   ```
-
-4. **Add to Dockerfile** (or mount as volume):
-   ```dockerfile
-   COPY yourgame.sh /enigma-bbs/doors/yourgame.sh
-   RUN chmod +x /enigma-bbs/doors/yourgame.sh
-   ```
-
-5. **Add menu configuration** as shown above
-
-6. **Rebuild:** `docker compose build && docker compose up -d`
 
 ---
 
@@ -326,26 +285,10 @@ sed -i '2a\\n// WORKAROUND: Load sharp before sqlite3 to prevent ARM64 segfault\
 - Set screen mode to 80x25
 - Ensure terminal character set is CP437
 
-### Door games not working
-- Verify game files are in correct `doors/` subdirectory
-- Check the executable name matches the script (e.g., `LORD.EXE`)
-- Verify door scripts are executable: `chmod +x doors/*.sh`
-- Check container logs: `docker compose logs -f`
-- Test dosemu manually:
-  ```bash
-  docker compose exec enigma-bbs su - bbs -c "dosemu -dumb -E 'DIR C:' -E 'exitemu'"
-  ```
-
 ### Door display issues
 - Ensure your terminal supports CP437 character set
 - Use 80x25 screen mode
 - SyncTERM handles DOS door output best
-
-### ARM64 / Raspberry Pi Notes
-This setup uses `platform: linux/amd64` in docker-compose.yml to run an x86_64 container on ARM64 hardware via QEMU emulation. This:
-- Allows dosemu to work (DOS is x86-only)
-- Will be slower than native x86 execution
-- Is the recommended approach for DOS doors on ARM64
 
 ---
 

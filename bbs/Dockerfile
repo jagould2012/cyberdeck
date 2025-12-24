@@ -59,13 +59,13 @@ RUN for i in 1 2 3 4 5 6 7 8 9 10; do \
 # Create bbs user for door games
 RUN useradd -m -s /bin/bash bbs
 
+# Install xvfb for headless DOSBox-X
+RUN apt-get update && apt-get install -y xvfb socat && rm -rf /var/lib/apt/lists/*
+
 # Copy door scripts to a separate location (not in the volume mount)
 COPY scripts/lord.sh /usr/local/bin/lord.sh
 COPY scripts/tw2002.sh /usr/local/bin/tw2002.sh
 RUN chmod +x /usr/local/bin/*.sh
-
-# Install xvfb for headless DOSBox-X
-RUN apt-get update && apt-get install -y xvfb && rm -rf /var/lib/apt/lists/*
 
 # Save defaults before volumes mount over them
 RUN mkdir -p /enigma-bbs-defaults && \

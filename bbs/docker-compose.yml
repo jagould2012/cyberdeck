@@ -15,3 +15,23 @@ services:
       - ./mods:/enigma-bbs/mods
       - ./mail:/enigma-bbs/mail
       - ./doors:/enigma-bbs/doors
+    networks:
+      - bbsnet
+    depends_on:
+      - gameserver
+
+  gameserver:
+    build: ./gameserver
+    container_name: GameServer
+    hostname: gameserver
+    tty: true
+    restart: unless-stopped
+    networks:
+      - bbsnet
+    ports:
+      - "10513:513"
+      - "10023:23"
+
+networks:
+  bbsnet:
+    driver: bridge
