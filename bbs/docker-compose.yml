@@ -1,5 +1,6 @@
 services:
   synchronet:
+    platform: linux/amd64
     build: .
     container_name: SynchronetBBS
     hostname: synchronet

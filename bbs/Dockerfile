@@ -18,48 +18,71 @@ RUN apt-get update && apt-get install -y \
     unzip \
     perl \
     python3 \
-    wget \
-    autoconf2.13 \
     && rm -rf /var/lib/apt/lists/*
 
-# NOTE: We do NOT install libmozjs-78-dev - it's broken on ARM64!
-# Instead, Synchronet will build its bundled SpiderMonkey 1.8.5
-
-# Clone Synchronet
+# Clone Synchronet (full clone for doors/xtrn)
 RUN git clone --depth 1 https://gitlab.synchro.net/main/sbbs.git /sbbs
 
-# Fix ARM64 build: Update config.guess and config.sub in mozjs source
-# The bundled versions are from 2009 and don't recognize aarch64
-RUN wget -q -O /tmp/config.guess 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' && \
-    wget -q -O /tmp/config.sub 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' && \
-    chmod +x /tmp/config.guess /tmp/config.sub && \
-    find /sbbs -name "config.guess" -exec cp /tmp/config.guess {} \; && \
-    find /sbbs -name "config.sub" -exec cp /tmp/config.sub {} \;
-
-# Build Synchronet (this will compile the bundled SpiderMonkey)
+# Build main Synchronet
 WORKDIR /sbbs/src/sbbs3
 ENV SBBSDIR=/sbbs
-RUN make RELEASE=1 SBBSDIR=/sbbs 2>&1 | tee /tmp/build.log || \
-    (echo "=== BUILD FAILED - Last 200 lines ===" && tail -200 /tmp/build.log && exit 1)
+RUN make RELEASE=1 SBBSDIR=/sbbs 2>&1 && \
+    echo "=== Main build completed ==="
 
 # Install all binaries to exec directory
-RUN find /sbbs/src -path "*/gcc.linux.*.exe.release/*" -type f -executable -exec cp {} /sbbs/exec/ \; 2>/dev/null || true
+RUN find /sbbs/src -path "*/gcc.linux.*.exe.release/*" -type f -executable -exec cp {} /sbbs/exec/ \; && \
+    find /sbbs/src -path "*/gcc.linux.*.lib.release/*.so" -exec cp {} /sbbs/exec/ \;
 
-# Copy shared libraries to exec directory
-RUN find /sbbs/src -path "*/gcc.linux.*.lib.release/*.so" -exec cp {} /sbbs/exec/ \; 2>/dev/null || true
+# Build doors/external programs
+WORKDIR /sbbs/src/doors
+RUN for dir in */; do \
+        if [ -f "$dir/Makefile" ] || [ -f "$dir/GNUmakefile" ]; then \
+            echo "Building door: $dir"; \
+            make -C "$dir" RELEASE=1 2>&1 || true; \
+        fi; \
+    done && \
+    echo "=== Doors build completed ==="
 
-RUN ls -la /sbbs/exec/sbbs /sbbs/exec/scfg /sbbs/exec/*.so
+# Copy built door executables to xtrn directories
+RUN find /sbbs/src/doors -type f -executable -newer /sbbs/src/doors -exec file {} \; | \
+    grep "ELF" | cut -d: -f1 | while read f; do \
+        name=$(basename "$f"); \
+        dest_dir="/sbbs/xtrn/$name"; \
+        mkdir -p "$dest_dir" 2>/dev/null || true; \
+        cp "$f" "$dest_dir/" 2>/dev/null || cp "$f" /sbbs/xtrn/ 2>/dev/null || true; \
+    done
+
+# Build Baja scripts (.src -> .bin)
+WORKDIR /sbbs/exec
+RUN for src in *.src; do \
+        if [ -f "$src" ]; then \
+            echo "Compiling: $src"; \
+            /sbbs/exec/baja "$src" 2>&1 || true; \
+        fi; \
+    done && \
+    echo "=== Baja compilation completed ==="
+
+# Also compile any .src files in xtrn subdirectories
+RUN find /sbbs/xtrn -name "*.src" -type f | while read src; do \
+        echo "Compiling: $src"; \
+        /sbbs/exec/baja "$src" 2>&1 || true; \
+    done
 
 # Copy default config files
 RUN cp -r /sbbs/ctrl.new/* /sbbs/ctrl/ 2>/dev/null || true
 RUN cp -r /sbbs/text.new/* /sbbs/text/ 2>/dev/null || true
 
-RUN ls -la /sbbs/exec/sbbs
+# Verify key files exist
+RUN ls -la /sbbs/exec/sbbs /sbbs/exec/scfg /sbbs/exec/baja && \
+    echo "=== Checking for compiled .bin files ===" && \
+    ls -la /sbbs/exec/*.bin 2>/dev/null | head -10 || echo "No .bin files yet"
 
 # Create required directories
-RUN mkdir -p /sbbs/data /sbbs/ctrl /sbbs/text /sbbs/node1 /sbbs/node2 /sbbs/node3 /sbbs/node4
+RUN mkdir -p /sbbs/data /sbbs/ctrl /sbbs/text \
+    /sbbs/node1 /sbbs/node2 /sbbs/node3 /sbbs/node4 \
+    /sbbs/xtrn /sbbs/mods
 
-# Add entrypoint (your existing one with bind mount password injection)
+# Add entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

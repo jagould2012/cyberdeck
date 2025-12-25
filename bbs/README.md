@@ -12,10 +12,7 @@ Based on: https://wiki.synchro.net/howto:raspbian_install
 
 ## Base Image
 
-Uses **Ubuntu 24.04 LTS (Noble)** because:
-- It's the current Ubuntu LTS release
-- The DOSEMU2 PPA has ARM64 packages available for Noble
-- Better compatibility than Debian for the DOSEMU2 PPA
+We are currently using an x86_64 build due to a bug in the old version of SpyderMonkey (1.8.5) that Synchronet uses. Tracking [bug](https://gitlab.synchro.net/main/sbbs/-/issues/685) to hopefully go back to ARM64 build.
 
 ## Quick Start
 
