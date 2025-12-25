@@ -1,0 +1,35 @@
+services:
+  synchronet:
+    platform: linux/amd64
+    build: .
+    container_name: SynchronetBBS
+    hostname: synchronet
+    tty: true
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    ports:
+      # - "10023:23"       # Telnet
+      # Disable all except SSH
+      - "10022:22"       # SSH (Synchronet's built-in SSH)
+      # - "10080:80"       # HTTP web interface
+      # - "10443:443"      # HTTPS
+      # - "10513:513"      # RLogin
+      # - "10021:21"       # FTP
+      # Uncomment if needed:
+      # - "25:25"        # SMTP
+      # - "110:110"      # POP3
+      # - "119:119"      # NNTP
+    volumes:
+      - ./ctrl:/sbbs/ctrl
+      - ./data:/sbbs/data
+      - ./mods:/sbbs/mods
+      # Optional: mount these if you want to customize
+      # - ./text:/sbbs/text
+      # - ./xtrn:/sbbs/xtrn
+    environment:
+      - SBBSCTRL=/sbbs/ctrl
+      - SBBSEXEC=/sbbs/exec
+      - TERM=ansi-bbs
+      - SYSOP_PASSWORD=${SYSOP_PASSWORD}
+      - BBS_NAME=${BBS_NAME}
