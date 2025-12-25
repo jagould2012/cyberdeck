@@ -217,7 +217,7 @@ SyncTERM is the recommended terminal for connecting to BBS systems. It properly 
    - **Screen Mode:** 80x25
 4. Press **Escape** to save, select your entry and press **Enter**
 
-**Quick connect:** Type the address directly: `localhost:10023`
+For new users, enter `new` as the SSH username and dont enter a password.
 
 ### Tips
 - Press **Alt+Enter** for fullscreen
