@@ -121,22 +121,14 @@ docker exec -it SynchronetBBS /sbbs/exec/scfg
 
 ---
 
-## DOSEMU2 for DOS Doors (ARM64)
-
-The Dockerfile uses Ubuntu 24.04 (Noble) and installs DOSEMU2 directly from the official PPA:
-
-```dockerfile
-# Add DOSEMU2 PPA
-curl -fsSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xebe1b5ded2ad45d6' | \
-    gpg --dearmor -o /etc/apt/trusted.gpg.d/ubuntu-dosemu2-ppa.gpg
-echo "deb https://ppa.launchpadcontent.net/dosemu2/ppa/ubuntu noble main" > /etc/apt/sources.list.d/dosemu2.list
-apt-get update && apt-get install -y dosemu2
-```
-
-The Dockerfile also downloads Nelgin's pre-configured DOSEMU2 settings from:
-- https://www.endofthelinebbs.com/dosemu2.tar.gz
 
 ### Configuring DOS Doors
+
+## Auto Install
+
+Under Doors > Operator > Auto-install New External Programs to configure other doors (Lord, Tradewars).
+
+## Manual Configuration
 
 1. In `sbbs.ini`, ensure `UseDOSemu=true` is set in the `[bbs]` section (the Dockerfile does this automatically)
 2. Configure doors in SCFG under External Programs
