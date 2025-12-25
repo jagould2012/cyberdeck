@@ -95,7 +95,8 @@ sleep 5
 # Generate SSH keys if needed
 echo ""
 echo "Generating SSH keys..."
-docker exec SynchronetBBS bash -c "rm -f /sbbs/ctrl/cryptlib.key 2>/dev/null; /sbbs/exec/sbbsecho -k 2>/dev/null || true"
+docker exec SynchronetBBS bash -c "rm -f /sbbs/ctrl/cryptlib.key /sbbs/ctrl/ssh_host_* 2>/dev/null"
+
 
 # Alternative: restart to regenerate keys
 docker compose restart

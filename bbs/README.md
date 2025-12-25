@@ -119,8 +119,25 @@ docker compose up -d
 docker exec -it SynchronetBBS /sbbs/exec/scfg
 ```
 
----
+## Other Setting
 
+* Set default shell to Oblivion/2
+
+`main.ini`
+```
+[newuser]
+    command_shell=OBV-2
+```
+
+* Disable IPV6
+
+`sbbs.ini`
+```
+[Global]
+Interface=0.0.0.0
+```
+
+---
 
 ### Configuring DOS Doors
 
@@ -160,12 +177,8 @@ Default port mappings in docker-compose.yml:
 
 | Host Port | Container Port | Service |
 |-----------|----------------|---------|
-| 10023 | 23 | Telnet |
 | 10022 | 22 | SSH (Synchronet's built-in, not system SSH) |
-| 10080 | 80 | HTTP Web Interface |
-| 10443 | 443 | HTTPS |
-| 10513 | 513 | RLogin |
-| 10021 | 21 | FTP |
+
 
 Additional ports (uncomment in docker-compose.yml if needed):
 | Port | Service |
@@ -173,6 +186,11 @@ Additional ports (uncomment in docker-compose.yml if needed):
 | 25 | SMTP |
 | 110 | POP3 |
 | 119 | NNTP |
+| 10023 | 23 | Telnet |
+| 10080 | 80 | HTTP Web Interface |
+| 10443 | 443 | HTTPS |
+| 10513 | 513 | RLogin |
+| 10021 | 21 | FTP |
 
 ---
 
@@ -194,8 +212,8 @@ SyncTERM is the recommended terminal for connecting to BBS systems. It properly 
 2. Press **D** for Dialing Directory, then **E** to edit/add entry
 3. Create a new entry:
    - **Name:** My BBS
-   - **Address:** `localhost:10023` (or your server's IP)
-   - **Connection Type:** Telnet
+   - **Address:** `localhost:10022` (or your server's IP)
+   - **Connection Type:** SSH
    - **Screen Mode:** 80x25
 4. Press **Escape** to save, select your entry and press **Enter**
 
@@ -216,11 +234,6 @@ SyncTERM is the recommended terminal for connecting to BBS systems. It properly 
 | **NetRunner** | Windows | https://www.mysticbbs.com/downloads.html |
 | **EtherTerm** | Win/Mac/Linux | https://github.com/M-griffin/EtherTerm |
 | **Qodem** | Linux | http://qodem.sourceforge.net/ |
-
-Basic telnet (no ANSI graphics):
-```bash
-telnet localhost 10023
-```
 
 ---
 

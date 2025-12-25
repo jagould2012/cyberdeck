@@ -9,12 +9,13 @@ services:
     cap_add:
       - SYS_ADMIN
     ports:
-      - "10023:23"       # Telnet
+      # - "10023:23"       # Telnet
+      # Disable all except SSH
       - "10022:22"       # SSH (Synchronet's built-in SSH)
-      - "10080:80"       # HTTP web interface
-      - "10443:443"      # HTTPS
-      - "10513:513"      # RLogin
-      - "10021:21"       # FTP
+      # - "10080:80"       # HTTP web interface
+      # - "10443:443"      # HTTPS
+      # - "10513:513"      # RLogin
+      # - "10021:21"       # FTP
       # Uncomment if needed:
       # - "25:25"        # SMTP
       # - "110:110"      # POP3
