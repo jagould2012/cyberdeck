@@ -121,14 +121,6 @@ docker exec -it SynchronetBBS /sbbs/exec/scfg
 
 ## Other Setting
 
-* Set default shell to Oblivion/2
-
-`main.ini`
-```
-[newuser]
-    command_shell=OBV-2
-```
-
 * Disable IPV6
 
 `sbbs.ini`
@@ -138,6 +130,96 @@ Interface=0.0.0.0
 ```
 
 ---
+
+## Theme Install - Cyberdeck
+
+The Cyberdeck theme applies a consistent grayscale color scheme across all BBS screens. Colors used:
+- **Bright white** (`\x01h\x01w`) - First letter of words, highlights
+- **Gray** (`\x01n\x01w`) - Normal text
+- **Dark gray** (`\x01h\x01k`) - Accents, separators
+- **Brown/Yellow** (`\x01y`) - Command keys in menus
+
+### Quick Install
+
+```bash
+# 1. Apply color theme to system prompts
+./update-msg-colors.sh
+
+# 2. Copy ANSI art
+./copy-ans.sh
+
+# 3. Copy JS overrides to mods
+mkdir -p mods
+cp yesnobar.js noyesbar.js mods/
+
+# 4. Restart
+docker restart SynchronetBBS
+```
+
+### Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `update-msg-colors.sh` | Main theme installer - updates attr.ini, text.dat, modopts.ini, text.ini |
+| `update-msg-colors.pl` | Converts .msg/.asc file colors (called by update-msg-colors.sh) |
+| `update-text-dat.pl` | Converts text.dat system prompt colors (called by update-msg-colors.sh) |
+| `generate-text-ini.pl` | Generates ctrl/text.ini for shell prompt colors |
+| `copy-ans.sh` | Copies ANSI art from art/ to text/ with proper formatting |
+
+### Custom Files
+
+| File | Purpose |
+|------|---------|
+| `ctrl/attr.ini` | Menu color attributes (mnehigh, mnelow, mnecmd, etc.) |
+| `ctrl/text.ini` | Shell prompt color overrides (Main, File, status line) |
+| `ctrl/text.dat` | System message colors (modified by script) |
+| `ctrl/modopts.ini` | JS module settings like first_caller_msg (modified by script) |
+| `mods/yesnobar.js` | Grayscale Yes/No dialog |
+| `mods/noyesbar.js` | Grayscale No/Yes dialog |
+
+### copy-ans.sh
+
+Copies ANSI art from `art/` to `text/` with proper Synchronet formatting.
+
+**Setup:**
+- Place `.ans` files in `art/` for main screens (e.g., `answer.ans`, `bullseye.ans`)
+- Place `.ans` files in `art/menu/` for menu screens (e.g., `main.ans`)
+- Place `.ans` files in `art/random/` for random login screens
+- Optional: create `file.append.ans` to append content after a pause
+
+**Features:**
+- Strips SAUCE metadata from source files
+- Truncates files to MAX_ROWS (default 22) to prevent [more] prompt
+- Strips trailing blank lines
+- Adds clear screen code (Ctrl-A l) at start
+- Adds speed control for random login screens
+
+**Usage:**
+```bash
+./copy-ans.sh              # Uses ./art and ./text as defaults
+./copy-ans.sh ./art ./text # Explicit paths
+MAX_ROWS=20 ./copy-ans.sh  # Custom row limit
+```
+
+### update-msg-colors.sh
+
+Applies the Cyberdeck color scheme to all Synchronet system prompts and menus.
+
+**What it does:**
+1. Resets files from Docker image (clean slate)
+2. Updates `ctrl/attr.ini` with grayscale theme
+3. Modifies `ctrl/modopts.ini` with JS module colors (uses actual Ctrl-A characters)
+4. Creates `ctrl/text.ini` for shell prompt overrides
+5. Converts `ctrl/text.dat` colors (cyan/blue/green → white, red/magenta → dark gray)
+6. Processes all `.msg` and `.asc` files in text/ and text/menu/
+
+**Usage:**
+```bash
+./update-msg-colors.sh
+docker restart SynchronetBBS
+```
+
+Backups are saved to `.color-backup-YYYYMMDD-HHMMSS/`.
 
 ### Configuring DOS Doors
 

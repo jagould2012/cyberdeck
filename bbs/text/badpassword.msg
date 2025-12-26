@@ -1,0 +1,1 @@
+i'm sorry, but that password is not allowed (too common or easily guessed).

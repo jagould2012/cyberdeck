@@ -9,11 +9,15 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Mounted volumes
-ctrl/
+# Mounted volumes - data that changes at runtime
 data/
-mods/
 xtrn/
-text/
+
+# Ignore ctrl except theme configs
+ctrl/*
+!ctrl/attr.ini
+!ctrl/text.ini
 
 .env
+
+.color-backup-*/
