@@ -14,11 +14,11 @@ my $content = <$fh>;
 close($fh);
 
 # Step 1: Protect @-codes by replacing with placeholders
-# @-codes can contain: letters, numbers, underscore, dot, colon, dash, hash, percent, slash
-# Examples: @SYSAVAIL-L####@, @TIME-L@, @include:%zmenu/head.msg@
+# @-codes can contain many characters - be inclusive to avoid breaking them
+# Examples: @SYSAVAIL-L####@, @TIME-L@, @include:%zmenu/head.msg@, @TMSG!........@
 my %codes;
 my $counter = 0;
-$content =~ s/(\@[A-Za-z0-9_.:#%\/-]+\@)/
+$content =~ s/(\@[^@\r\n]+\@)/
     $counter++;
     $codes{"XYZPLACEHOLDERXYZ$counter"} = $1;
     "XYZPLACEHOLDERXYZ$counter";

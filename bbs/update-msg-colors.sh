@@ -203,20 +203,30 @@ if [ -f "$MODOPTS_INI" ]; then
     sed -i.bak '/^[[:space:]]*logonlist_fmt[[:space:]]*=$/d' "$MODOPTS_INI"
     sed -i.bak '/^[[:space:]]*logons_header_fmt[[:space:]]*=$/d' "$MODOPTS_INI"
     sed -i.bak '/^[[:space:]]*nobody_logged_on_fmt[[:space:]]*=$/d' "$MODOPTS_INI"
+    sed -i.bak '/^[[:space:]]*guest_name[[:space:]]*=$/d' "$MODOPTS_INI"
+    sed -i.bak '/^[[:space:]]*guest_email[[:space:]]*=$/d' "$MODOPTS_INI"
+    sed -i.bak '/^[[:space:]]*guest_location[[:space:]]*=$/d' "$MODOPTS_INI"
+    sed -i.bak '/^[[:space:]]*guest_referral[[:space:]]*=$/d' "$MODOPTS_INI"
     rm -f "$MODOPTS_INI.bak"
     
     # Remove any existing color settings we're about to add (clean slate)
     sed -i.bak '/^first_caller_msg/d' "$MODOPTS_INI"
     sed -i.bak '/^last_few_callers_msg/d' "$MODOPTS_INI"
     sed -i.bak '/^logonlist_fmt/d' "$MODOPTS_INI"
+    sed -i.bak '/^logons_header_fmt/d' "$MODOPTS_INI"
+    sed -i.bak '/^guest_name/d' "$MODOPTS_INI"
+    sed -i.bak '/^guest_email/d' "$MODOPTS_INI"
+    sed -i.bak '/^guest_location/d' "$MODOPTS_INI"
+    sed -i.bak '/^guest_referral/d' "$MODOPTS_INI"
     rm -f "$MODOPTS_INI.bak"
     
-    # Add settings with ACTUAL Ctrl-A characters (not escaped text)
-    # Perl \x01 creates real byte value 1 (Ctrl-A)
-    # Color scheme: \x01n=normal, \x01w=white, \x01h=high, \x01k=black(gray with h)
-    perl -i -pe 's/^\[logonlist\]$/[logonlist]\nfirst_caller_msg = \x01n\x01w\x01hYou are the first caller of the day!\nlast_few_callers_msg = \x01n\x01wLast few callers:\x01n\r\n/' "$MODOPTS_INI"
+    # Add logonlist settings with ACTUAL Ctrl-A characters
+    perl -i -pe 's/^\[logonlist\]$/[logonlist]\nfirst_caller_msg = \x01n\x01w\x01hYou are the first caller of the day!\nlast_few_callers_msg = \x01n\x01wLast few callers:\x01n\r\n\nlogons_header_fmt = \x01n\x01w\r\nLogons %s:\r\n/' "$MODOPTS_INI"
     
-    echo "Updated logonlist colors in $MODOPTS_INI (using Ctrl-A characters)"
+    # Add logon settings (guest prompts) with grayscale colors
+    perl -i -pe 's/^\[logon\]$/[logon]\nguest_name = \x01w\x01hFor our records, please enter your full name: \x01n\x01w\nguest_email = \x01w\x01hPlease enter your e-mail address: \x01n\x01w\nguest_location = \x01w\x01hPlease enter your location (City, State): \x01n\x01w\nguest_referral = \x01w\x01hWhere did you hear about this BBS?\\r\\n: \x01n\x01w/' "$MODOPTS_INI"
+    
+    echo "Updated logonlist and logon colors in $MODOPTS_INI (using Ctrl-A characters)"
 else
     echo "Warning: $MODOPTS_INI not found"
 fi
@@ -251,8 +261,11 @@ print "shell_file_prompt_end = ${CA}n${CA}w(${CA}h\@LN\@${CA}n${CA}w) \@LIB\@ ($
 # Menu labels - bright first letter, rest gray lowercase
 print "Main = ${CA}h${CA}wM${CA}n${CA}wain\n";
 print "File = ${CA}h${CA}wF${CA}n${CA}wile\n";
+
 print "\n[js]\n";
 print "; Global JS text overrides\n";
+# Help command hint - was yellow, now white
+print "Type ${CA}w;help${CA}w for more commands. = Type ${CA}h${CA}w;help${CA}n${CA}w for more commands.\n";
 ' > "$TEXT_INI"
 
 echo "Created:   $TEXT_INI"

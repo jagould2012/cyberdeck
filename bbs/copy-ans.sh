@@ -59,6 +59,14 @@ truncate_ansi() {
     echo "$content" | head -n "$max_rows"
 }
 
+# Check if file uses cursor positioning (ESC [ row ; col H)
+# Files with cursor positioning shouldn't be truncated by line count
+uses_cursor_positioning() {
+    local file="$1"
+    # Look for ANSI cursor position sequences like ESC[5;1H
+    grep -q $'\033\[[0-9]*;[0-9]*H' "$file" 2>/dev/null
+}
+
 # Strip SAUCE metadata from a file (outputs to stdout)
 # SAUCE records start with EOF char (0x1A / Ctrl-Z) followed by "SAUCE00"
 # This removes everything from the 0x1A onward
@@ -69,6 +77,20 @@ strip_sauce() {
     # 1. Removes everything from Ctrl-Z (0x1A) to end of file
     # 2. Removes trailing blank lines (lines with only whitespace/CR/LF)
     perl -pe 's/\x1a.*//' "$file" | perl -0777 -pe 's/[\r\n\s]+$/\n/'
+}
+
+# Strip SAUCE and optionally truncate (skip truncation for cursor-positioned files)
+strip_and_truncate() {
+    local file="$1"
+    local max_rows="$2"
+    
+    if uses_cursor_positioning "$file"; then
+        # Don't truncate cursor-positioned files - just strip SAUCE
+        strip_sauce "$file"
+    else
+        # Normal files - strip SAUCE and truncate
+        strip_sauce "$file" | head -n "$max_rows"
+    fi
 }
 
 # Extract SAUCE metadata from a file (outputs to stdout)
@@ -153,22 +175,26 @@ for file in "$ART_DIR"/*.ans; do
         echo "Merging: $filename + ${basename}.append.ans -> $TEXT_DIR/$filename"
         {
             get_prefix_from_original "$TEXT_DIR" "$basename"
-            strip_sauce "$file" | head -n "$MAX_ROWS"
+            strip_and_truncate "$file" "$MAX_ROWS"
             printf '\001p'  # Ctrl-A p = pause
             printf '\001l'  # Ctrl-A l = clear screen
-            strip_sauce "$append_file" | head -n "$MAX_ROWS"
+            strip_and_truncate "$append_file" "$MAX_ROWS"
             get_sauce_from_original "$TEXT_DIR" "$basename"
         } > "$TEXT_DIR/$filename"
     else
-        # Copy single file, truncated to fit screen
+        # Copy single file, truncated to fit screen (unless cursor-positioned)
         echo "Copying: $filename -> $TEXT_DIR/$filename"
-        row_count=$(strip_sauce "$file" | wc -l | tr -d ' ')
-        if [ -n "$row_count" ] && [ "$row_count" -gt "$MAX_ROWS" ]; then
-            echo "  (truncated from $row_count to $MAX_ROWS rows)"
+        if uses_cursor_positioning "$file"; then
+            echo "  (cursor-positioned art, not truncating)"
+        else
+            row_count=$(strip_sauce "$file" | wc -l | tr -d ' ')
+            if [ -n "$row_count" ] && [ "$row_count" -gt "$MAX_ROWS" ]; then
+                echo "  (truncated from $row_count to $MAX_ROWS rows)"
+            fi
         fi
         {
             get_prefix_from_original "$TEXT_DIR" "$basename"
-            strip_sauce "$file" | head -n "$MAX_ROWS"
+            strip_and_truncate "$file" "$MAX_ROWS"
             get_sauce_from_original "$TEXT_DIR" "$basename"
         } > "$TEXT_DIR/$filename"
     fi
@@ -206,21 +232,25 @@ if [ -d "$MENU_SRC" ]; then
             echo "Merging: menu/$filename + ${basename}.append.ans -> $MENU_DIR/$filename"
             {
                 get_prefix_from_original "$MENU_DIR" "$basename"
-                strip_sauce "$file" | head -n "$MAX_ROWS"
+                strip_and_truncate "$file" "$MAX_ROWS"
                 printf '\001p'  # Ctrl-A p = pause
                 printf '\001l'  # Ctrl-A l = clear screen
-                strip_sauce "$append_file" | head -n "$MAX_ROWS"
+                strip_and_truncate "$append_file" "$MAX_ROWS"
                 get_sauce_from_original "$MENU_DIR" "$basename"
             } > "$MENU_DIR/$filename"
         else
             echo "Copying: menu/$filename -> $MENU_DIR/$filename"
-            row_count=$(strip_sauce "$file" | wc -l | tr -d ' ')
-            if [ -n "$row_count" ] && [ "$row_count" -gt "$MAX_ROWS" ]; then
-                echo "  (truncated from $row_count to $MAX_ROWS rows)"
+            if uses_cursor_positioning "$file"; then
+                echo "  (cursor-positioned art, not truncating)"
+            else
+                row_count=$(strip_sauce "$file" | wc -l | tr -d ' ')
+                if [ -n "$row_count" ] && [ "$row_count" -gt "$MAX_ROWS" ]; then
+                    echo "  (truncated from $row_count to $MAX_ROWS rows)"
+                fi
             fi
             {
                 get_prefix_from_original "$MENU_DIR" "$basename"
-                strip_sauce "$file" | head -n "$MAX_ROWS"
+                strip_and_truncate "$file" "$MAX_ROWS"
                 get_sauce_from_original "$MENU_DIR" "$basename"
             } > "$MENU_DIR/$filename"
         fi

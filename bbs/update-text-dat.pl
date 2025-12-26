@@ -6,10 +6,9 @@
 # (backslash, one, letter) - NOT escape sequences
 #
 # Cyberdeck color scheme:
-# - Brown (y/Y) for command keys and highlights
-# - White (w/W) for normal text
+# - White (w/W) for normal text and prompts
 # - Dark gray (k with h) for accents
-# - No blue, cyan, green, red, magenta - convert to white/gray
+# - Command key colors are handled by attr.ini, not text.dat
 
 use strict;
 use warnings;
@@ -37,6 +36,10 @@ $content =~ s/\\1B/\\1W/g;
 $content =~ s/\\1g/\\1w/g;
 $content =~ s/\\1G/\\1W/g;
 
+# Convert yellow to white (prompts, headers - command keys use attr.ini)
+$content =~ s/\\1y/\\1w/g;
+$content =~ s/\\1Y/\\1W/g;
+
 # Convert red to dark gray (will show with high intensity)
 $content =~ s/\\1r/\\1k/g;
 $content =~ s/\\1R/\\1K/g;
@@ -44,9 +47,6 @@ $content =~ s/\\1R/\\1K/g;
 # Convert magenta to dark gray
 $content =~ s/\\1m/\\1k/g;
 $content =~ s/\\1M/\\1K/g;
-
-# Yellow stays as-is (it's brown, good for accents)
-# White stays as-is
 
 # Write output
 open(my $out, ">", $file) or die "Cannot write $file: $!";
