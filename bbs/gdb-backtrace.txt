@@ -1,0 +1,1011 @@
+=== GDB SESSION START ===
+=== Binary Info ===
+Symbols from "/sbbs/exec/sbbs".
+Local exec file:
+	`/sbbs/exec/sbbs', file type elf64-littleaarch64.
+	Entry point: 0x6880
+	0x0000000000000238 - 0x0000000000000253 is .interp
+	0x0000000000000254 - 0x0000000000000278 is .note.gnu.build-id
+	0x0000000000000278 - 0x0000000000000298 is .note.ABI-tag
+	0x0000000000000298 - 0x00000000000002dc is .gnu.hash
+	0x00000000000002e0 - 0x00000000000013d8 is .dynsym
+	0x00000000000013d8 - 0x0000000000001ccc is .dynstr
+	0x0000000000001ccc - 0x0000000000001e36 is .gnu.version
+	0x0000000000001e38 - 0x0000000000001e78 is .gnu.version_r
+	0x0000000000001e78 - 0x0000000000002dc0 is .rela.dyn
+	0x0000000000002dc0 - 0x0000000000003c78 is .rela.plt
+	0x0000000000003c78 - 0x0000000000003c90 is .init
+	0x0000000000003c90 - 0x0000000000004680 is .plt
+	0x0000000000004680 - 0x000000000000e4d0 is .text
+	0x000000000000e4d0 - 0x000000000000e4e4 is .fini
+	0x000000000000e4f0 - 0x0000000000011488 is .rodata
+	0x0000000000011488 - 0x0000000000011684 is .eh_frame_hdr
+	0x0000000000011688 - 0x00000000000127f8 is .eh_frame
+	0x000000000002fba8 - 0x000000000002fbb0 is .init_array
+	0x000000000002fbb0 - 0x000000000002fbb8 is .fini_array
+	0x000000000002fbb8 - 0x000000000002fe18 is .dynamic
+	0x000000000002fe18 - 0x000000000002ffe8 is .got
+	0x000000000002ffe8 - 0x00000000000304e8 is .got.plt
+	0x00000000000304e8 - 0x0000000000030bd0 is .data
+	0x0000000000030bd0 - 0x000000000004e3c8 is .bss
+
+=== Shared Libraries ===
+No shared libraries loaded at this time.
+
+=== Running program ===
+warning: Error disabling address space randomization: Operation not permitted
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
+[New Thread 0xffff7b60f180 (LWP 603)]
+[New Thread 0xffff7ac0f180 (LWP 604)]
+[New Thread 0xffff7a20f180 (LWP 605)]
+[New Thread 0xffff7980f180 (LWP 606)]
+[New Thread 0xffff78e0f180 (LWP 607)]
+[New Thread 0xffff73e0f180 (LWP 608)]
+[New Thread 0xffff7340f180 (LWP 609)]
+[Thread 0xffff7340f180 (LWP 609) exited]
+[New Thread 0xffff72a0f180 (LWP 610)]
+[New Thread 0xffff7200f180 (LWP 611)]
+[New Thread 0xffff7160f180 (LWP 612)]
+[New Thread 0xffff70c0f180 (LWP 613)]
+[New Thread 0xffff7d8bf180 (LWP 614)]
+[New Thread 0xffff67e0f180 (LWP 615)]
+
+Thread 12 "sbbs/events" received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0xffff70c0f180 (LWP 613)]
+0x0000ffff7e70a250 in js_GetClassPrototype(JSContext*, JSObject*, JSProtoKey, JSObject**, js::Class*) () from /sbbs/exec/libsbbs.so
+
+=== CRASH OCCURRED ===
+=== Backtrace ===
+#0  0x0000ffff7e70a250 in js_GetClassPrototype(JSContext*, JSObject*, JSProtoKey, JSObject**, js::Class*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#1  0x0000ffff7e6d45d4 in js_NewFunction(JSContext*, JSObject*, int (*)(JSContext*, unsigned int, js::Value*), unsigned int, unsigned int, JSObject*, JSAtom*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#2  0x0000ffff7e6d6e14 in js_DefineFunction(JSContext*, JSObject*, long, int (*)(JSContext*, unsigned int, js::Value*), unsigned int, unsigned int) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#3  0x0000ffff7e684d4c in JS_DefineFunctions () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#4  0x0000ffff7e70c980 in js::DefineConstructorAndPrototype(JSContext*, JSObject*, JSProtoKey, JSAtom*, JSObject*, js::Class*, int (*)(JSContext*, unsigned int, js::Value*), unsigned int, JSPropertySpec*, JSFunctionSpec*, JSPropertySpec*, JSFunctionSpec*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#5  0x0000ffff7e70d5b0 in js_InitClass(JSContext*, JSObject*, JSObject*, js::Class*, int (*)(JSContext*, unsigned int, js::Value*), unsigned int, JSPropertySpec*, JSFunctionSpec*, JSPropertySpec*, JSFunctionSpec*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#6  0x0000ffff7e6d4c5c in js_InitFunctionClass(JSContext*, JSObject*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#7  0x0000ffff7e684b18 in js_InitFunctionAndObjectClasses(JSContext*, JSObject*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#8  0x0000ffff7e684bb8 in JS_InitStandardClasses () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#9  0x0000ffff7e58f710 in js_CreateGlobalObject () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#10 0x0000ffff7e5e8884 in js_CreateCommonObjects () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#11 0x0000ffff7e5e8bd4 in sbbs_t::js_init(JSRuntime**, JSObject**, char const*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#12 0x0000ffff7e5f2988 in event_thread(void*) [clone .part.0] () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#13 0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472573436288, 281472741187600, 281472741187270, 0, 8448576, 281472741187271, 281472564985856, 281472573436288, 281472564985856, 281472573438144, 281472573434384, 16846921939738749695, 0, 16846921939959291203, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#14 0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+=== All Thread Backtraces ===
+
+Thread 14 (Thread 0xffff67e0f180 (LWP 615) "sbbs/events"):
+#0  0x0000ffff7e1de834 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0xffff48010c30) at ./nptl/futex-internal.c:57
+        _x3tmp = 0
+        _x0tmp = 281471889771568
+        _x0 = 281471889771568
+        _x3 = 0
+        _x4tmp = 0
+        _x1tmp = 393
+        _x1 = 393
+        _x4 = 0
+        _x5tmp = 4294967295
+        _x2tmp = 0
+        _x2 = 0
+        _x5 = 4294967295
+        _x8 = 98
+        _sys_result = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        _sys_result = <optimized out>
+        _x5tmp = <optimized out>
+        _x4tmp = <optimized out>
+        _x3tmp = <optimized out>
+        _x2tmp = <optimized out>
+        _x1tmp = <optimized out>
+        _x0tmp = <optimized out>
+        _x0 = <optimized out>
+        _x1 = <optimized out>
+        _x2 = <optimized out>
+        _x3 = <optimized out>
+        _x4 = <optimized out>
+        _x5 = <optimized out>
+        _x8 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0xffff48010c30) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0xffff48010c30, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x0000ffff7e1e1388 in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0xffff48010aa0, cond=0xffff48010c08) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0xffff7e1e10c4 <__condvar_cleanup_waiting>, __arg = 0xffff67e0e818, __canceltype = 1734344704, __prev = 0x0}
+        cbuffer = {wseq = 0, cond = 0xffff48010c08, mutex = 0xffff48010aa0, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 0
+        seq = 0
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0xffff48010c08, mutex=0xffff48010aa0) at ./nptl/pthread_cond_wait.c:618
+No locals.
+#5  0x0000ffff7e123b00 in PR_WaitCondVar () from /lib/aarch64-linux-gnu/libnspr4.so
+No symbol table info available.
+#6  0x0000ffff7e6e086c in js::GCHelperThread::threadMain(void*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#7  0x0000ffff7e129998 in ?? () from /lib/aarch64-linux-gnu/libnspr4.so
+No symbol table info available.
+#8  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472424538496, 281472573416968, 281472573416598, 0, 8448576, 281472573416599, 281472416088064, 281472424538496, 281472416088064, 281472424540352, 281472424536592, 16846921939738749695, 0, 16846921939609066819, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#9  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 13 (Thread 0xffff7d8bf180 (LWP 614) "sbbs/jsRTtrig"):
+#0  0x0000ffff7e216ce0 in __GI___clock_nanosleep (clock_id=<optimized out>, clock_id@entry=0, flags=flags@entry=0, req=0xffff7d8be910, rem=0xffff7d8be910) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:48
+        _x2tmp = 281472788064528
+        _x0tmp = <optimized out>
+        _x0 = 0
+        _x2 = 281472788064528
+        _x8 = 115
+        _x3tmp = 281472788064528
+        _x1tmp = 0
+        _x1 = 0
+        _x3 = 281472788064528
+        _sys_result = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        r = <optimized out>
+#1  0x0000ffff7e21bcac in __GI___nanosleep (req=<optimized out>, rem=<optimized out>) at ../sysdeps/unix/sysv/linux/nanosleep.c:25
+        ret = <optimized out>
+#2  0x0000ffff7e5b8b58 in trigger_thread(void*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#3  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472788066688, 281472573416960, 281472573416630, 0, 322112, 281472573416631, 281472787742720, 281472788066688, 281472787742720, 281472788068544, 281472788064784, 16846921939738749695, 0, 16846921939779394883, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#4  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 12 (Thread 0xffff70c0f180 (LWP 613) "sbbs/events"):
+#0  0x0000ffff7e70a250 in js_GetClassPrototype(JSContext*, JSObject*, JSProtoKey, JSObject**, js::Class*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#1  0x0000ffff7e6d45d4 in js_NewFunction(JSContext*, JSObject*, int (*)(JSContext*, unsigned int, js::Value*), unsigned int, unsigned int, JSObject*, JSAtom*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#2  0x0000ffff7e6d6e14 in js_DefineFunction(JSContext*, JSObject*, long, int (*)(JSContext*, unsigned int, js::Value*), unsigned int, unsigned int) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#3  0x0000ffff7e684d4c in JS_DefineFunctions () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#4  0x0000ffff7e70c980 in js::DefineConstructorAndPrototype(JSContext*, JSObject*, JSProtoKey, JSAtom*, JSObject*, js::Class*, int (*)(JSContext*, unsigned int, js::Value*), unsigned int, JSPropertySpec*, JSFunctionSpec*, JSPropertySpec*, JSFunctionSpec*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#5  0x0000ffff7e70d5b0 in js_InitClass(JSContext*, JSObject*, JSObject*, js::Class*, int (*)(JSContext*, unsigned int, js::Value*), unsigned int, JSPropertySpec*, JSFunctionSpec*, JSPropertySpec*, JSFunctionSpec*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#6  0x0000ffff7e6d4c5c in js_InitFunctionClass(JSContext*, JSObject*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#7  0x0000ffff7e684b18 in js_InitFunctionAndObjectClasses(JSContext*, JSObject*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#8  0x0000ffff7e684bb8 in JS_InitStandardClasses () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#9  0x0000ffff7e58f710 in js_CreateGlobalObject () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#10 0x0000ffff7e5e8884 in js_CreateCommonObjects () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#11 0x0000ffff7e5e8bd4 in sbbs_t::js_init(JSRuntime**, JSObject**, char const*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#12 0x0000ffff7e5f2988 in event_thread(void*) [clone .part.0] () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#13 0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472573436288, 281472741187600, 281472741187270, 0, 8448576, 281472741187271, 281472564985856, 281472573436288, 281472564985856, 281472573438144, 281472573434384, 16846921939738749695, 0, 16846921939959291203, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#14 0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 11 (Thread 0xffff7160f180 (LWP 612) "sbbs/termOutput"):
+#0  0x0000ffff7e1de834 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0xffff71609830, op=393, expected=0, futex_word=0xffff6c04be00) at ./nptl/futex-internal.c:57
+        _x3tmp = 281472583899184
+        _x0tmp = 281472493993472
+        _x0 = 281472493993472
+        _x3 = 281472583899184
+        _x4tmp = 0
+        _x1tmp = 393
+        _x1 = 393
+        _x4 = 0
+        _x5tmp = 4294967295
+        _x2tmp = 0
+        _x2 = 0
+        _x5 = 4294967295
+        _x8 = 98
+        _sys_result = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        _sys_result = <optimized out>
+        _x5tmp = <optimized out>
+        _x4tmp = <optimized out>
+        _x3tmp = <optimized out>
+        _x2tmp = <optimized out>
+        _x1tmp = <optimized out>
+        _x0tmp = <optimized out>
+        _x0 = <optimized out>
+        _x1 = <optimized out>
+        _x2 = <optimized out>
+        _x3 = <optimized out>
+        _x4 = <optimized out>
+        _x5 = <optimized out>
+        _x8 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0xffff71609830, clockid=0, expected=0, futex_word=0xffff6c04be00) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0xffff6c04be00, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0xffff71609830, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x0000ffff7e1e1688 in __pthread_cond_wait_common (abstime=0xffff71609830, clockid=0, mutex=0xffff6c04bda8, cond=0xffff6c04bdd8) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0xffff7e1e10c4 <__condvar_cleanup_waiting>, __arg = 0xffff71609778, __canceltype = 0, __prev = 0x0}
+        cbuffer = {wseq = 0, cond = 0xffff6c04bdd8, mutex = 0xffff6c04bda8, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 0
+        seq = 0
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_timedwait64 (cond=0xffff6c04bdd8, mutex=0xffff6c04bda8, abstime=0xffff71609830) at ./nptl/pthread_cond_wait.c:643
+        flags = <optimized out>
+        clockid = 0
+#5  0x0000ffff7e9132dc in WaitForEvent () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#6  0x0000ffff7e5eb1a0 in output_thread(void*) () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#7  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472583922048, 281472741187600, 281472741187270, 0, 8448576, 281472741187271, 281472575471616, 281472583922048, 281472575471616, 281472583923904, 281472583920144, 16846921939738749695, 0, 16846921939986554179, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#8  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 10 (Thread 0xffff7200f180 (LWP 611) "sbbs/httpSess"):
+#0  futex_wait (private=0, expected=2, futex_word=0xffff54055ea0) at ../sysdeps/nptl/futex-internal.h:146
+        _x2tmp = 2
+        _x0tmp = 281472091381408
+        _x0 = 281472091381408
+        _x2 = 2
+        _x8 = 98
+        _x3tmp = 0
+        _x1tmp = <optimized out>
+        _x1 = 128
+        _x3 = 0
+        _sys_result = <optimized out>
+        __ret = <optimized out>
+        err = <optimized out>
+#1  __GI___lll_lock_wait (futex=futex@entry=0xffff54055ea0, private=private@entry=0) at ./nptl/lowlevellock.c:49
+No locals.
+#2  0x0000ffff7e1e519c in lll_mutex_lock_optimized (mutex=0xffff54055ea0) at ./nptl/pthread_mutex_lock.c:48
+        __futex = 0xffff54055ea0
+        private = 0
+        private = <optimized out>
+        __futex = <optimized out>
+        __atg2_result = <optimized out>
+        __oldval = <optimized out>
+        __oldval = <optimized out>
+        __oldval = <optimized out>
+        __oldval = <optimized out>
+#3  ___pthread_mutex_lock (mutex=0xffff54055ea0) at ./nptl/pthread_mutex_lock.c:93
+        type = <optimized out>
+        __PRETTY_FUNCTION__ = "___pthread_mutex_lock"
+        id = <optimized out>
+#4  0x0000ffff7e3b8f34 in http_session_thread(void*) () from /sbbs/exec/libwebsrvr.so
+No symbol table info available.
+#5  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472594407808, 281472625845360, 281472625845030, 0, 8448576, 281472625845031, 281472585957376, 281472594407808, 281472585957376, 281472594409664, 281472594405904, 16846921939738749695, 0, 16846921939938319683, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#6  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 9 (Thread 0xffff72a0f180 (LWP 610) "sbbs/sendMail"):
+#0  0x0000ffff7e1de834 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0xffff72a08c50, op=393, expected=0, futex_word=0xffff6001ee10) at ./nptl/futex-internal.c:57
+        _x3tmp = 281472604867664
+        _x0tmp = 281472292482576
+        _x0 = 281472292482576
+        _x3 = 281472604867664
+        _x4tmp = 0
+        _x1tmp = -375
+        _x1 = 393
+        _x4 = 0
+        _x5tmp = 4294967295
+        _x2tmp = 0
+        _x2 = 0
+        _x5 = 4294967295
+        _x8 = 98
+        _sys_result = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        _sys_result = <optimized out>
+        _x5tmp = <optimized out>
+        _x4tmp = <optimized out>
+        _x3tmp = <optimized out>
+        _x2tmp = <optimized out>
+        _x1tmp = <optimized out>
+        _x0tmp = <optimized out>
+        _x0 = <optimized out>
+        _x1 = <optimized out>
+        _x2 = <optimized out>
+        _x3 = <optimized out>
+        _x4 = <optimized out>
+        _x5 = <optimized out>
+        _x8 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0xffff72a08c50, clockid=-1, expected=0, futex_word=0xffff6001ee10) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 4294966784
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0xffff6001ee10, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0xffff72a08c50, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x0000ffff7e1e1688 in __pthread_cond_wait_common (abstime=0xffff72a08c50, clockid=0, mutex=0xffff6001edb8, cond=0xffff6001ede8) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0xffff7e1e10c4 <__condvar_cleanup_waiting>, __arg = 0xffff72a08b78, __canceltype = 1610739128, __prev = 0x0}
+        cbuffer = {wseq = 0, cond = 0xffff6001ede8, mutex = 0xffff6001edb8, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 0
+        seq = 0
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_timedwait64 (cond=0xffff6001ede8, mutex=0xffff6001edb8, abstime=0xffff72a08c50) at ./nptl/pthread_cond_wait.c:643
+        flags = <optimized out>
+        clockid = 0
+#5  0x0000ffff7e912f48 in xp_sem_timedwait () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#6  0x0000ffff7e90a388 in sem_trywait_block () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#7  0x0000ffff7e3698e4 in sendmail_thread(void*) () from /sbbs/exec/libmailsrvr.so
+No symbol table info available.
+#8  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472604893568, 281472720224288, 281472720223958, 0, 8448576, 281472720223959, 281472596443136, 281472604893568, 281472596443136, 281472604895424, 281472604891664, 16846921939738749695, 0, 16846921939932028227, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#9  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 7 (Thread 0xffff73e0f180 (LWP 608) "sbbs/webServer"):
+#0  0x0000ffff7e241bfc in __GI___poll (fds=0xffff5404f8f0, nfds=2, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+        _x3tmp = 0
+        _x0tmp = 281472091355376
+        _x0 = 281472091355376
+        _x3 = 0
+        _x4tmp = 0
+        _x1tmp = 2
+        _x1 = 2
+        _x4 = 0
+        _x2tmp = <optimized out>
+        _x2 = 281472625844688
+        _x8 = 73
+        _sys_result = <optimized out>
+        sc_ret = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        timeout_ts = {tv_sec = 1, tv_nsec = 937645625}
+        timeout_ts_p = <optimized out>
+#1  0x0000ffff7e909164 in xpms_accept () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#2  0x0000ffff7e3bc014 in web_server () from /sbbs/exec/libwebsrvr.so
+No symbol table info available.
+#3  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472625865088, 281474670773104, 281474670772774, 0, 8448576, 281474670772775, 281472617414656, 281472625865088, 281472617414656, 281472625866944, 281472625863184, 16846921939738749695, 0, 16846921939944611139, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#4  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 6 (Thread 0xffff78e0f180 (LWP 607) "sbbs/services"):
+#0  0x0000ffff7e241bfc in __GI___poll (fds=0xffff5c04dbe0, nfds=8, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+        _x3tmp = 0
+        _x0tmp = 281472225565664
+        _x0 = 281472225565664
+        _x3 = 0
+        _x4tmp = 0
+        _x1tmp = 8
+        _x1 = 8
+        _x4 = 0
+        _x2tmp = <optimized out>
+        _x2 = 281472709732864
+        _x8 = 73
+        _sys_result = <optimized out>
+        sc_ret = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        timeout_ts = {tv_sec = 1, tv_nsec = 937520167}
+        timeout_ts_p = <optimized out>
+#1  0x0000ffff7e31c80c in services_thread () from /sbbs/exec/libservices.so
+No symbol table info available.
+#2  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472709751168, 281474670773104, 281474670772774, 0, 8448576, 281474670772775, 281472701300736, 281472709751168, 281472701300736, 281472709753024, 281472709749264, 16846921939738749695, 0, 16846921939827170627, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#3  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 5 (Thread 0xffff7980f180 (LWP 606) "sbbs/mailServer"):
+#0  0x0000ffff7e241bfc in __GI___poll (fds=0xffff600425a0, nfds=5, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+        _x3tmp = 0
+        _x0tmp = 281472292627872
+        _x0 = 281472292627872
+        _x3 = 0
+        _x4tmp = 0
+        _x1tmp = 5
+        _x1 = 5
+        _x4 = 0
+        _x2tmp = <optimized out>
+        _x2 = 281472720223616
+        _x8 = 73
+        _sys_result = <optimized out>
+        sc_ret = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        timeout_ts = {tv_sec = 1, tv_nsec = 938464916}
+        timeout_ts_p = <optimized out>
+#1  0x0000ffff7e909164 in xpms_accept () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#2  0x0000ffff7e36bd88 in mail_server () from /sbbs/exec/libmailsrvr.so
+No symbol table info available.
+#3  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472720236928, 281474670773104, 281474670772774, 0, 8448576, 281474670772775, 281472711786496, 281472720236928, 281472711786496, 281472720238784, 281472720235024, 16846921939738749695, 0, 16846921939846044995, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#4  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 4 (Thread 0xffff7a20f180 (LWP 605) "sbbs/ftpServer"):
+#0  0x0000ffff7e241bfc in __GI___poll (fds=0xffff68042ef0, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+        _x3tmp = 0
+        _x0tmp = 281472426847984
+        _x0 = 281472426847984
+        _x3 = 0
+        _x4tmp = 0
+        _x1tmp = 1
+        _x1 = 1
+        _x4 = 0
+        _x2tmp = <optimized out>
+        _x2 = 281472730714656
+        _x8 = 73
+        _sys_result = <optimized out>
+        sc_ret = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        timeout_ts = {tv_sec = 1, tv_nsec = 915367083}
+        timeout_ts_p = <optimized out>
+#1  0x0000ffff7e909164 in xpms_accept () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#2  0x0000ffff7f8a540c in ftp_server () from /sbbs/exec/libftpsrvr.so
+No symbol table info available.
+#3  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472730722688, 281474670773104, 281474670772774, 0, 8448576, 281474670772775, 281472722272256, 281472730722688, 281472722272256, 281472730724544, 281472730720784, 16846921939738749695, 0, 16846921939806199107, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#4  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 3 (Thread 0xffff7ac0f180 (LWP 604) "sbbs/termServer"):
+#0  0x0000ffff7e216ce0 in __GI___clock_nanosleep (clock_id=<optimized out>, clock_id@entry=0, flags=flags@entry=0, req=0xffff7ac0d918, rem=0xffff7ac0d918) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:48
+        _x2tmp = 281472741202200
+        _x0tmp = <optimized out>
+        _x0 = 0
+        _x2 = 281472741202200
+        _x8 = 115
+        _x3tmp = 281472741202200
+        _x1tmp = 0
+        _x1 = 0
+        _x3 = 281472741202200
+        _sys_result = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        r = <optimized out>
+#1  0x0000ffff7e21bcac in __GI___nanosleep (req=<optimized out>, rem=<optimized out>) at ../sysdeps/unix/sysv/linux/nanosleep.c:25
+        ret = <optimized out>
+#2  0x0000ffff7e5f55e8 in bbs_thread () from /sbbs/exec/libsbbs.so
+No symbol table info available.
+#3  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472741208448, 281474670773104, 281474670772774, 0, 8448576, 281474670772775, 281472732758016, 281472741208448, 281472732758016, 281472741210304, 281472741206544, 16846921939738749695, 0, 16846921939791519043, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#4  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 2 (Thread 0xffff7b60f180 (LWP 603) "sbbs/sigHandler"):
+#0  0x0000ffff7e19b6d8 in __GI___sigtimedwait (set=set@entry=0xffff7b60e8a0, info=info@entry=0xffff7b60e788, timeout=timeout@entry=0x0) at ../sysdeps/unix/sysv/linux/sigtimedwait.c:31
+        _x2tmp = 0
+        _x0tmp = 281472751691936
+        _x0 = -4
+        _x2 = 0
+        _x8 = 137
+        _x3tmp = 8
+        _x1tmp = 281472751691656
+        _x1 = 281472751691656
+        _x3 = 8
+        _sys_result = <optimized out>
+        sc_ret = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        result = <optimized out>
+#1  0x0000ffff7e19ac84 in __GI___sigwait (set=0xffff7b60e8a0, sig=0xffff7b60e89c) at ../sysdeps/unix/sysv/linux/sigwait.c:28
+        si = {si_signo = 7, si_errno = 0, si_code = 0, __pad0 = 0, _sifields = {_pad = {0, 0, 2069948576, 65535, 2069948572, 65535, 0, 0, 0, 0, 25637, 0, 1932141837, 13, -1, 0, 0, 0, -65281, -1, 65280, -256, -241, -1048336, 0, 0, -1723363889, -1785983132}, _kill = {si_pid = 0, si_uid = 0}, _timer = {si_tid = 0, si_overrun = 0, si_sigval = {sival_int = 2069948576, sival_ptr = 0xffff7b60e8a0}}, _rt = {si_pid = 0, si_uid = 0, si_sigval = {sival_int = 2069948576, sival_ptr = 0xffff7b60e8a0}}, _sigchld = {si_pid = 0, si_uid = 0, si_status = 2069948576, si_utime = 281472751691932, si_stime = 0}, _sigfault = {si_addr = 0x0, si_addr_lsb = -5984, _bounds = {_addr_bnd = {_lower = 0xffff7b60e89c, _upper = 0x0}, _pkey = 2069948572}}, _sigpoll = {si_band = 0, si_fd = 2069948576}, _sigsys = {_call_addr = 0x0, _syscall = 2069948576, _arch = 65535}}}
+        ret = <optimized out>
+#2  0x0000aaaab5d48ff4 in handle_sigs ()
+No symbol table info available.
+#3  0x0000ffff7e1e2030 in start_thread (arg=0x0) at ./nptl/pthread_create.c:442
+        ret = <optimized out>
+        pd = 0x0
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {281472751694208, 281474670773104, 281474670772774, 0, 8448576, 281474670772775, 281472743243776, 281472751694208, 281472743243776, 281472751696064, 281472751692304, 16846921939738749695, 0, 16846921939818782019, 0, 0, 0, 0, 0, 0, 0, 0}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = 0
+#4  0x0000ffff7e24bf1c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:79
+No locals.
+
+Thread 1 (Thread 0xffff7f91a020 (LWP 601) "sbbs"):
+#0  0x0000ffff7e2449d0 in __GI___select (nfds=0, readfds=0x0, writefds=0x0, exceptfds=0x0, timeout=0x0) at ../sysdeps/unix/sysv/linux/select.c:69
+        _x3tmp = 0
+        _x0tmp = 0
+        _x0 = 0
+        _x3 = 0
+        _x4tmp = 0
+        _x1tmp = 0
+        _x1 = 0
+        _x4 = 0
+        _x5tmp = 0
+        _x2tmp = 0
+        _x2 = 0
+        _x5 = 0
+        _x8 = 72
+        _sys_result = <optimized out>
+        sc_ret = <optimized out>
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        s = <optimized out>
+        us = <optimized out>
+        ns = <optimized out>
+        ts64 = {tv_sec = 0, tv_nsec = -7670739140576047665}
+        pts64 = 0x0
+        r = <optimized out>
+#1  0x0000aaaab5d44f10 in main ()
+No symbol table info available.
+
+=== Registers ===
+x0             0xffff7ea99f90      281472806789008
+x1             0x50                80
+x2             0x7fff7b704100      140735264342272
+x3             0xfffb7fffffffffff  -1266637395197953
+x4             0xffff7b703048      281472752693320
+x5             0xffff7b700390      281472752681872
+x6             0xffff4801b520      281471889814816
+x7             0x46                70
+x8             0xffff70c0a268      281472573416040
+x9             0xffff7ea99f90      281472806789008
+x10            0x0                 0
+x11            0x0                 0
+x12            0x32                50
+x13            0xe96254            15295060
+x14            0x64                100
+x15            0x18                24
+x16            0xffff7ea82e90      281472806694544
+x17            0xffff7e6b2e40      281472802696768
+x18            0xffff7ea7f000      281472806678528
+x19            0xfffb7fffffffffff  -1266637395197953
+x20            0xffff480193c0      281471889806272
+x21            0xffff7ea99f90      281472806789008
+x22            0xffff70c0a2a8      281472573416104
+x23            0xffff70c0a238      281472573415992
+x24            0x0                 0
+x25            0xffff7e6ced74      281472802811252
+x26            0xffff7ea99f90      281472806789008
+x27            0x1000              4096
+x28            0xffff7ea99f90      281472806789008
+x29            0xffff70c0a1f0      281472573415920
+x30            0xffff7e70a16c      281472803053932
+sp             0xffff70c0a1f0      0xffff70c0a1f0
+pc             0xffff7e70a250      0xffff7e70a250 <js_GetClassPrototype(JSContext*, JSObject*, JSProtoKey, JSObject**, js::Class*)+320>
+cpsr           0x20001000          [ EL=0 BTYPE=0 SSBS C ]
+fpsr           0x0                 [ ]
+fpcr           0x0                 [ Len=0 Stride=0 RMode=0 ]
+tpidr          0xffff70c0f8c0      0xffff70c0f8c0
+tpidr2         0x0                 0x0
+pauth_dmask    0x7f000000000000    35747322042253312
+pauth_cmask    0x7f000000000000    35747322042253312
+
+=== Current Frame ===
+Stack level 0, frame at 0xffff70c0a240:
+ pc = 0xffff7e70a250 in js_GetClassPrototype(JSContext*, JSObject*, JSProtoKey, JSObject**, js::Class*); saved pc = 0xffff7e6d45d4
+ called by frame at 0xffff70c0a2b0
+ Arglist at 0xffff70c0a1f0, args: 
+ Locals at 0xffff70c0a1f0, Previous frame's sp is 0xffff70c0a240
+ Saved registers:
+  x19 at 0xffff70c0a200, x20 at 0xffff70c0a208, x21 at 0xffff70c0a210, x22 at 0xffff70c0a218, x23 at 0xffff70c0a220, x29 at 0xffff70c0a1f0, x30 at 0xffff70c0a1f8
+
+=== Local Variables ===
+No symbol table info available.
+
+=== Disassembly around crash ===
+Dump of assembler code for function _Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE:
+   0x0000ffff7e70a110 <+0>:	stp	x29, x30, [sp, #-80]!
+   0x0000ffff7e70a114 <+4>:	mov	x29, sp
+   0x0000ffff7e70a118 <+8>:	stp	x19, x20, [sp, #16]
+   0x0000ffff7e70a11c <+12>:	mov	x20, x0
+   0x0000ffff7e70a120 <+16>:	mov	w19, w2
+   0x0000ffff7e70a124 <+20>:	stp	x21, x22, [sp, #32]
+   0x0000ffff7e70a128 <+24>:	mov	x22, x3
+   0x0000ffff7e70a12c <+28>:	mov	x21, x4
+   0x0000ffff7e70a130 <+32>:	cbz	w2, 0xffff7e70a150 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+64>
+   0x0000ffff7e70a134 <+36>:	cbz	x1, 0xffff7e70a1e8 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+216>
+   0x0000ffff7e70a138 <+40>:	mov	x0, x1
+   0x0000ffff7e70a13c <+44>:	bl	0xffff7e4b6bf0 <_ZNK8JSObject9getGlobalEv@plt>
+   0x0000ffff7e70a140 <+48>:	mov	x1, x0
+   0x0000ffff7e70a144 <+52>:	ldr	x0, [x0, #8]
+   0x0000ffff7e70a148 <+56>:	ldr	w0, [x0, #8]
+   0x0000ffff7e70a14c <+60>:	tbnz	w0, #18, 0xffff7e70a1a4 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+148>
+   0x0000ffff7e70a150 <+64>:	str	x23, [sp, #48]
+   0x0000ffff7e70a154 <+68>:	add	x23, sp, #0x48
+   0x0000ffff7e70a158 <+72>:	mov	x4, x21
+   0x0000ffff7e70a15c <+76>:	mov	w2, w19
+   0x0000ffff7e70a160 <+80>:	mov	x0, x20
+   0x0000ffff7e70a164 <+84>:	mov	x3, x23
+   0x0000ffff7e70a168 <+88>:	bl	0xffff7e709ce4 <_Z18js_FindClassObjectP9JSContextP8JSObject10JSProtoKeyPN2js5ValueEPNS4_5ClassE>
+   0x0000ffff7e70a16c <+92>:	cbz	w0, 0xffff7e70a22c <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+284>
+   0x0000ffff7e70a170 <+96>:	ldr	x2, [sp, #72]
+   0x0000ffff7e70a174 <+100>:	mov	x19, #0xffff7fffffffffff    	// #-140737488355329
+   0x0000ffff7e70a178 <+104>:	movk	x19, #0xfffb, lsl #48
+   0x0000ffff7e70a17c <+108>:	cmp	x2, x19
+   0x0000ffff7e70a180 <+112>:	b.hi	0xffff7e70a244 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+308>  // b.pmore
+   0x0000ffff7e70a184 <+116>:	mov	x2, #0x0                   	// #0
+   0x0000ffff7e70a188 <+120>:	str	x2, [x22]
+   0x0000ffff7e70a18c <+124>:	mov	w0, #0x1                   	// #1
+   0x0000ffff7e70a190 <+128>:	ldp	x19, x20, [sp, #16]
+   0x0000ffff7e70a194 <+132>:	ldp	x21, x22, [sp, #32]
+   0x0000ffff7e70a198 <+136>:	ldr	x23, [sp, #48]
+   0x0000ffff7e70a19c <+140>:	ldp	x29, x30, [sp], #80
+   0x0000ffff7e70a1a0 <+144>:	ret
+   0x0000ffff7e70a1a4 <+148>:	ldr	x2, [x1, #56]
+   0x0000ffff7e70a1a8 <+152>:	add	w0, w19, #0x27
+   0x0000ffff7e70a1ac <+156>:	cmp	w0, w2
+   0x0000ffff7e70a1b0 <+160>:	b.cs	0xffff7e70a150 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+64>  // b.hs, b.nlast
+   0x0000ffff7e70a1b4 <+164>:	ldr	x3, [x1, #64]
+   0x0000ffff7e70a1b8 <+168>:	mov	x2, #0xffff7fffffffffff    	// #-140737488355329
+   0x0000ffff7e70a1bc <+172>:	movk	x2, #0xfffb, lsl #48
+   0x0000ffff7e70a1c0 <+176>:	ldr	x0, [x3, w0, uxtw #3]
+   0x0000ffff7e70a1c4 <+180>:	cmp	x0, x2
+   0x0000ffff7e70a1c8 <+184>:	b.ls	0xffff7e70a150 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+64>  // b.plast
+   0x0000ffff7e70a1cc <+188>:	and	x1, x0, #0x7fffffffffff
+   0x0000ffff7e70a1d0 <+192>:	str	x1, [x22]
+   0x0000ffff7e70a1d4 <+196>:	mov	w0, #0x1                   	// #1
+   0x0000ffff7e70a1d8 <+200>:	ldp	x19, x20, [sp, #16]
+   0x0000ffff7e70a1dc <+204>:	ldp	x21, x22, [sp, #32]
+   0x0000ffff7e70a1e0 <+208>:	ldp	x29, x30, [sp], #80
+   0x0000ffff7e70a1e4 <+212>:	ret
+   0x0000ffff7e70a1e8 <+216>:	ldr	x0, [x0, #104]
+   0x0000ffff7e70a1ec <+220>:	cbz	x0, 0xffff7e70a208 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+248>
+   0x0000ffff7e70a1f0 <+224>:	ldr	x0, [x0, #16]
+   0x0000ffff7e70a1f4 <+228>:	ldr	w1, [x0]
+   0x0000ffff7e70a1f8 <+232>:	tbz	w1, #21, 0xffff7e70a2a0 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+400>
+   0x0000ffff7e70a1fc <+236>:	ldr	x1, [x0, #24]
+   0x0000ffff7e70a200 <+240>:	cbnz	x1, 0xffff7e70a138 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+40>
+   0x0000ffff7e70a204 <+244>:	nop
+   0x0000ffff7e70a208 <+248>:	ldr	x1, [x20, #240]
+   0x0000ffff7e70a20c <+252>:	cbz	x1, 0xffff7e70a1d0 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+192>
+   0x0000ffff7e70a210 <+256>:	mov	x0, x1
+   0x0000ffff7e70a214 <+260>:	bl	0xffff7e4b6bf0 <_ZNK8JSObject9getGlobalEv@plt>
+   0x0000ffff7e70a218 <+264>:	mov	x1, x0
+   0x0000ffff7e70a21c <+268>:	ldr	x0, [x0, #8]
+   0x0000ffff7e70a220 <+272>:	ldr	w0, [x0, #8]
+   0x0000ffff7e70a224 <+276>:	tbz	w0, #18, 0xffff7e70a150 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+64>
+   0x0000ffff7e70a228 <+280>:	b	0xffff7e70a1a4 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+148>
+   0x0000ffff7e70a22c <+284>:	ldp	x19, x20, [sp, #16]
+   0x0000ffff7e70a230 <+288>:	mov	w0, #0x0                   	// #0
+   0x0000ffff7e70a234 <+292>:	ldp	x21, x22, [sp, #32]
+   0x0000ffff7e70a238 <+296>:	ldr	x23, [sp, #48]
+   0x0000ffff7e70a23c <+300>:	ldp	x29, x30, [sp], #80
+   0x0000ffff7e70a240 <+304>:	ret
+   0x0000ffff7e70a244 <+308>:	and	x2, x2, #0x7fffffffffff
+   0x0000ffff7e70a248 <+312>:	adrp	x0, 0xffff7ea7f000 <capabilityInfo+168>
+   0x0000ffff7e70a24c <+316>:	ldr	x0, [x0, #3056]
+=> 0x0000ffff7e70a250 <+320>:	ldr	x1, [x2, #8]
+   0x0000ffff7e70a254 <+324>:	cmp	x1, x0
+   0x0000ffff7e70a258 <+328>:	b.ne	0xffff7e70a188 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+120>  // b.any
+   0x0000ffff7e70a25c <+332>:	ldr	x3, [x20, #88]
+   0x0000ffff7e70a260 <+336>:	adrp	x0, 0xffff7e70f000 <_ZL22DefinePropertyOnObjectP9JSContextP8JSObjectRK8PropDescbPb+1152>
+   0x0000ffff7e70a264 <+340>:	ldr	x5, [x1, #192]
+   0x0000ffff7e70a268 <+344>:	add	x0, x0, #0x8c0
+   0x0000ffff7e70a26c <+348>:	ldr	x3, [x3, #1512]
+   0x0000ffff7e70a270 <+352>:	cmp	x5, #0x0
+   0x0000ffff7e70a274 <+356>:	csel	x5, x0, x5, eq	// eq = none
+   0x0000ffff7e70a278 <+360>:	mov	x4, x23
+   0x0000ffff7e70a27c <+364>:	mov	x0, x20
+   0x0000ffff7e70a280 <+368>:	mov	x1, x2
+   0x0000ffff7e70a284 <+372>:	blr	x5
+   0x0000ffff7e70a288 <+376>:	cbz	w0, 0xffff7e70a22c <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+284>
+   0x0000ffff7e70a28c <+380>:	ldr	x2, [sp, #72]
+   0x0000ffff7e70a290 <+384>:	cmp	x2, x19
+   0x0000ffff7e70a294 <+388>:	b.ls	0xffff7e70a184 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+116>  // b.plast
+   0x0000ffff7e70a298 <+392>:	and	x2, x2, #0x7fffffffffff
+   0x0000ffff7e70a29c <+396>:	b	0xffff7e70a188 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+120>
+   0x0000ffff7e70a2a0 <+400>:	sub	x2, x0, #0x10
+   0x0000ffff7e70a2a4 <+404>:	tbnz	w1, #3, 0xffff7e70a2bc <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+428>
+   0x0000ffff7e70a2a8 <+408>:	ldr	x3, [x0, #8]
+   0x0000ffff7e70a2ac <+412>:	mov	x2, #0xfffffffffffffff0    	// #-16
+   0x0000ffff7e70a2b0 <+416>:	ldrh	w3, [x3, #88]
+   0x0000ffff7e70a2b4 <+420>:	sub	x2, x2, w3, uxtw #3
+   0x0000ffff7e70a2b8 <+424>:	add	x2, x0, x2
+   0x0000ffff7e70a2bc <+428>:	ldr	x3, [x2]
+   0x0000ffff7e70a2c0 <+432>:	orr	w2, w1, #0x200000
+   0x0000ffff7e70a2c4 <+436>:	and	x1, x3, #0x7fffffffffff
+   0x0000ffff7e70a2c8 <+440>:	ldr	x1, [x1, #40]
+   0x0000ffff7e70a2cc <+444>:	str	w2, [x0]
+   0x0000ffff7e70a2d0 <+448>:	str	x1, [x0, #24]
+   0x0000ffff7e70a2d4 <+452>:	cbnz	x1, 0xffff7e70a138 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+40>
+   0x0000ffff7e70a2d8 <+456>:	b	0xffff7e70a208 <_Z20js_GetClassPrototypeP9JSContextP8JSObject10JSProtoKeyPS2_PN2js5ClassE+248>
+End of assembler dump.
+
+=== Maps ===
+process 601
+Mapped address spaces:
+
+          Start Addr           End Addr       Size     Offset  Perms  objfile
+      0xaaaab5d40000     0xaaaab5d53000    0x13000        0x0  r-xp   /sbbs/exec/sbbs
+      0xaaaab5d6f000     0xaaaab5d70000     0x1000    0x1f000  r--p   /sbbs/exec/sbbs
+      0xaaaab5d70000     0xaaaab5d71000     0x1000    0x20000  rw-p   /sbbs/exec/sbbs
+      0xaaaab5d71000     0xaaaab5d8f000    0x1e000        0x0  rw-p   
+      0xaaaab9353000     0xaaaab93b6000    0x63000        0x0  rw-p   [heap]
+      0xffff48000000     0xffff48021000    0x21000        0x0  rw-p   
+      0xffff48021000     0xffff4c000000  0x3fdf000        0x0  ---p   
+      0xffff50000000     0xffff50021000    0x21000        0x0  rw-p   
+      0xffff50021000     0xffff54000000  0x3fdf000        0x0  ---p   
+      0xffff54000000     0xffff54059000    0x59000        0x0  rw-p   
+      0xffff54059000     0xffff58000000  0x3fa7000        0x0  ---p   
+      0xffff5c000000     0xffff5c063000    0x63000        0x0  rw-p   
+      0xffff5c063000     0xffff60000000  0x3f9d000        0x0  ---p   
+      0xffff60000000     0xffff60057000    0x57000        0x0  rw-p   
+      0xffff60057000     0xffff64000000  0x3fa9000        0x0  ---p   
+      0xffff67600000     0xffff67610000    0x10000        0x0  ---p   
+      0xffff67610000     0xffff67e10000   0x800000        0x0  rw-p   
+      0xffff68000000     0xffff68054000    0x54000        0x0  rw-p   
+      0xffff68054000     0xffff6c000000  0x3fac000        0x0  ---p   
+      0xffff6c000000     0xffff6c04b000    0x4b000        0x0  rw-p   
+      0xffff6c04b000     0xffff6c04c000     0x1000        0x0  rw-p   
+      0xffff6c04c000     0xffff6c09f000    0x53000        0x0  rw-p   
+      0xffff6c09f000     0xffff70000000  0x3f61000        0x0  ---p   
+      0xffff70400000     0xffff70410000    0x10000        0x0  ---p   
+      0xffff70410000     0xffff70c10000   0x800000        0x0  rw-p   
+      0xffff70e00000     0xffff70e10000    0x10000        0x0  ---p   
+      0xffff70e10000     0xffff71610000   0x800000        0x0  rw-p   
+      0xffff71800000     0xffff71810000    0x10000        0x0  ---p   
+      0xffff71810000     0xffff72010000   0x800000        0x0  rw-p   
+      0xffff72200000     0xffff72210000    0x10000        0x0  ---p   
+      0xffff72210000     0xffff72a10000   0x800000        0x0  rw-p   
+      0xffff72c00000     0xffff72c10000    0x10000        0x0  ---p   
+      0xffff72c10000     0xffff73410000   0x800000        0x0  rw-p   
+      0xffff73600000     0xffff73610000    0x10000        0x0  ---p   
+      0xffff73610000     0xffff73e10000   0x800000        0x0  rw-p   
+      0xffff74000000     0xffff74021000    0x21000        0x0  rw-p   
+      0xffff74021000     0xffff78000000  0x3fdf000        0x0  ---p   
+      0xffff78200000     0xffff78600000   0x400000        0x0  rw-p   
+      0xffff78600000     0xffff78610000    0x10000        0x0  ---p   
+      0xffff78610000     0xffff78e10000   0x800000        0x0  rw-p   
+      0xffff79000000     0xffff79010000    0x10000        0x0  ---p   
+      0xffff79010000     0xffff79810000   0x800000        0x0  rw-p   
+      0xffff79a00000     0xffff79a10000    0x10000        0x0  ---p   
+      0xffff79a10000     0xffff7a210000   0x800000        0x0  rw-p   
+      0xffff7a400000     0xffff7a410000    0x10000        0x0  ---p   
+      0xffff7a410000     0xffff7ac10000   0x800000        0x0  rw-p   
+      0xffff7ae00000     0xffff7ae10000    0x10000        0x0  ---p   
+      0xffff7ae10000     0xffff7b610000   0x800000        0x0  rw-p   
+      0xffff7b700000     0xffff7b800000   0x100000        0x0  rw-p   
+      0xffff7b800000     0xffff7d5cf000  0x1dcf000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libicudata.so.72.1
+      0xffff7d5cf000     0xffff7d5df000    0x10000  0x1dcf000  ---p   /usr/lib/aarch64-linux-gnu/libicudata.so.72.1
+      0xffff7d5df000     0xffff7d5e0000     0x1000  0x1dcf000  r--p   /usr/lib/aarch64-linux-gnu/libicudata.so.72.1
+      0xffff7d5e0000     0xffff7d5e1000     0x1000  0x1dd0000  rw-p   /usr/lib/aarch64-linux-gnu/libicudata.so.72.1
+      0xffff7d600000     0xffff7d7e6000   0x1e6000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libicuuc.so.72.1
+      0xffff7d7e6000     0xffff7d7fd000    0x17000   0x1e6000  ---p   /usr/lib/aarch64-linux-gnu/libicuuc.so.72.1
+      0xffff7d7fd000     0xffff7d810000    0x13000   0x1ed000  r--p   /usr/lib/aarch64-linux-gnu/libicuuc.so.72.1
+      0xffff7d810000     0xffff7d811000     0x1000   0x200000  rw-p   /usr/lib/aarch64-linux-gnu/libicuuc.so.72.1
+      0xffff7d811000     0xffff7d813000     0x2000        0x0  rw-p   
+      0xffff7d870000     0xffff7d880000    0x10000        0x0  ---p   
+      0xffff7d880000     0xffff7d8c0000    0x40000        0x0  rw-p   
+      0xffff7d8c0000     0xffff7da57000   0x197000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libxml2.so.2.9.14
+      0xffff7da57000     0xffff7da67000    0x10000   0x197000  ---p   /usr/lib/aarch64-linux-gnu/libxml2.so.2.9.14
+      0xffff7da67000     0xffff7da70000     0x9000   0x197000  r--p   /usr/lib/aarch64-linux-gnu/libxml2.so.2.9.14
+      0xffff7da70000     0xffff7da71000     0x1000   0x1a0000  rw-p   /usr/lib/aarch64-linux-gnu/libxml2.so.2.9.14
+      0xffff7da71000     0xffff7da72000     0x1000        0x0  rw-p   
+      0xffff7da80000     0xffff7da9a000    0x1a000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libz.so.1.2.13
+      0xffff7da9a000     0xffff7daaf000    0x15000    0x1a000  ---p   /usr/lib/aarch64-linux-gnu/libz.so.1.2.13
+      0xffff7daaf000     0xffff7dab0000     0x1000    0x1f000  r--p   /usr/lib/aarch64-linux-gnu/libz.so.1.2.13
+      0xffff7dab0000     0xffff7dab1000     0x1000    0x20000  rw-p   /usr/lib/aarch64-linux-gnu/libz.so.1.2.13
+      0xffff7dac0000     0xffff7dad0000    0x10000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libbz2.so.1.0.4
+      0xffff7dad0000     0xffff7dadf000     0xf000    0x10000  ---p   /usr/lib/aarch64-linux-gnu/libbz2.so.1.0.4
+      0xffff7dadf000     0xffff7dae0000     0x1000     0xf000  r--p   /usr/lib/aarch64-linux-gnu/libbz2.so.1.0.4
+      0xffff7dae0000     0xffff7dae1000     0x1000    0x10000  rw-p   /usr/lib/aarch64-linux-gnu/libbz2.so.1.0.4
+      0xffff7daf0000     0xffff7db11000    0x21000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/liblz4.so.1.9.4
+      0xffff7db11000     0xffff7db2f000    0x1e000    0x21000  ---p   /usr/lib/aarch64-linux-gnu/liblz4.so.1.9.4
+      0xffff7db2f000     0xffff7db30000     0x1000    0x2f000  r--p   /usr/lib/aarch64-linux-gnu/liblz4.so.1.9.4
+      0xffff7db30000     0xffff7db31000     0x1000    0x30000  rw-p   /usr/lib/aarch64-linux-gnu/liblz4.so.1.9.4
+      0xffff7db40000     0xffff7dbdd000    0x9d000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libzstd.so.1.5.4
+      0xffff7dbdd000     0xffff7dbef000    0x12000    0x9d000  ---p   /usr/lib/aarch64-linux-gnu/libzstd.so.1.5.4
+      0xffff7dbef000     0xffff7dbf0000     0x1000    0x9f000  r--p   /usr/lib/aarch64-linux-gnu/libzstd.so.1.5.4
+      0xffff7dbf0000     0xffff7dbf1000     0x1000    0xa0000  rw-p   /usr/lib/aarch64-linux-gnu/libzstd.so.1.5.4
+      0xffff7dc00000     0xffff7ddfb000   0x1fb000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.30
+      0xffff7ddfb000     0xffff7de05000     0xa000   0x1fb000  ---p   /usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.30
+      0xffff7de05000     0xffff7de10000     0xb000   0x205000  r--p   /usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.30
+      0xffff7de10000     0xffff7de13000     0x3000   0x210000  rw-p   /usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.30
+      0xffff7de13000     0xffff7de16000     0x3000        0x0  rw-p   
+      0xffff7de40000     0xffff7de6b000    0x2b000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/liblzma.so.5.4.1
+      0xffff7de6b000     0xffff7de7f000    0x14000    0x2b000  ---p   /usr/lib/aarch64-linux-gnu/liblzma.so.5.4.1
+      0xffff7de7f000     0xffff7de80000     0x1000    0x2f000  r--p   /usr/lib/aarch64-linux-gnu/liblzma.so.5.4.1
+      0xffff7de80000     0xffff7de81000     0x1000    0x30000  rw-p   /usr/lib/aarch64-linux-gnu/liblzma.so.5.4.1
+      0xffff7de90000     0xffff7de97000     0x7000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libacl.so.1.1.2301
+      0xffff7de97000     0xffff7deaf000    0x18000     0x7000  ---p   /usr/lib/aarch64-linux-gnu/libacl.so.1.1.2301
+      0xffff7deaf000     0xffff7deb0000     0x1000     0xf000  r--p   /usr/lib/aarch64-linux-gnu/libacl.so.1.1.2301
+      0xffff7deb0000     0xffff7deb1000     0x1000    0x10000  rw-p   /usr/lib/aarch64-linux-gnu/libacl.so.1.1.2301
+      0xffff7dec0000     0xffff7df08000    0x48000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libnettle.so.8.6
+      0xffff7df08000     0xffff7df1e000    0x16000    0x48000  ---p   /usr/lib/aarch64-linux-gnu/libnettle.so.8.6
+      0xffff7df1e000     0xffff7df20000     0x2000    0x4e000  r--p   /usr/lib/aarch64-linux-gnu/libnettle.so.8.6
+      0xffff7df20000     0xffff7df21000     0x1000    0x50000  rw-p   /usr/lib/aarch64-linux-gnu/libnettle.so.8.6
+      0xffff7df30000     0xffff7df44000    0x14000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libgcc_s.so.1
+      0xffff7df44000     0xffff7df5f000    0x1b000    0x14000  ---p   /usr/lib/aarch64-linux-gnu/libgcc_s.so.1
+      0xffff7df5f000     0xffff7df60000     0x1000    0x1f000  r--p   /usr/lib/aarch64-linux-gnu/libgcc_s.so.1
+      0xffff7df60000     0xffff7df61000     0x1000    0x20000  rw-p   /usr/lib/aarch64-linux-gnu/libgcc_s.so.1
+      0xffff7df70000     0xffff7dff2000    0x82000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libm.so.6
+      0xffff7dff2000     0xffff7e00f000    0x1d000    0x82000  ---p   /usr/lib/aarch64-linux-gnu/libm.so.6
+      0xffff7e00f000     0xffff7e010000     0x1000    0x8f000  r--p   /usr/lib/aarch64-linux-gnu/libm.so.6
+      0xffff7e010000     0xffff7e011000     0x1000    0x90000  rw-p   /usr/lib/aarch64-linux-gnu/libm.so.6
+      0xffff7e020000     0xffff7e0dd000    0xbd000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libarchive.so.13.6.2
+      0xffff7e0dd000     0xffff7e0ec000     0xf000    0xbd000  ---p   /usr/lib/aarch64-linux-gnu/libarchive.so.13.6.2
+      0xffff7e0ec000     0xffff7e0f0000     0x4000    0xcc000  r--p   /usr/lib/aarch64-linux-gnu/libarchive.so.13.6.2
+      0xffff7e0f0000     0xffff7e0f1000     0x1000    0xd0000  rw-p   /usr/lib/aarch64-linux-gnu/libarchive.so.13.6.2
+      0xffff7e100000     0xffff7e13d000    0x3d000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libnspr4.so
+      0xffff7e13d000     0xffff7e14e000    0x11000    0x3d000  ---p   /usr/lib/aarch64-linux-gnu/libnspr4.so
+      0xffff7e14e000     0xffff7e150000     0x2000    0x3e000  r--p   /usr/lib/aarch64-linux-gnu/libnspr4.so
+      0xffff7e150000     0xffff7e151000     0x1000    0x40000  rw-p   /usr/lib/aarch64-linux-gnu/libnspr4.so
+      0xffff7e151000     0xffff7e154000     0x3000        0x0  rw-p   
+      0xffff7e160000     0xffff7e2eb000   0x18b000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libc.so.6
+      0xffff7e2eb000     0xffff7e2fc000    0x11000   0x18b000  ---p   /usr/lib/aarch64-linux-gnu/libc.so.6
+      0xffff7e2fc000     0xffff7e300000     0x4000   0x18c000  r--p   /usr/lib/aarch64-linux-gnu/libc.so.6
+      0xffff7e300000     0xffff7e302000     0x2000   0x190000  rw-p   /usr/lib/aarch64-linux-gnu/libc.so.6
+      0xffff7e302000     0xffff7e30f000     0xd000        0x0  rw-p   
+      0xffff7e310000     0xffff7e328000    0x18000        0x0  r-xp   /sbbs/exec/libservices.so
+      0xffff7e328000     0xffff7e33f000    0x17000    0x18000  ---p   /sbbs/exec/libservices.so
+      0xffff7e33f000     0xffff7e340000     0x1000    0x1f000  r--p   /sbbs/exec/libservices.so
+      0xffff7e340000     0xffff7e341000     0x1000    0x20000  rw-p   /sbbs/exec/libservices.so
+      0xffff7e341000     0xffff7e34f000     0xe000        0x0  rw-p   
+      0xffff7e350000     0xffff7e379000    0x29000        0x0  r-xp   /sbbs/exec/libmailsrvr.so
+      0xffff7e379000     0xffff7e38f000    0x16000    0x29000  ---p   /sbbs/exec/libmailsrvr.so
+      0xffff7e38f000     0xffff7e390000     0x1000    0x2f000  r--p   /sbbs/exec/libmailsrvr.so
+      0xffff7e390000     0xffff7e391000     0x1000    0x30000  rw-p   /sbbs/exec/libmailsrvr.so
+      0xffff7e391000     0xffff7e39e000     0xd000        0x0  rw-p   
+      0xffff7e3a0000     0xffff7e3c8000    0x28000        0x0  r-xp   /sbbs/exec/libwebsrvr.so
+      0xffff7e3c8000     0xffff7e3df000    0x17000    0x28000  ---p   /sbbs/exec/libwebsrvr.so
+      0xffff7e3df000     0xffff7e3e0000     0x1000    0x2f000  r--p   /sbbs/exec/libwebsrvr.so
+      0xffff7e3e0000     0xffff7e3e1000     0x1000    0x30000  rw-p   /sbbs/exec/libwebsrvr.so
+      0xffff7e3e1000     0xffff7e3f3000    0x12000        0x0  rw-p   
+      0xffff7e400000     0xffff7ea23000   0x623000        0x0  r-xp   /sbbs/exec/libsbbs.so
+      0xffff7ea23000     0xffff7ea39000    0x16000   0x623000  ---p   /sbbs/exec/libsbbs.so
+      0xffff7ea39000     0xffff7ea80000    0x47000   0x629000  r--p   /sbbs/exec/libsbbs.so
+      0xffff7ea80000     0xffff7eaa2000    0x22000   0x670000  rw-p   /sbbs/exec/libsbbs.so
+      0xffff7eaa2000     0xffff7f67c000   0xbda000        0x0  rw-p   
+      0xffff7f67c000     0xffff7f868000   0x1ec000        0x0  rw-p   
+      0xffff7f86f000     0xffff7f890000    0x21000        0x0  rw-p   
+      0xffff7f890000     0xffff7f8ac000    0x1c000        0x0  r-xp   /sbbs/exec/libftpsrvr.so
+      0xffff7f8ac000     0xffff7f8bf000    0x13000    0x1c000  ---p   /sbbs/exec/libftpsrvr.so
+      0xffff7f8bf000     0xffff7f8c0000     0x1000    0x1f000  r--p   /sbbs/exec/libftpsrvr.so
+      0xffff7f8c0000     0xffff7f8c1000     0x1000    0x20000  rw-p   /sbbs/exec/libftpsrvr.so
+      0xffff7f8c1000     0xffff7f8d0000     0xf000        0x0  rw-p   
+      0xffff7f8d0000     0xffff7f8da000     0xa000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/libcap.so.2.66
+      0xffff7f8da000     0xffff7f8ef000    0x15000     0xa000  ---p   /usr/lib/aarch64-linux-gnu/libcap.so.2.66
+      0xffff7f8ef000     0xffff7f8f0000     0x1000     0xf000  r--p   /usr/lib/aarch64-linux-gnu/libcap.so.2.66
+      0xffff7f8f0000     0xffff7f8f1000     0x1000    0x10000  rw-p   /usr/lib/aarch64-linux-gnu/libcap.so.2.66
+      0xffff7f8f2000     0xffff7f919000    0x27000        0x0  r-xp   /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
+      0xffff7f91a000     0xffff7f926000     0xc000        0x0  rw-p   
+      0xffff7f92b000     0xffff7f92d000     0x2000        0x0  rw-p   
+      0xffff7f92d000     0xffff7f92f000     0x2000        0x0  r--p   [vvar]
+      0xffff7f92f000     0xffff7f930000     0x1000        0x0  r-xp   [vdso]
+      0xffff7f930000     0xffff7f932000     0x2000    0x2e000  r--p   /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
+      0xffff7f932000     0xffff7f934000     0x2000    0x30000  rw-p   /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
+      0xffffedc1d000     0xffffedc3e000    0x21000        0x0  rw-p   [stack]
