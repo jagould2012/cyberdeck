@@ -17,3 +17,5 @@ xtrn/
 text/
 
 .env
+
+.color-backup-*/

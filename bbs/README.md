@@ -121,14 +121,6 @@ docker exec -it SynchronetBBS /sbbs/exec/scfg
 
 ## Other Setting
 
-* Set default shell to Oblivion/2
-
-`main.ini`
-```
-[newuser]
-    command_shell=OBV-2
-```
-
 * Disable IPV6
 
 `sbbs.ini`
@@ -138,6 +130,41 @@ Interface=0.0.0.0
 ```
 
 ---
+
+## Theme Install
+
+Two scripts customize the BBS appearance: one deploys ANSI art, the other updates system colors.
+
+### copy-ans.sh
+
+Copies ANSI art from `art/` to `text/` with proper Synchronet formatting.
+
+**Setup:**
+- Place `.ans` files in `art/` for main screens (e.g., `answer.ans`, `bullseye.ans`, `synch.ans`)
+- Place `.ans` files in `art/random/` for random login screens
+- Optional: create `file.append.ans` to append content after a pause
+
+**Features:**
+- Strips SAUCE metadata from source files
+- Extracts prefix codes from existing `.msg`/`.asc` files
+- Adds speed control (slow scroll for random logins, reset for regular screens)
+- Handles merged files with `@PAUSE@` between parts
+```bash
+./copy-ans.sh ./art ./text
+```
+
+### update-msg-colors.sh
+
+Applies a consistent color scheme to Synchronet system prompts and menus.
+
+**Changes:**
+- Updates `ctrl/attr.ini` with grayscale theme (bright white highlights, gray text, dark gray accents)
+- Converts `.msg` file text to lowercase (preserves @-codes and Ctrl-A codes)
+```bash
+./update-msg-colors.sh
+```
+
+Backups are saved to `.color-backup-YYYYMMDD-HHMMSS/`. Restart Synchronet after running.
 
 ### Configuring DOS Doors
 
