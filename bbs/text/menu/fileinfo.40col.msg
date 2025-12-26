@@ -3,9 +3,9 @@
 nw @DR@ h@DIR@
 nw⁄file wh@FILE_NAME@
 nw|date h@FILE_DATE@ nwsize h@FILE_SIZE@ nwcost h@FILE_COST@
-nw|h@CLEAR@0
-nw|crc  h@CLEAR@1
-nw|md5  h@CLEAR@2
-nw|uled h@CLEAR@3 nwby h@CLEAR@4
-nw¿dled h@CLEAR@5 nwtimes, last h@CLEAR@6
-@CLEAR@7
+nw|h@FILE_DESC|>@
+nw|crc  h@FILE_CRC32@
+nw|md5  h@FILE_MD5@
+nw|uled h@FILE_DATE_ULED@ nwby h@FILE_UPLOADER@
+nw¿dled h@FILE_TIMES_DLED@ nwtimes, last h@FILE_DATE_DLED@
+@CRLF@

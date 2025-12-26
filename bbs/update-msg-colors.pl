@@ -14,24 +14,26 @@ my $content = <$fh>;
 close($fh);
 
 # Step 1: Protect @-codes by replacing with placeholders
-# @-codes can contain many characters - be inclusive to avoid breaking them
-# Examples: @SYSAVAIL-L####@, @TIME-L@, @include:%zmenu/head.msg@, @TMSG!........@
-my %codes;
+# @-codes can contain many characters including |, :, !, ., etc.
+# Match @ followed by any characters (non-greedy) until the next @
+# Use a unique marker that won't appear in the file
+my @codes;
 my $counter = 0;
-$content =~ s/(\@[^@\r\n]+\@)/
-    $counter++;
-    $codes{"XYZPLACEHOLDERXYZ$counter"} = $1;
-    "XYZPLACEHOLDERXYZ$counter";
+
+# Use a different approach: capture everything between @ pairs
+# The pattern matches @...@ where ... is any char except @ and newlines
+$content =~ s/(\@[^\@\r\n]+\@)/
+    push @codes, $1;
+    "\x00PLACEHOLDER" . $counter++ . "END\x00";
 /ge;
 
 # Step 2: Lowercase regular ASCII text (A-Z only, not high ASCII graphics)
 # But preserve Ctrl-A code letters (they come right after \x01)
 $content =~ s/(?<!\x01)([A-Z])/lc($1)/ge;
 
-# Step 3: Restore @-codes (they were lowercased in step 2)
-foreach my $key (keys %codes) {
-    my $lower_key = lc($key);
-    $content =~ s/$lower_key/$codes{$key}/g;
+# Step 3: Restore @-codes from the array (preserving original case)
+for (my $i = 0; $i < @codes; $i++) {
+    $content =~ s/\x00placeholder${i}end\x00/$codes[$i]/i;
 }
 
 # Step 4: Convert to Cyberdeck color scheme

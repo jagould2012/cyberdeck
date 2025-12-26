@@ -94,6 +94,48 @@ echo "Reset complete."
 echo ""
 
 # ============================================
+# PART 0b: Update system settings in main.ini
+# ============================================
+echo "--- Part 0b: Updating system settings in main.ini ---"
+
+MAIN_INI="${CTRL_DIR}/main.ini"
+
+if [ -f "$MAIN_INI" ]; then
+    # Read current settings value
+    CURRENT_SETTINGS=$(grep "^settings=" "$MAIN_INI" | head -1 | cut -d'=' -f2)
+    
+    if [ -n "$CURRENT_SETTINGS" ]; then
+        echo "Current settings: $CURRENT_SETTINGS"
+        
+        # SYS_ECHO_PW = (1<<12) = 0x1000 = 4096
+        # Clear this bit to disable password echo
+        SYS_ECHO_PW=0x1000
+        
+        # Convert to decimal, clear the bit, convert back to hex
+        CURRENT_DEC=$((CURRENT_SETTINGS))
+        NEW_DEC=$((CURRENT_DEC & ~SYS_ECHO_PW))
+        NEW_SETTINGS=$(printf "0x%x" $NEW_DEC)
+        
+        if [ "$CURRENT_DEC" -ne "$NEW_DEC" ]; then
+            echo "Disabling SYS_ECHO_PW (Display/Log Passwords Locally)"
+            echo "New settings: $NEW_SETTINGS"
+            
+            # Update the settings line in main.ini
+            sed -i.bak "s/^settings=.*/settings=$NEW_SETTINGS/" "$MAIN_INI"
+            rm -f "$MAIN_INI.bak"
+        else
+            echo "SYS_ECHO_PW already disabled"
+        fi
+    else
+        echo "Warning: Could not read settings from $MAIN_INI"
+    fi
+else
+    echo "Warning: $MAIN_INI not found"
+fi
+
+echo ""
+
+# ============================================
 # PART 1: Update ctrl/attr.ini
 # ============================================
 echo "--- Part 1: Updating ctrl/attr.ini ---"

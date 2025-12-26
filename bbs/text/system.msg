@@ -7,10 +7,10 @@ and has been online continuously for y@UPTIME@w hours.
 ysystem totals:w
 
 users:     k@TUSER|L.......@w today: k@STATS.NUSERS@w
-logons:    k@STATS.LOGONS|L@w today: k@CLS@1w
-timeused:  k@CLS@2w today: k@CLS@3w
-messages:  k@CLS@4w today: k@CLS@5w
-e-mail:    k@CLS@6w today: k@CLS@7w
-feedback:  k@CLS@8w today: k@CLS@9w
-files:     k@BBS@0w today: k@STATS.ULS@w
+logons:    k@STATS.LOGONS|L@w today: k@STATS.LTODAY@w
+timeused:  k@STATS.TIMEON|L@w today: k@STATS.TTODAY@w
+messages:  k@TMSG|L........@w today: k@STATS.PTODAY@w
+e-mail:    k@MAILW:0|L.....@w today: k@STATS.ETODAY@w
+feedback:  k@MAILW:1|L.....@w today: k@STATS.FTODAY@w
+files:     k@TFILE|L.......@w today: k@STATS.ULS@w
                  downloaded today: k@STATS.DLS@w (k@STATS.DLB@w nbytesh)
