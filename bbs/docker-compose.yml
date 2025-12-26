@@ -25,8 +25,8 @@ services:
       - ./data:/sbbs/data
       - ./mods:/sbbs/mods
       # Optional: mount these if you want to customize
-      # - ./text:/sbbs/text
-      # - ./xtrn:/sbbs/xtrn
+      - ./text:/sbbs/text
+      - ./xtrn:/sbbs/xtrn
     environment:
       - SBBSCTRL=/sbbs/ctrl
       - SBBSEXEC=/sbbs/exec

@@ -4,16 +4,16 @@ set -e
 echo "=== Synchronet BBS Installer ==="
 
 # Build the image first
-echo "[1/5] Building Docker image..."
+echo "[1/6] Building Docker image..."
 docker compose build
 
 # Create directories for persistent data
-echo "[2/5] Creating directories..."
-mkdir -p ctrl data mods
+echo "[2/6] Creating directories..."
+mkdir -p ctrl data mods xtrn text
 
 # Check if ctrl is empty or missing key files
 if [ ! -f "./ctrl/sbbs.ini" ]; then
-    echo "[3/5] Extracting default config files..."
+    echo "[3/6] Extracting default config files..."
     
     # Create a temporary container (don't start it)
     docker create --name sbbs-temp bbs-synchronet
@@ -21,12 +21,20 @@ if [ ! -f "./ctrl/sbbs.ini" ]; then
     # Copy the ctrl directory from the image
     docker cp sbbs-temp:/sbbs/ctrl/. ./ctrl/
     
+    # Copy the xtrn directory (doors/external programs)
+    docker cp sbbs-temp:/sbbs/xtrn/. ./xtrn/
+    
+    # Copy the text directory (ANSI screens, menus, etc)
+    docker cp sbbs-temp:/sbbs/text/. ./text/
+    
     # Remove the temporary container
     docker rm sbbs-temp
     
     echo "Config files extracted to ./ctrl/"
+    echo "External programs extracted to ./xtrn/"
+    echo "Text/ANSI files extracted to ./text/"
 else
-    echo "[3/5] Config files already exist, skipping extraction"
+    echo "[3/6] Config files already exist, skipping extraction"
 fi
 
 # List what we have
@@ -34,9 +42,17 @@ echo ""
 echo "=== Config files in ./ctrl/ ==="
 ls -la ./ctrl/ | head -20
 
+echo ""
+echo "=== External programs in ./xtrn/ ==="
+ls -la ./xtrn/ | head -20
+
+echo ""
+echo "=== Text files in ./text/ ==="
+ls -la ./text/ | head -20
+
 # Run scfg BEFORE starting the main container to generate .cnf files
 echo ""
-echo "[4/5] Running initial configuration (scfg)..."
+echo "[4/6] Running initial configuration (scfg)..."
 echo "This will open the Synchronet Configuration utility."
 echo "Set up your BBS name and settings, then save and exit (ESC, Y)."
 echo ""
@@ -47,6 +63,8 @@ docker run -it --rm \
     -v "$(pwd)/ctrl:/sbbs/ctrl" \
     -v "$(pwd)/data:/sbbs/data" \
     -v "$(pwd)/mods:/sbbs/mods" \
+    -v "$(pwd)/xtrn:/sbbs/xtrn" \
+    -v "$(pwd)/text:/sbbs/text" \
     -e TERM=xterm \
     bbs-synchronet
 
@@ -85,7 +103,7 @@ fi
 
 # Now start the container
 echo ""
-echo "[5/5] Starting Synchronet BBS..."
+echo "[5/6] Starting Synchronet BBS..."
 docker compose up -d
 
 # Wait for container to be ready
@@ -94,11 +112,10 @@ sleep 5
 
 # Generate SSH keys if needed
 echo ""
-echo "Generating SSH keys..."
+echo "[6/6] Generating SSH keys..."
 docker exec SynchronetBBS bash -c "rm -f /sbbs/ctrl/cryptlib.key /sbbs/ctrl/ssh_host_* 2>/dev/null"
 
-
-# Alternative: restart to regenerate keys
+# Restart to regenerate keys
 docker compose restart
 sleep 3
 
@@ -113,11 +130,15 @@ docker logs --tail 20 SynchronetBBS 2>&1 || true
 echo ""
 echo "=== Installation Complete ==="
 echo ""
-echo "If the container is running, connect via:"
-echo "  Telnet:  telnet localhost 10023"
+echo "Persistent data directories:"
+echo "  ./ctrl/  - Configuration files"
+echo "  ./data/  - User data, logs, messages"
+echo "  ./xtrn/  - Door games and external programs"
+echo "  ./text/  - ANSI screens, menus, prompts"
+echo "  ./mods/  - Custom modifications"
+echo ""
+echo "Connect via:"
 echo "  SSH:     ssh -p 10022 localhost"
-echo "  Web:     http://localhost:10080"
-echo "  FTP:     ftp://localhost:10021"
 echo ""
 echo "To reconfigure: docker exec -it SynchronetBBS /sbbs/exec/scfg"
 echo "To view logs:   docker logs -f SynchronetBBS"

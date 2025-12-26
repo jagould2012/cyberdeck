@@ -13,5 +13,7 @@ Thumbs.db
 ctrl/
 data/
 mods/
+xtrn/
+text/
 
 .env
