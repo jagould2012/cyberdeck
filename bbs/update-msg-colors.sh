@@ -224,6 +224,42 @@ fi
 echo ""
 
 # ============================================
+# PART 1b: Create ctrl/text.ini for shell prompt colors
+# ============================================
+echo "--- Part 1b: Creating ctrl/text.ini ---"
+
+TEXT_INI="${CTRL_DIR}/text.ini"
+
+# Generate text.ini with actual Ctrl-A characters using perl
+# Style: lowercase text with bright white first letter
+perl -e '
+my $CA = "\x01";
+print "; Synchronet Text String Overrides\n";
+print "; Cyberdeck color scheme: grayscale\n";
+print "; Style: lowercase with bright white first letter\n";
+print ";\n\n";
+
+print "[default.js]\n";
+# Shell prompt begin: gray bullet, bright white
+print "shell_prompt_begin = ${CA}-${CA}w\xfe ${CA}h${CA}w\n";
+# Shell prompt middle: gray bullet, bright white
+print "shell_prompt_middle = ${CA}n${CA}w\xfe ${CA}h${CA}w\n";
+# Main menu prompt end - single backslash, lowercase
+print "shell_main_prompt_end = ${CA}n${CA}w[${CA}h\@GN\@${CA}n${CA}w] \@GRP\@ [${CA}h\@SN\@${CA}n${CA}w] \@SUB\@: ${CA}n\n";
+# File menu prompt end - single backslash, lowercase
+print "shell_file_prompt_end = ${CA}n${CA}w(${CA}h\@LN\@${CA}n${CA}w) \@LIB\@ (${CA}h\@DN\@${CA}n${CA}w) \@DIR\@: ${CA}n\n";
+# Menu labels - bright first letter, rest gray lowercase
+print "Main = ${CA}h${CA}wM${CA}n${CA}wain\n";
+print "File = ${CA}h${CA}wF${CA}n${CA}wile\n";
+print "\n[js]\n";
+print "; Global JS text overrides\n";
+' > "$TEXT_INI"
+
+echo "Created:   $TEXT_INI"
+
+echo ""
+
+# ============================================
 # PART 1b: Update ctrl/text.dat colors
 # ============================================
 echo "--- Part 1b: Updating ctrl/text.dat colors ---"

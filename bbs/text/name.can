@@ -1,0 +1,26 @@
+; Enter disallowed user names (aliases) in this file
+; Wildcard characters (*, ~, ^) are allowed
+; Rejection message file: text/badname.msg
+new
+all
+sysop~
+ping
+areafix
+sbbsecho
+sbbs
+netmail
+anonymous
+anon
+user
+root
+help
+info
+support
+system
+admin
+administrator
+@~
+#~
+!~
+:~
+;~
