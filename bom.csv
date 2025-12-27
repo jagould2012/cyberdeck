@@ -3,10 +3,11 @@ Quantity,Description,Link,Notes
 ,Computers,,
 ,,,
 2,Raspberry Pi 5 16GB Single Board Computers,https://www.amazon.com/dp/B0DY7MWDF9?linkCode=ll1&tag=jagould2012-20&linkId=0729d799dd504df3d4454b081bc47bf8&language=en_US&ref_=as_li_ss_tl,16GB version to allow for Kubernetes and containers
-2,Transcent 256GB M.2 2242 SSD module,https://www.amazon.com/dp/B07KG2KFSX?th=1&linkCode=ll1&tag=jagould2012-20&linkId=fb514042f6681917c59dabc4e3bfedde&language=en_US&ref_=as_li_ss_tl,
+2,Patriot M.2 PCIe NVME flash - 256GB,https://www.amazon.com/dp/B082BWY2C2?th=1&linkCode=ll1&tag=jagould2012-20&linkId=7b7f5fd9b6ba912347646656cbd5a0a8&language=en_US&ref_=as_li_ss_tl,"Must be NVME, not SATA"
 1,"GeeekPi 3U 9"" LCD display",https://www.amazon.com/dp/B0FZQGN2FS?coliid=I2SMGGHY26APN1&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=45af344763cc0ff389bafea75b350623&language=en_US&ref_=as_li_ss_tl,
 1,"GeeekPi 1U 6.9"" LCD display",https://www.amazon.com/dp/B0G337KQS6?coliid=I3IXGO8OB1Q1II&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=8b4cbab3c91a4e72b3747fbd775b85ad&language=en_US&ref_=as_li_ss_tl,
 1,BotBlox Gigabit Ethernet Switch,https://botblox.io/products/gigablox-small-gigabit-switch,Necessary if you want Gigabit between Raspberry Pi SBCs
+1,Keyboard with Touchpad,https://amzn.to/456Uwe9,
 ,,,
 ,Radios,,
 ,,,
@@ -40,7 +41,9 @@ Quantity,Description,Link,Notes
 1,USB mini keyboard with trackpad,https://www.amazon.com/dp/B0DKPHX18V?th=1&linkCode=ll1&tag=jagould2012-20&linkId=dbd6d2a9c0762135fc0b0d7c9ecfa8df&language=en_US&ref_=as_li_ss_tl,
 1,Neoprene case,https://www.amazon.com/dp/B071WC3KXP?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eb1d78b43e4a5638ad9a36ff3697c99c&language=en_US&ref_=as_li_ss_tl,For keyboad
 ,,,
-1,"N-Type 12"" extension cable",https://www.amazon.com/dp/B0B93BM8PK?th=1&linkCode=ll1&tag=jagould2012-20&linkId=c98bc5940087793822f0c227f186e9a9&language=en_US&ref_=as_li_ss_tl,For LoRa antenna
+1,N connector to RP-SMA cable,https://www.amazon.com/dp/B089VRZXD6?&linkCode=ll1&tag=jagould2012-20&linkId=c7dbd94464854c443b18841fe6aaf3ae&language=en_US&ref_=as_li_ss_tl,Right angle N connector for LoRa
+1,Panel mount N connector,https://www.amazon.com/dp/B0C33BTK4R?&linkCode=ll1&tag=jagould2012-20&linkId=913a11453c80cb4beef4945cdcd64f30&language=en_US&ref_=as_li_ss_tl,
+1,Ipex-1 to RP-SMA cable,https://www.amazon.com/dp/B0CSSPJ8S2?&linkCode=ll1&tag=jagould2012-20&linkId=438d4e2894662c1cff2a462ebd954d1e&language=en_US&ref_=as_li_ss_tl,For LoRa
 2,"RPI-SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B07MT3VZXZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=0a91d0981ef509d0fd28ccbb86958586&language=en_US&ref_=as_li_ss_tl,For AXE3000 WiFi antenna
 2,"SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B08139CQLG?th=1&linkCode=ll1&tag=jagould2012-20&linkId=08997393fe479e61210564a2a0ecdeac&language=en_US&ref_=as_li_ss_tl,For RTL-SDR antenna
 1,SMA right angle adapter - 4 pack,https://www.amazon.com/dp/B07YW3M4GB?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eca363638807b23059ca236a42444385&language=en_US&ref_=as_li_ss_tl,
@@ -52,12 +55,15 @@ Quantity,Description,Link,Notes
 1,XT90 alligator clamps,https://www.amazon.com/dp/B0BJ8VXTWR?&linkCode=ll1&tag=jagould2012-20&linkId=fc10867998fdfe6c6c3cf3c75bfa1f27&language=en_US&ref_=as_li_ss_tl,
 ,,,
 1,Heat shrink tubing,https://www.amazon.com/dp/B0BVVMCY86?th=1&linkCode=ll1&tag=jagould2012-20&linkId=2e46068b8e6c4abb1e24180654371b31&language=en_US&ref_=as_li_ss_tl,
-1,Heat shrink terminal kit,https://www.amazon.com/dp/B0C2CBM2YS?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9877c2b1b1108b66da7233dfbe5a4588&language=en_US&ref_=as_li_ss_tl,
+1,Heat shrink terminal kit,https://www.amazon.com/dp/B0C2CBM2YS?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9877c2b1b1108b66da7233dfbe5a4588&language=en_US&ref_=as_li_ss_tl,Used for larger gauge connections to power supplies
+1,Ferrule crimping kit,https://www.amazon.com/dp/B07PJK2VNT?&linkCode=ll1&tag=jagould2012-20&linkId=d0296b791db320e885a5cbd558e99e0b&language=en_US&ref_=as_li_ss_tl,Used on all small gauge power wires to terminal blocks
 ,,,
+1,Screw terminal barrier strips,https://www.amazon.com/dp/B0D7VRSH1G?&linkCode=ll1&tag=jagould2012-20&linkId=ef79e244e0a82d01c300dff6fcec04e0&language=en_US&ref_=as_li_ss_tl,5V power distribution
 1,USB-C pigtail power cables - 5 pack,https://www.amazon.com/dp/B0BFHXWCS9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=5a9b90fdd67263b50550c6f52fc52b03&language=en_US&ref_=as_li_ss_tl,
+,,,
 2,Right angle USB extension,https://www.amazon.com/dp/B0793P8XJK?&linkCode=ll1&tag=jagould2012-20&linkId=e8e6c236726e3d53504d852c3f57c5dc&language=en_US&ref_=as_li_ss_tl,Bring one USB 3.0 port to rear of plate
 2,Cable Matters USB / Gigabit Ethernet hub,https://www.amazon.com/dp/B073X66DFN?&linkCode=ll1&tag=jagould2012-20&linkId=0d9157ec0c3c05b20712ae016dbedc3c&language=en_US&ref_=as_li_ss_tl,Second ethernet port and USB ports behind plate
-1,1' Cat6 Ethernet cable - 5 pack,https://www.amazon.com/dp/B00C4U030G?th=1&linkCode=ll1&tag=jagould2012-20&linkId=30acc1c0e6354878147cd26dc6b32913&language=en_US&ref_=as_li_ss_tl,
+1,1' USB-C to USB A - 5 pack,https://www.amazon.com/dp/B08PXWYKTB?th=1&linkCode=ll1&tag=jagould2012-20&linkId=b4dde1596bad16d339235b70a56b5735&language=en_US&ref_=as_li_ss_tl,Touch screen connection to Pi USB
 1,Right angle USB C cable,https://www.amazon.com/dp/B0DFC3F315?th=1&linkCode=ll1&tag=jagould2012-20&linkId=ebe477914631332b99af5805d7a2fe30&language=en_US&ref_=as_li_ss_tl,HackRF One
 1,Micro HDMI to HDMI 1' Angle Up - 2 pack,https://www.amazon.com/dp/B07DZY2D4D?th=1&linkCode=ll1&tag=jagould2012-20&linkId=a902bb0f5837d3c0dafbdda1832de5d4&language=en_US&ref_=as_li_ss_tl,
 1,Micro HDMI to HDMI 1' Angle Down - 2 pack,https://www.amazon.com/dp/B07FT1Z3PM?th=1&linkCode=ll1&tag=jagould2012-20&linkId=20cb610c81bcf0546a5e8f187c6e658f&language=en_US&ref_=as_li_ss_tl,
@@ -71,3 +77,9 @@ Quantity,Description,Link,Notes
 10,"Threaded Standoff - 2"" x 5/16"" 10-32",https://www.mcmaster.com/products/91780a261/,
 ,,,
 1,"1/8"" ABS plastic sheet 8"" x 12"" - 2 pack",https://www.amazon.com/dp/B0FJFFH7Z9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=1029d95ab8f9d28ab42d2653db07312e&language=en_US&ref_=as_li_ss_tl,Custom mounting plates behind aluminum plate
+1,"iCraft 1/2"" x 1/8"" 3D foam tape",https://www.amazon.com/iCraft-5611-Jumbo-Rolls-Black/dp/B093Y43FGF?crid=SSJEDCOKNH7C&dib=eyJ2IjoiMSJ9.d-kk0xkjTN1F3AlRfseXbd-Zi_PKe6-0eLNG6mEqihb-Z_tOjGcDQEU49k8yUG8A3nMPeCp0roDDjHoWQT3D4MkY235Rf6pNgPE9SNApcgz_64tqpFJEW8McQcH_MJsSUETmxfW1_LSILra0XfgEmEHlqIaVuPQuET9mqUeAdBD1JtMcdv7NKdboevBKTDT9HdNLmQH1qZ_YNohLjDJlYWai3PUqQ_JgpMfq5-3tg3cd4c13AhG_tEdZgTKNxnENES4ej074Qg4m5KlvyAqz-Qoi1zq4LfnLvW_IJLcYmDg.FXiE55f1fYRmruWNO2bCYbn1RxThkAtFOu4ot-SdmSs&dib_tag=se&keywords=icraft%2Bfoam%2Btape%2Bblack&qid=1766805695&sprefix=icraft%2Bfoam%2Btape%2Bblack%2Caps%2C166&sr=8-6&th=1&linkCode=ll1&tag=jagould2012-20&linkId=cdeeace2592c34b722d932876637c5b6&language=en_US&ref_=as_li_ss_tl,For mounting power components to ABS panels
+,,,
+1,Neoprene Case,https://www.amazon.com/dp/B01JZ3NEM8?th=1&linkCode=ll1&tag=jagould2012-20&linkId=80bd015303bdc9a928e0defa96a9a1ae&language=en_US&ref_=as_li_ss_tl,For antenna storage
+1,Left-angle IEC power cable,https://www.amazon.com/dp/B003MGB1EI?th=1&linkCode=ll1&tag=jagould2012-20&linkId=c640d6844eaec2f8ba6b8de4bc8c366d&language=en_US&ref_=as_li_ss_tl,
+1,Adhesive neoprene sheets,https://www.amazon.com/dp/B08P1XQMQH?th=1&linkCode=ll1&tag=jagould2012-20&linkId=6299576ea2492a4487798448a1b6fef9&language=en_US&ref_=as_li_ss_tl,Lining for case lid to protect keyboard
+1,Neoprene foam,https://www.amazon.com/dp/B09TXGTD1B?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9bd1273f77f26a978f2a5cf1326310af&language=en_US&ref_=as_li_ss_tl,Protective sheet between keyboard and screens
