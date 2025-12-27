@@ -26,7 +26,8 @@ hdmi_force_hotplug=1
 hdmi_blanking=0
 
 # Enable fan
-dtoverlay=gpio-fan" | sudo tee -a "$CONFIG_FILE"
+dtoverlay=gpio-fan
+usb_max_current_enable=1" | sudo tee -a "$CONFIG_FILE"
 
 # Disable any suspend/sleep targets
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
