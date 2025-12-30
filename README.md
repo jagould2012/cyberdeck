@@ -23,3 +23,9 @@ Wiring diagram for the power supplies, switches, and relays can be found [here](
 ### Internal Panels
 
 Power supplies and USB devices are mounted to 1/8" ABS panels. Dxf files for the panels can be found [here](https://github.com/jagould2012/cyberdeck/blob/main/dxf/).
+
+### Assembly
+
+![](./images/3d.png)
+
+Sketchup model is available [here](./Cyberdeck.skp) to assist in assembly.
