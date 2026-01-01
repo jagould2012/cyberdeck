@@ -29,3 +29,15 @@ Power supplies and USB devices are mounted to 1/8" ABS panels. Dxf files for the
 ![](./images/3d.png)
 
 Sketchup model is available [here](./Cyberdeck.skp) to assist in assembly.
+
+### Stand
+
+![](./images/stand1.png)
+![](./images/stand2.png)
+![](./images/stand3.png)
+
+An option stand design is constucted from aluminum t-slot rail.
+
+Sketchup model of the stand is available [here](./Stand) to assist in assembly.
+
+The stand bill of materials is available [here](stand.bom.csv).
