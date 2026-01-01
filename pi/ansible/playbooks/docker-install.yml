@@ -4,7 +4,7 @@
 # Usage: ansible-playbook playbooks/docker-install.yml
 
 - name: Install Docker
-  hosts: raspberry_pis:test_vms
+  hosts: raspberry_pis
   become: true
 
   vars:
@@ -78,12 +78,11 @@
         state: present
 
     # --- Configure Docker users ---
-    - name: Add users to docker group
+    - name: Add user to docker group
       ansible.builtin.user:
-        name: "{{ item }}"
+        name: "{{ ansible_user }}"
         groups: docker
         append: true
-      loop: "{{ docker_users }}"
 
     - name: Ensure Docker service is started and enabled
       ansible.builtin.systemd:
@@ -94,6 +93,6 @@
     - name: Display Docker installation info
       ansible.builtin.debug:
         msg: >
-          Docker installed successfully. Users {{ docker_users | join(', ') }} 
-          have been added to the docker group. They may need to log out and 
+          Docker installed successfully. User {{ ansible_user }} 
+          has been added to the docker group. Log out and 
           back in for group membership to take effect.

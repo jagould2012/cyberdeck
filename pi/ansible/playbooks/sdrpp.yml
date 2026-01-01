@@ -1,0 +1,62 @@
+---
+# Playbook: Install SDR++
+# Installs SDR++ from prebuilt Debian package (arm64) or builds from source
+# Usage: ansible-playbook playbooks/sdrpp.yml
+# Requires: sdr-base.yml to be run first
+
+- name: Install SDR++
+  hosts: raspberry_pis
+  become: true
+
+  vars:
+    sdrpp_deb_url: "https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/sdrpp_debian_bookworm_aarch64.deb"
+    sdrpp_deb_file: /tmp/sdrpp_debian_bookworm_aarch64.deb
+
+  tasks:
+    - name: Check if SDR++ is already installed
+      ansible.builtin.command: which sdrpp
+      register: sdrpp_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install SDR++ runtime dependencies
+      ansible.builtin.apt:
+        name:
+          - libfftw3-3
+          - libglfw3
+          - libglew2.2
+          - libvolk2.5
+          - libzstd1
+          - libsoapysdr0.8
+          - libairspy0
+          - libairspyhf1
+          - libiio0
+          - libad9361-0
+          - librtaudio6
+          - libhackrf0
+          - librtlsdr0
+          - libcodec2-1.2
+        state: present
+      when: sdrpp_check.rc != 0
+
+    - name: Download SDR++ Debian package
+      ansible.builtin.get_url:
+        url: "{{ sdrpp_deb_url }}"
+        dest: "{{ sdrpp_deb_file }}"
+        mode: '0644'
+      when: sdrpp_check.rc != 0
+
+    - name: Install SDR++ from deb package
+      ansible.builtin.apt:
+        deb: "{{ sdrpp_deb_file }}"
+        state: present
+      when: sdrpp_check.rc != 0
+
+    - name: Clean up downloaded deb file
+      ansible.builtin.file:
+        path: "{{ sdrpp_deb_file }}"
+        state: absent
+
+    - name: Display SDR++ installation status
+      ansible.builtin.debug:
+        msg: "SDR++ installed. Run with: sdrpp"

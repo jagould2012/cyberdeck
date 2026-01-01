@@ -4,7 +4,7 @@
 # Usage: ansible-playbook playbooks/network-setup.yml
 
 - name: Configure NetworkManager and mDNS (Avahi)
-  hosts: raspberry_pis:test_vms
+  hosts: raspberry_pis
   become: true
 
   tasks:
@@ -66,7 +66,6 @@
             version: 2
             renderer: NetworkManager
         mode: '0644'
-      notify: Apply netplan
 
     # --- Configure NetworkManager ---
     - name: Ensure NetworkManager is unmasked and enabled
@@ -93,10 +92,6 @@
         state: started
 
   handlers:
-    - name: Apply netplan
-      ansible.builtin.command: netplan generate
-      changed_when: true
-
     - name: Restart NetworkManager
       ansible.builtin.systemd:
         name: NetworkManager

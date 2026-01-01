@@ -1,40 +1,37 @@
 ---
 # Playbook: Regenerate SSH Host Keys
-# Removes old SSH host keys and generates new unique ones
+# Only generates keys if they don't already exist
 # Usage: ansible-playbook playbooks/ssh-hostkeys.yml
-#
-# WARNING: After running this playbook, you may need to update your
-# ~/.ssh/known_hosts file on the control machine.
 
 - name: Regenerate SSH Host Keys
-  hosts: raspberry_pis:test_vms
+  hosts: raspberry_pis
   become: true
 
   tasks:
-    - name: Find existing SSH host key files
-      ansible.builtin.find:
-        paths: /etc/ssh
-        patterns: "ssh_host_*"
-      register: host_keys
+    - name: Check if SSH host keys exist
+      ansible.builtin.stat:
+        path: /etc/ssh/ssh_host_ed25519_key
+      register: ssh_key_check
 
-    - name: Remove old SSH host keys
-      ansible.builtin.file:
-        path: "{{ item.path }}"
-        state: absent
-      loop: "{{ host_keys.files }}"
-      when: host_keys.files | length > 0
+    - name: Generate SSH host keys if missing
+      when: not ssh_key_check.stat.exists
+      block:
+        - name: Regenerate SSH host keys
+          ansible.builtin.command: dpkg-reconfigure openssh-server
+          changed_when: true
+          notify: Restart SSH
 
-    - name: Regenerate SSH host keys
-      ansible.builtin.command: dpkg-reconfigure openssh-server
-      changed_when: true
-      notify: Restart SSH
+        - name: Display notice about known_hosts
+          ansible.builtin.debug:
+            msg: >
+              SSH host keys have been generated. You may need to update
+              your ~/.ssh/known_hosts file on your local machine.
+              Run: ssh-keygen -R {{ ansible_host }}
 
-    - name: Display notice about known_hosts
+    - name: SSH keys already exist
       ansible.builtin.debug:
-        msg: >
-          SSH host keys have been regenerated. You may need to update
-          your ~/.ssh/known_hosts file on your local machine.
-          Run: ssh-keygen -R {{ ansible_host }}
+        msg: "SSH host keys already exist, skipping regeneration"
+      when: ssh_key_check.stat.exists
 
   handlers:
     - name: Restart SSH

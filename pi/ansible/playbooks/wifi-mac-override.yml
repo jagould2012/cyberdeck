@@ -4,7 +4,7 @@
 # Can also be run manually: ansible-playbook playbooks/wifi-mac-override.yml -e "wifi_mac_override=AA:BB:CC:DD:EE:FF"
 
 - name: Configure WiFi MAC Address Override
-  hosts: raspberry_pis:test_vms
+  hosts: raspberry_pis
   become: true
 
   tasks:

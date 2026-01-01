@@ -18,202 +18,157 @@ Ansible playbooks for automating Raspberry Pi Kali Linux setup and configuration
    pip install ansible
    ```
 
-2. Copy your SSH key to the Pi:
+### On target hosts:
+
+1. Ensure SSH is enabled. If not, connect via console and run:
    ```bash
-   ssh-copy-id kali@<pi-ip-address>
+   sudo apt update
+   sudo apt install -y openssh-server
+   sudo systemctl enable ssh
+   sudo systemctl start ssh
    ```
 
-### On the Raspberry Pi:
-
-- Kali Linux installed on NVMe drive (per README instructions)
-- SSH enabled and accessible
-- Network connectivity
+2. Copy SSH keys from your control machine:
+   ```bash
+   ssh-copy-id jonathan@cyberdeck-pi1.local
+   ssh-copy-id jonathan@cyberdeck-pi2.local
+   ssh-copy-id parallels@10.211.55.5
+   ```
 
 ## Quick Start
 
-1. Clone/copy this directory to your control machine
-
-2. Copy SSH keys to the Pis:
-   ```bash
-   ssh-copy-id kali@cyberdeck-pi1.local
-   ssh-copy-id kali@cyberdeck-pi2.local
-   ```
-
-3. Test connectivity:
+1. Test connectivity:
    ```bash
    ansible all -m ping
    ```
 
-4. Run the full setup on both hosts:
+2. Run the full setup on all hosts:
    ```bash
-   ansible-playbook site.yml
+   ansible-playbook site.yml -K
    ```
 
-   Or run on a specific host:
+3. Or run on specific hosts:
    ```bash
+   # Just the test VM
+   ansible-playbook site.yml --limit test-vm -K
+
+   # Just physical Pis
+   ansible-playbook site.yml --limit pi
+
+   # Single host
    ansible-playbook site.yml --limit cyberdeck-pi1
    ```
 
-## Test VM
+## Sudo Password
 
-A test VM is included to validate configurations before deploying to real hardware.
-
-### Setup Test VM
-
-1. Update `inventory.yml` with your VM's IP:
-   ```yaml
-   test-vm:
-     ansible_host: 192.168.1.200
-   ```
-
-2. Copy SSH key:
-   ```bash
-   ssh-copy-id kali@<vm-ip>
-   ```
-
-### Test with Pi1 Configuration
+If a host requires a sudo password, add `-K` (or `--ask-become-pass`):
 ```bash
-ansible-playbook playbooks/test-vm.yml -e "test_config=pi1"
+ansible-playbook site.yml -K
 ```
 
-### Test with Pi2 Configuration
+To configure passwordless sudo on a host, connect via SSH and run:
 ```bash
-ansible-playbook playbooks/test-vm.yml -e "test_config=pi2"
+echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 ```
-
-The test VM automatically:
-- Loads the selected Pi's configuration (MAC address, custom settings)
-- Skips hardware-specific tasks (HDMI, fan) since `is_vm: true`
-- Runs all other setup tasks normally
 
 ## Project Structure
 
 ```
 ansible-pi-setup/
 ├── ansible.cfg              # Ansible configuration
-├── inventory.yml            # Host inventory (pi1, pi2, test-vm)
+├── inventory.yml            # Host inventory
 ├── site.yml                 # Main playbook (runs all)
 ├── group_vars/
-│   ├── all.yml              # Variables for all hosts
-│   ├── pi1_config.yml       # Pi1-specific configuration
-│   ├── pi2_config.yml       # Pi2-specific configuration
-│   └── test_vms.yml         # Test VM settings (is_vm: true)
-├── host_vars/
-│   └── test-vm.yml          # Test VM host variables
-├── playbooks/
-│   ├── boot-config.yml      # HDMI, fan, sleep settings
-│   ├── network-setup.yml    # NetworkManager & mDNS
-│   ├── ssh-hostkeys.yml     # Regenerate SSH keys
-│   ├── disable-sleep.yml    # Mask sleep targets
-│   ├── docker-install.yml   # Install Docker CE
-│   ├── wifi-mac-override.yml # Override WiFi MAC
-│   ├── reboot.yml           # Reboot utility
-│   └── test-vm.yml          # Test VM with pi1/pi2 config
-├── templates/               # Jinja2 templates (if needed)
-└── files/                   # Static files (if needed)
+│   └── all.yml              # Variables for all hosts
+├── host_vars/               # Per-host variables (if needed)
+└── playbooks/
+    ├── boot-config.yml      # HDMI, fan, sleep settings (pi group only)
+    ├── network-setup.yml    # NetworkManager & mDNS (Avahi)
+    ├── hostname.yml         # Set system hostname
+    ├── ssh-hostkeys.yml     # Generate SSH keys if missing
+    ├── disable-sleep.yml    # Mask sleep targets
+    ├── docker-install.yml   # Install Docker CE
+    ├── wifi-mac-override.yml # Override WiFi MAC (if defined)
+    └── reboot.yml           # Reboot utility
 ```
 
-## Configuration Groups
+## Inventory Groups
 
-The inventory uses configuration groups to manage Pi-specific settings:
+| Group | Description | Hosts |
+|-------|-------------|-------|
+| `raspberry_pis` | All hosts | cyberdeck-pi1, cyberdeck-pi2, test-vm |
+| `pi` | Physical Raspberry Pis | cyberdeck-pi1, cyberdeck-pi2 |
+| `vm` | Virtual machines | test-vm |
 
-| Group | Hosts | Configuration |
-|-------|-------|---------------|
-| `pi1_config` | cyberdeck-pi1 | Original WiFi MAC |
-| `pi2_config` | cyberdeck-pi2 | Alternate WiFi MAC |
-| `test_vms` | test-vm | VM mode (skips hardware tasks) |
+Hardware-specific tasks (HDMI, fan, boot config) only run on the `pi` group.
 
-Add host-specific settings to `group_vars/pi1_config.yml` or `group_vars/pi2_config.yml`.
+## Hosts
+
+| Host | Group | User | Hostname | Notes |
+|------|-------|------|----------|-------|
+| cyberdeck-pi1 | pi | jonathan | cyberdeck-pi1 | |
+| cyberdeck-pi2 | pi | jonathan | cyberdeck-pi2 | WiFi MAC override |
+| test-vm | vm | parallels | cyberdeck-testvm | Skips hardware tasks |
 
 ## Individual Playbooks
 
 Run specific playbooks as needed:
 
-### Boot Configuration
-Configures HDMI hotplug, fan control, and disables console blanking.
 ```bash
+# Boot configuration (pi group only)
 ansible-playbook playbooks/boot-config.yml
-```
 
-### Network Setup
-Cleans up conflicting network services, configures NetworkManager, and enables mDNS.
-```bash
+# Network setup
 ansible-playbook playbooks/network-setup.yml
+
+# Set hostname
+ansible-playbook playbooks/hostname.yml
+
+# Docker installation
+ansible-playbook playbooks/docker-install.yml -K
+
+# Reboot hosts
+ansible-playbook playbooks/reboot.yml --limit test-vm
 ```
 
-### SSH Host Keys
-Regenerates SSH host keys (useful when cloning SD cards).
-```bash
-ansible-playbook playbooks/ssh-hostkeys.yml
-```
-> ⚠️ After running, update your local `~/.ssh/known_hosts`:
-> ```bash
-> ssh-keygen -R <pi-ip-address>
-> ```
+## What Gets Configured
 
-### Disable Sleep
-Masks all sleep/suspend/hibernate targets.
-```bash
-ansible-playbook playbooks/disable-sleep.yml
-```
-
-### Docker Installation
-Installs Docker CE with compose plugin.
-```bash
-ansible-playbook playbooks/docker-install.yml
-```
-> After installation, log out and back in for docker group membership to take effect.
-
-### WiFi MAC Override
-Use when two Pis have the same WiFi MAC address.
-```bash
-ansible-playbook playbooks/wifi-mac-override.yml -e "wifi_mac_override=AA:BB:CC:DD:EE:FF"
-```
-
-Or define per-host in `host_vars/pi2.yml`:
-```yaml
-wifi_mac_override: "AA:BB:CC:DD:EE:FF"
-```
-
-### Reboot
-Safely reboots and waits for hosts to come back online.
-```bash
-ansible-playbook playbooks/reboot.yml
-```
-
-## Running on Specific Hosts
-
-```bash
-# All production Pis (excludes test-vm)
-ansible-playbook site.yml
-
-# Single Pi
-ansible-playbook site.yml --limit cyberdeck-pi1
-
-# Test VM with specific config
-ansible-playbook playbooks/test-vm.yml -e "test_config=pi2"
-
-# All hosts including test-vm (careful!)
-ansible-playbook site.yml --limit "raspberry_pis:test_vms"
-```
+| Component | Hosts | Description |
+|-----------|-------|-------------|
+| Hostname | all | Set via hostnamectl, updated in /etc/hosts |
+| HDMI | pi only | Force hotplug, disable blanking |
+| Fan | pi only | GPIO fan overlay enabled |
+| USB | pi only | Max current enabled |
+| Console | pi only | Blanking disabled (kernel cmdline) |
+| Sleep | all | All sleep targets masked |
+| Network | all | NetworkManager as renderer |
+| mDNS | all | Avahi daemon enabled |
+| SSH | all | Host keys generated if missing |
+| Docker | all | CE + Compose plugin installed |
 
 ## Customization
 
-### Adding Docker Users
+### Adding a new host
 
-Edit `group_vars/all.yml`:
+Edit `inventory.yml` and add to the appropriate group:
+
 ```yaml
-docker_users:
-  - kali
-  - another_user
+pi:
+  hosts:
+    cyberdeck-pi3:
+      ansible_host: cyberdeck-pi3.local
+      custom_hostname: cyberdeck-pi3
 ```
 
-### Changing Default User
+### Adding a WiFi MAC override
 
-Edit `inventory.yml`:
+Add `wifi_mac_override` to the host in `inventory.yml`:
+
 ```yaml
-vars:
-  ansible_user: kali  # Change to your username
+cyberdeck-pi2:
+  ansible_host: cyberdeck-pi2.local
+  custom_hostname: cyberdeck-pi2
+  wifi_mac_override: "DE:AD:BE:EF:CA:FE"
 ```
 
 ## Troubleshooting
@@ -221,7 +176,7 @@ vars:
 ### Connection Issues
 ```bash
 # Test SSH connection
-ssh kali@<pi-ip>
+ssh jonathan@cyberdeck-pi1.local
 
 # Test Ansible connectivity
 ansible all -m ping -vvv
@@ -242,23 +197,9 @@ ansible-playbook site.yml --check --diff
 ansible-playbook site.yml -vvv
 ```
 
-## What Gets Configured
-
-| Component | Configuration |
-|-----------|--------------|
-| HDMI | Force hotplug, disable blanking |
-| Fan | GPIO fan overlay enabled |
-| USB | Max current enabled |
-| Sleep | All sleep targets masked |
-| Console | Blanking disabled (kernel cmdline) |
-| Network | NetworkManager as renderer |
-| mDNS | Avahi daemon enabled |
-| SSH | New host keys generated |
-| Docker | CE + Compose plugin installed |
-
 ## Notes
 
-- The playbooks are idempotent - safe to run multiple times
-- A reboot is required after boot configuration changes
-- SSH keys regeneration will require updating your `known_hosts`
+- Playbooks are idempotent - safe to run multiple times
+- SSH keys only generated if they don't exist
 - Docker group membership requires logout/login to take effect
+- A reboot may be required after boot configuration changes on Pis

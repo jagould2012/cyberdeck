@@ -4,7 +4,7 @@
 # Usage: ansible-playbook playbooks/hostname.yml
 
 - name: Configure System Hostname
-  hosts: raspberry_pis:test_vms
+  hosts: raspberry_pis
   become: true
 
   tasks:

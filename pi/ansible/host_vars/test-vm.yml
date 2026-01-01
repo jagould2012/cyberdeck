@@ -9,4 +9,4 @@
 # The test_config variable dynamically loads the appropriate group vars
 
 # VM-specific overrides (if any)
-# ansible_host: 192.168.1.200
+ansible_host: 10.211.55.5

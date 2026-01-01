@@ -3,8 +3,8 @@
 # Runs the full setup on test-vm using either pi1 or pi2 configuration
 #
 # Usage:
-#   Test with Pi1 config: ansible-playbook playbooks/test-vm.yml -e "test_config=pi1"
-#   Test with Pi2 config: ansible-playbook playbooks/test-vm.yml -e "test_config=pi2"
+#   Test with Pi1 config: ansible-playbook playbooks/test-vm.yml -e "test_config=pi1" -K
+#   Test with Pi2 config: ansible-playbook playbooks/test-vm.yml -e "test_config=pi2" -K
 
 - name: Validate test configuration
   hosts: localhost
@@ -15,8 +15,8 @@
         msg: |
           You must specify which configuration to test.
           Usage:
-            ansible-playbook playbooks/test-vm.yml -e "test_config=pi1"
-            ansible-playbook playbooks/test-vm.yml -e "test_config=pi2"
+            ansible-playbook playbooks/test-vm.yml -e "test_config=pi1" -K
+            ansible-playbook playbooks/test-vm.yml -e "test_config=pi2" -K
       when: test_config is not defined
 
     - name: Validate test_config value
@@ -28,7 +28,7 @@
       ansible.builtin.debug:
         msg: "Testing VM with {{ test_config }} configuration"
 
-- name: Load and apply configuration to test VM
+- name: Run full setup on test VM
   hosts: test-vm
   gather_facts: true
   become: true
@@ -52,44 +52,234 @@
           WiFi MAC Override: {{ wifi_mac_override | default('not set') }}
           Is VM: {{ is_vm | default(false) }}
 
-- name: Run boot configuration
-  ansible.builtin.import_playbook: boot-config.yml
-  vars:
-    target_hosts: test-vm
-
-- name: Run network setup
-  ansible.builtin.import_playbook: network-setup.yml
-  vars:
-    target_hosts: test-vm
-
-- name: Run hostname configuration
-  ansible.builtin.import_playbook: hostname.yml
-  vars:
-    target_hosts: test-vm
-
-- name: Run WiFi MAC override
-  ansible.builtin.import_playbook: wifi-mac-override.yml
-  vars:
-    target_hosts: test-vm
-
-- name: Run SSH host keys regeneration
-  ansible.builtin.import_playbook: ssh-hostkeys.yml
-  vars:
-    target_hosts: test-vm
-
-- name: Run disable sleep
-  ansible.builtin.import_playbook: disable-sleep.yml
-  vars:
-    target_hosts: test-vm
-
-- name: Run Docker installation
-  ansible.builtin.import_playbook: docker-install.yml
-  vars:
-    target_hosts: test-vm
-
-- name: Test complete
-  hosts: test-vm
   tasks:
+    # === Boot Configuration ===
+    - name: Skip hardware config on VMs
+      ansible.builtin.debug:
+        msg: "Skipping hardware-specific boot configuration on VM"
+      when: is_vm | default(false)
+
+    - name: Disable sleep/suspend/hibernate targets
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        masked: true
+      loop:
+        - sleep.target
+        - suspend.target
+        - hibernate.target
+        - hybrid-sleep.target
+
+    # === Network Setup ===
+    - name: Check if netplan is installed
+      ansible.builtin.command: which netplan
+      register: netplan_check
+      changed_when: false
+      failed_when: false
+
+    - name: Stop and disable conflicting network services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+        masked: true
+      loop:
+        - netplan-wpa-wlan0.service
+        - systemd-networkd
+        - systemd-networkd-wait-online.service
+        - NetworkManager-wait-online.service
+      failed_when: false
+
+    - name: Create netplan backup directory
+      ansible.builtin.file:
+        path: /etc/netplan/backup
+        state: directory
+        mode: '0755'
+      when: netplan_check.rc == 0
+
+    - name: Create NetworkManager netplan config
+      ansible.builtin.copy:
+        dest: /etc/netplan/01-networkmanager.yaml
+        content: |
+          network:
+            version: 2
+            renderer: NetworkManager
+        mode: '0644'
+      when: netplan_check.rc == 0
+
+    - name: Apply netplan
+      ansible.builtin.command: netplan generate
+      changed_when: true
+      when: netplan_check.rc == 0
+
+    - name: Ensure NetworkManager is unmasked and enabled
+      ansible.builtin.systemd:
+        name: NetworkManager
+        masked: false
+        enabled: true
+        state: started
+
+    - name: Ensure avahi-daemon is unmasked and enabled
+      ansible.builtin.systemd:
+        name: avahi-daemon
+        masked: false
+        enabled: true
+        state: started
+
+    # === Hostname Configuration ===
+    - name: Configure hostname
+      when: custom_hostname is defined
+      block:
+        - name: Set hostname via hostnamectl
+          ansible.builtin.hostname:
+            name: "{{ custom_hostname }}"
+
+        - name: Update /etc/hostname
+          ansible.builtin.copy:
+            content: "{{ custom_hostname }}\n"
+            dest: /etc/hostname
+            mode: '0644'
+
+        - name: Update /etc/hosts with new hostname
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            regexp: '^127\.0\.1\.1'
+            line: "127.0.1.1\t{{ custom_hostname }}"
+            state: present
+
+        - name: Restart avahi-daemon to advertise new hostname
+          ansible.builtin.systemd:
+            name: avahi-daemon
+            state: restarted
+          failed_when: false
+
+        - name: Display hostname configuration
+          ansible.builtin.debug:
+            msg: "Hostname set to {{ custom_hostname }} (accessible via {{ custom_hostname }}.local)"
+
+    # === WiFi MAC Override ===
+    - name: Configure WiFi MAC override
+      when: wifi_mac_override is defined
+      block:
+        - name: Add cloned MAC address to NetworkManager config
+          ansible.builtin.blockinfile:
+            path: /etc/NetworkManager/NetworkManager.conf
+            marker: "# {mark} ANSIBLE MANAGED - WiFi MAC Override"
+            block: |
+              [connection]
+              wifi.cloned-mac-address={{ wifi_mac_override }}
+          notify: Restart NetworkManager
+
+        - name: Display MAC override configuration
+          ansible.builtin.debug:
+            msg: "WiFi MAC address set to {{ wifi_mac_override }}"
+
+    # === SSH Host Keys ===
+    - name: Check if SSH host keys exist
+      ansible.builtin.stat:
+        path: /etc/ssh/ssh_host_ed25519_key
+      register: ssh_key_check
+
+    - name: Generate SSH host keys if missing
+      when: not ssh_key_check.stat.exists
+      block:
+        - name: Regenerate SSH host keys
+          ansible.builtin.command: dpkg-reconfigure openssh-server
+          changed_when: true
+
+        - name: Restart SSH
+          ansible.builtin.systemd:
+            name: ssh
+            state: restarted
+
+        - name: Display SSH key notice
+          ansible.builtin.debug:
+            msg: "SSH host keys generated. Run: ssh-keygen -R {{ ansible_host }}"
+
+    - name: SSH keys already exist
+      ansible.builtin.debug:
+        msg: "SSH host keys already exist, skipping regeneration"
+      when: ssh_key_check.stat.exists
+
+    # === Docker Installation ===
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Docker prerequisites
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+
+    - name: Create keyrings directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Check if Docker GPG key exists
+      ansible.builtin.stat:
+        path: /etc/apt/keyrings/docker.gpg
+      register: docker_gpg_key
+
+    - name: Download Docker GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /tmp/docker.gpg.key
+        mode: '0644'
+      when: not docker_gpg_key.stat.exists
+
+    - name: Dearmor and install Docker GPG key
+      ansible.builtin.shell: |
+        gpg --dearmor -o /etc/apt/keyrings/docker.gpg < /tmp/docker.gpg.key
+        chmod a+r /etc/apt/keyrings/docker.gpg
+      args:
+        creates: /etc/apt/keyrings/docker.gpg
+      when: not docker_gpg_key.stat.exists
+
+    - name: Add Docker apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch={{ docker_arch | default('amd64') }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable"
+        state: present
+        filename: docker
+
+    - name: Update apt cache after adding Docker repo
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Docker packages
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Add user to docker group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+
+    - name: Ensure Docker service is started and enabled
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Restart NetworkManager
+      ansible.builtin.systemd:
+        name: NetworkManager
+        state: restarted
+
+  post_tasks:
     - name: Display test completion
       ansible.builtin.debug:
         msg: |
@@ -99,3 +289,4 @@
           - Hostname: {{ custom_hostname | default('not set') }}.local
           - WiFi MAC Override: {{ wifi_mac_override | default('not set') }}
           - Hardware tasks: {{ 'skipped (VM)' if is_vm | default(false) else 'applied' }}
+          - Docker: installed (log out/in for group to take effect)

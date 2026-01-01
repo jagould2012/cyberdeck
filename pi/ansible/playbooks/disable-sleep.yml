@@ -4,7 +4,7 @@
 # Usage: ansible-playbook playbooks/disable-sleep.yml
 
 - name: Disable Sleep Modes
-  hosts: raspberry_pis:test_vms
+  hosts: raspberry_pis
   become: true
 
   tasks:

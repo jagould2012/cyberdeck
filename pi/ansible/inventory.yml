@@ -3,35 +3,36 @@
 
 all:
   children:
-    # Base group - all hosts get common configuration
+    # All hosts that get the full setup
     raspberry_pis:
       children:
-        pi1_config:
-        pi2_config:
+        pi:
+        vm:
 
-    # Configuration group for Pi1 settings
-    pi1_config:
+    # Physical Raspberry Pi hardware
+    pi:
       hosts:
         cyberdeck-pi1:
           ansible_host: cyberdeck-pi1.local
-
-    # Configuration group for Pi2 settings  
-    pi2_config:
-      hosts:
+          custom_hostname: cyberdeck-pi1
         cyberdeck-pi2:
           ansible_host: cyberdeck-pi2.local
+          custom_hostname: cyberdeck-pi2
+          wifi_mac_override: "DE:AD:BE:EF:CA:FE"
+      vars:
+        ansible_user: jonathan
 
-    # Test VM - add to either pi1_config or pi2_config to test that configuration
-    # Example: Move test-vm under pi1_config or pi2_config as needed
-    test_vms:
+    # Virtual machines (skip hardware-specific tasks)
+    vm:
       hosts:
         test-vm:
-          ansible_host: 192.168.1.200  # Change to your VM's IP
-          # Set to true to skip hardware-specific tasks (fan, HDMI, etc.)
-          is_vm: true
+          ansible_host: 10.211.55.5
+          custom_hostname: cyberdeck-testvm
+      vars:
+        ansible_user: parallels
+        is_vm: true
 
   vars:
-    ansible_user: kali
     ansible_become: true
     ansible_become_method: sudo
     ansible_python_interpreter: /usr/bin/python3

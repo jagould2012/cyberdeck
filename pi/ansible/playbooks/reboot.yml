@@ -4,7 +4,7 @@
 # Usage: ansible-playbook playbooks/reboot.yml
 
 - name: Reboot Raspberry Pi Hosts
-  hosts: raspberry_pis:test_vms
+  hosts: raspberry_pis
   become: true
 
   tasks:
