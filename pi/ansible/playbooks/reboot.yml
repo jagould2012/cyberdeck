@@ -1,0 +1,34 @@
+---
+# Playbook: Reboot Hosts
+# Safely reboots hosts and waits for them to come back online
+# Usage: ansible-playbook playbooks/reboot.yml
+
+- name: Reboot Raspberry Pi Hosts
+  hosts: raspberry_pis:test_vms
+  become: true
+
+  tasks:
+    - name: Reboot the system
+      ansible.builtin.reboot:
+        reboot_timeout: 300
+        connect_timeout: 30
+        pre_reboot_delay: 5
+        post_reboot_delay: 30
+        msg: "Ansible-triggered reboot"
+
+    - name: Wait for system to be fully ready
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        timeout: 300
+
+    - name: Gather facts after reboot
+      ansible.builtin.setup:
+
+    - name: Display uptime after reboot
+      ansible.builtin.command: uptime
+      register: uptime_result
+      changed_when: false
+
+    - name: Show system status
+      ansible.builtin.debug:
+        msg: "System rebooted successfully. Uptime: {{ uptime_result.stdout }}"

@@ -1,0 +1,8 @@
+# Group variables for test VMs
+# These settings apply to all test VMs
+
+# Skip hardware-specific tasks by default
+is_vm: true
+
+# Default test VM hostname (can be overridden by pi1/pi2 config during testing)
+custom_hostname: cyberdeck-testvm

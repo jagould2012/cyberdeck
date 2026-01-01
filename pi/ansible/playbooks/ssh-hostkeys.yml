@@ -1,0 +1,43 @@
+---
+# Playbook: Regenerate SSH Host Keys
+# Removes old SSH host keys and generates new unique ones
+# Usage: ansible-playbook playbooks/ssh-hostkeys.yml
+#
+# WARNING: After running this playbook, you may need to update your
+# ~/.ssh/known_hosts file on the control machine.
+
+- name: Regenerate SSH Host Keys
+  hosts: raspberry_pis:test_vms
+  become: true
+
+  tasks:
+    - name: Find existing SSH host key files
+      ansible.builtin.find:
+        paths: /etc/ssh
+        patterns: "ssh_host_*"
+      register: host_keys
+
+    - name: Remove old SSH host keys
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ host_keys.files }}"
+      when: host_keys.files | length > 0
+
+    - name: Regenerate SSH host keys
+      ansible.builtin.command: dpkg-reconfigure openssh-server
+      changed_when: true
+      notify: Restart SSH
+
+    - name: Display notice about known_hosts
+      ansible.builtin.debug:
+        msg: >
+          SSH host keys have been regenerated. You may need to update
+          your ~/.ssh/known_hosts file on your local machine.
+          Run: ssh-keygen -R {{ ansible_host }}
+
+  handlers:
+    - name: Restart SSH
+      ansible.builtin.systemd:
+        name: ssh
+        state: restarted

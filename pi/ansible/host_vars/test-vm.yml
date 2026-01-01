@@ -1,0 +1,12 @@
+# Host-specific variables for test-vm
+# 
+# To test with Pi1 configuration:
+#   ansible-playbook site.yml --limit test-vm -e "test_config=pi1"
+#
+# To test with Pi2 configuration:
+#   ansible-playbook site.yml --limit test-vm -e "test_config=pi2"
+#
+# The test_config variable dynamically loads the appropriate group vars
+
+# VM-specific overrides (if any)
+# ansible_host: 192.168.1.200

@@ -1,0 +1,37 @@
+# Ansible Inventory for Raspberry Pi Setup
+# Cyberdeck Raspberry Pi Hosts + Test VM
+
+all:
+  children:
+    # Base group - all hosts get common configuration
+    raspberry_pis:
+      children:
+        pi1_config:
+        pi2_config:
+
+    # Configuration group for Pi1 settings
+    pi1_config:
+      hosts:
+        cyberdeck-pi1:
+          ansible_host: cyberdeck-pi1.local
+
+    # Configuration group for Pi2 settings  
+    pi2_config:
+      hosts:
+        cyberdeck-pi2:
+          ansible_host: cyberdeck-pi2.local
+
+    # Test VM - add to either pi1_config or pi2_config to test that configuration
+    # Example: Move test-vm under pi1_config or pi2_config as needed
+    test_vms:
+      hosts:
+        test-vm:
+          ansible_host: 192.168.1.200  # Change to your VM's IP
+          # Set to true to skip hardware-specific tasks (fan, HDMI, etc.)
+          is_vm: true
+
+  vars:
+    ansible_user: kali
+    ansible_become: true
+    ansible_become_method: sudo
+    ansible_python_interpreter: /usr/bin/python3

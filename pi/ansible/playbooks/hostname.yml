@@ -1,0 +1,51 @@
+---
+# Playbook: Configure Hostname
+# Sets the system hostname for mDNS/Avahi discovery
+# Usage: ansible-playbook playbooks/hostname.yml
+
+- name: Configure System Hostname
+  hosts: raspberry_pis:test_vms
+  become: true
+
+  tasks:
+    - name: Skip if custom_hostname is not defined
+      ansible.builtin.debug:
+        msg: "No custom hostname configured for {{ inventory_hostname }}, skipping"
+      when: custom_hostname is not defined
+
+    - name: Configure hostname
+      when: custom_hostname is defined
+      block:
+        - name: Set hostname via hostnamectl
+          ansible.builtin.hostname:
+            name: "{{ custom_hostname }}"
+
+        - name: Update /etc/hostname
+          ansible.builtin.copy:
+            content: "{{ custom_hostname }}\n"
+            dest: /etc/hostname
+            mode: '0644'
+
+        - name: Update /etc/hosts with new hostname
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            regexp: '^127\.0\.1\.1'
+            line: "127.0.1.1\t{{ custom_hostname }}"
+            state: present
+
+        - name: Ensure localhost entry exists
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            regexp: '^127\.0\.0\.1'
+            line: "127.0.0.1\tlocalhost"
+            state: present
+
+        - name: Restart avahi-daemon to advertise new hostname
+          ansible.builtin.systemd:
+            name: avahi-daemon
+            state: restarted
+          failed_when: false
+
+        - name: Display hostname configuration
+          ansible.builtin.debug:
+            msg: "Hostname set to {{ custom_hostname }} (accessible via {{ custom_hostname }}.local)"

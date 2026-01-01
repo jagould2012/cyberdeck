@@ -1,0 +1,8 @@
+# Group variables for Pi1 configuration
+# Hosts in pi1_config group get these settings
+
+# Hostname for mDNS (accessible as <hostname>.local)
+custom_hostname: cyberdeck-pi1
+
+# No WiFi MAC override for Pi1 (uses original MAC)
+# wifi_mac_override: "AA:BB:CC:DD:EE:FF"

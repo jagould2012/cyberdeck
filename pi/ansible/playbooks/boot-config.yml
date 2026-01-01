@@ -1,0 +1,89 @@
+---
+# Playbook: Configure Boot Settings
+# Configures HDMI hotplug, fan, and prevents sleep modes
+# Usage: ansible-playbook playbooks/boot-config.yml
+# Note: Hardware-specific tasks are skipped on VMs (is_vm: true)
+
+- name: Configure Raspberry Pi Boot Settings
+  hosts: raspberry_pis:test_vms
+  become: true
+
+  tasks:
+    - name: Skip hardware config on VMs
+      ansible.builtin.debug:
+        msg: "Skipping hardware-specific boot configuration on VM"
+      when: is_vm | default(false)
+
+    - name: Configure hardware boot settings
+      when: not (is_vm | default(false))
+      block:
+        - name: Find boot config.txt location
+          ansible.builtin.stat:
+            path: "{{ item }}"
+          register: config_check
+          loop: "{{ boot_config_paths }}"
+
+        - name: Set config.txt path
+          ansible.builtin.set_fact:
+            config_file: "{{ item.item }}"
+          loop: "{{ config_check.results }}"
+          when: item.stat.exists
+
+        - name: Find cmdline.txt location
+          ansible.builtin.stat:
+            path: "{{ item }}"
+          register: cmdline_check
+          loop: "{{ cmdline_paths }}"
+
+        - name: Set cmdline.txt path
+          ansible.builtin.set_fact:
+            cmdline_file: "{{ item.item }}"
+          loop: "{{ cmdline_check.results }}"
+          when: item.stat.exists
+
+        - name: Add HDMI and fan configuration to config.txt
+          ansible.builtin.blockinfile:
+            path: "{{ config_file }}"
+            marker: "# {mark} ANSIBLE MANAGED - HDMI and Fan Settings"
+            block: |
+              # Keep system awake without monitor
+              hdmi_force_hotplug=1
+              hdmi_blanking=0
+
+              # Enable fan
+              dtoverlay=gpio-fan
+              usb_max_current_enable=1
+          when: config_file is defined
+          notify: Reboot required
+
+        - name: Check if consoleblank=0 is in cmdline.txt
+          ansible.builtin.shell: grep -q "consoleblank=0" "{{ cmdline_file }}"
+          register: consoleblank_check
+          changed_when: false
+          failed_when: false
+          when: cmdline_file is defined
+
+        - name: Add consoleblank=0 to kernel cmdline
+          ansible.builtin.replace:
+            path: "{{ cmdline_file }}"
+            regexp: '(\s*)$'
+            replace: ' consoleblank=0\1'
+          when: 
+            - cmdline_file is defined
+            - consoleblank_check.rc != 0
+          notify: Reboot required
+
+    - name: Disable sleep/suspend/hibernate targets
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        masked: true
+      loop:
+        - sleep.target
+        - suspend.target
+        - hibernate.target
+        - hybrid-sleep.target
+
+  handlers:
+    - name: Reboot required
+      ansible.builtin.debug:
+        msg: "Reboot required for changes to take effect. Run: ansible-playbook playbooks/reboot.yml"

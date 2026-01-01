@@ -1,0 +1,35 @@
+---
+# Playbook: Disable Sleep Modes
+# Masks all sleep/suspend/hibernate targets
+# Usage: ansible-playbook playbooks/disable-sleep.yml
+
+- name: Disable Sleep Modes
+  hosts: raspberry_pis:test_vms
+  become: true
+
+  tasks:
+    - name: Mask sleep/suspend/hibernate targets
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        masked: true
+      loop:
+        - sleep.target
+        - suspend.target
+        - hibernate.target
+        - hybrid-sleep.target
+
+    - name: Verify sleep targets are masked
+      ansible.builtin.command: systemctl status {{ item }}
+      register: sleep_status
+      loop:
+        - sleep.target
+        - suspend.target
+        - hibernate.target
+        - hybrid-sleep.target
+      changed_when: false
+      failed_when: false
+
+    - name: Display sleep target status
+      ansible.builtin.debug:
+        msg: "{{ item.item }}: {{ 'masked' if 'masked' in item.stdout else 'not masked' }}"
+      loop: "{{ sleep_status.results }}"

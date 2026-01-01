@@ -1,0 +1,78 @@
+---
+# Main Site Playbook: Complete Raspberry Pi Setup
+# Runs all setup playbooks in the correct order
+# Usage: ansible-playbook site.yml
+#
+# Or run individual playbooks:
+#   ansible-playbook playbooks/boot-config.yml
+#   ansible-playbook playbooks/network-setup.yml
+#   ansible-playbook playbooks/ssh-hostkeys.yml
+#   ansible-playbook playbooks/disable-sleep.yml
+#   ansible-playbook playbooks/docker-install.yml
+#   ansible-playbook playbooks/reboot.yml
+
+- name: Complete Raspberry Pi Kali Linux Setup
+  hosts: raspberry_pis
+  become: true
+
+  pre_tasks:
+    - name: Display setup information
+      ansible.builtin.debug:
+        msg: |
+          Starting Raspberry Pi setup for: {{ inventory_hostname }}
+          Target host: {{ ansible_host }}
+          
+          This playbook will configure:
+          - Boot settings (HDMI, fan, sleep prevention)
+          - Network Manager and mDNS (Avahi)
+          - WiFi MAC override (if configured in host_vars)
+          - SSH host key regeneration
+          - Docker installation
+          
+          A reboot will be performed at the end.
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
+- name: Configure Boot Settings
+  ansible.builtin.import_playbook: playbooks/boot-config.yml
+
+- name: Configure Network Manager and mDNS
+  ansible.builtin.import_playbook: playbooks/network-setup.yml
+
+- name: Configure Hostname
+  ansible.builtin.import_playbook: playbooks/hostname.yml
+
+- name: Configure WiFi MAC Override (if defined)
+  ansible.builtin.import_playbook: playbooks/wifi-mac-override.yml
+
+- name: Regenerate SSH Host Keys
+  ansible.builtin.import_playbook: playbooks/ssh-hostkeys.yml
+
+- name: Disable Sleep Modes
+  ansible.builtin.import_playbook: playbooks/disable-sleep.yml
+
+- name: Install Docker
+  ansible.builtin.import_playbook: playbooks/docker-install.yml
+
+- name: Final Reboot
+  ansible.builtin.import_playbook: playbooks/reboot.yml
+
+- name: Setup Complete
+  hosts: raspberry_pis
+  tasks:
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg: |
+          ✓ Raspberry Pi setup complete!
+          
+          Host: {{ inventory_hostname }} ({{ ansible_host }})
+          {% if wifi_mac_override is defined %}
+          WiFi MAC Override: {{ wifi_mac_override }}
+          {% endif %}
+          
+          Next steps:
+          1. SSH keys: You may need to update ~/.ssh/known_hosts
+             Run: ssh-keygen -R {{ ansible_host }}
+          2. Docker: Log out and back in for docker group to take effect
+          3. mDNS: The Pi should be accessible via {{ inventory_hostname }}.local

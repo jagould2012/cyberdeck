@@ -1,0 +1,17 @@
+# Group variables for all Raspberry Pi hosts
+
+# Docker settings
+docker_users:
+  - "{{ ansible_user }}"
+
+# Boot config file locations (Kali/Raspberry Pi)
+boot_config_paths:
+  - /boot/firmware/config.txt
+  - /boot/config.txt
+
+cmdline_paths:
+  - /boot/firmware/cmdline.txt
+  - /boot/cmdline.txt
+
+# NetworkManager settings
+networkmanager_managed: true

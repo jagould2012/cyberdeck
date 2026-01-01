@@ -1,0 +1,8 @@
+# Group variables for Pi2 configuration
+# Hosts in pi2_config group get these settings
+
+# Hostname for mDNS (accessible as <hostname>.local)
+custom_hostname: cyberdeck-pi2
+
+# Override WiFi MAC address to avoid conflict with Pi1
+wifi_mac_override: "DE:AD:BE:EF:CA:FE"
