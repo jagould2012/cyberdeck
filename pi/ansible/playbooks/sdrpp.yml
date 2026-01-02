@@ -1,6 +1,7 @@
 ---
 # Playbook: Install SDR++
-# Installs SDR++ from prebuilt Debian package (arm64) or builds from source
+# Builds libvolk 2.5 from source (Kali has 3.2, SDR++ needs 2.5)
+# Then installs SDR++ from prebuilt Debian package
 # Usage: ansible-playbook playbooks/sdrpp.yml
 # Requires: sdr-base.yml to be run first
 
@@ -9,54 +10,150 @@
   become: true
 
   vars:
+    volk_version: "2.5.2"
+    volk_src_dir: /opt/build/volk
     sdrpp_deb_url: "https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/sdrpp_debian_bookworm_aarch64.deb"
     sdrpp_deb_file: /tmp/sdrpp_debian_bookworm_aarch64.deb
 
   tasks:
     - name: Check if SDR++ is already installed
-      ansible.builtin.command: which sdrpp
-      register: sdrpp_check
-      changed_when: false
-      failed_when: false
+      ansible.builtin.stat:
+        path: /usr/bin/sdrpp
+      register: sdrpp_binary
 
+    - name: Check if libvolk 2.5 is installed
+      ansible.builtin.stat:
+        path: /usr/local/lib/libvolk.so.2.5
+      register: volk25_lib
+
+    # ========================================
+    # Build libvolk 2.5 from source
+    # ========================================
+    - name: Install volk build dependencies
+      ansible.builtin.apt:
+        name:
+          - build-essential
+          - cmake
+          - git
+          - python3-mako
+          - libboost-all-dev
+          - libcpu-features-dev
+        state: present
+      when: not volk25_lib.stat.exists
+
+    - name: Create volk build directory
+      ansible.builtin.file:
+        path: "{{ volk_src_dir }}"
+        state: directory
+        mode: '0755'
+      when: not volk25_lib.stat.exists
+
+    - name: Clone volk repository
+      ansible.builtin.git:
+        repo: https://github.com/gnuradio/volk.git
+        dest: "{{ volk_src_dir }}"
+        version: "v{{ volk_version }}"
+        depth: 1
+      when: not volk25_lib.stat.exists
+
+    - name: Initialize volk submodules
+      ansible.builtin.command:
+        cmd: git submodule update --init --recursive
+        chdir: "{{ volk_src_dir }}"
+      when: not volk25_lib.stat.exists
+      changed_when: true
+
+    - name: Create volk build directory
+      ansible.builtin.file:
+        path: "{{ volk_src_dir }}/build"
+        state: directory
+        mode: '0755'
+      when: not volk25_lib.stat.exists
+
+    - name: Configure volk with cmake
+      ansible.builtin.command:
+        cmd: cmake -DCMAKE_BUILD_TYPE=Release ..
+        chdir: "{{ volk_src_dir }}/build"
+        creates: "{{ volk_src_dir }}/build/Makefile"
+      when: not volk25_lib.stat.exists
+
+    - name: Build volk
+      ansible.builtin.command:
+        cmd: make -j{{ ansible_processor_vcpus | default(4) }}
+        chdir: "{{ volk_src_dir }}/build"
+        creates: "{{ volk_src_dir }}/build/lib/libvolk.so"
+      when: not volk25_lib.stat.exists
+
+    - name: Install volk
+      ansible.builtin.command:
+        cmd: make install
+        chdir: "{{ volk_src_dir }}/build"
+      when: not volk25_lib.stat.exists
+      changed_when: true
+
+    - name: Run ldconfig for volk
+      ansible.builtin.command: ldconfig
+      when: not volk25_lib.stat.exists
+      changed_when: true
+
+    - name: Create symlink for libvolk2.5 compatibility
+      ansible.builtin.file:
+        src: /usr/local/lib/libvolk.so.2.5
+        dest: /usr/lib/libvolk.so.2.5
+        state: link
+      when: not volk25_lib.stat.exists
+
+    # ========================================
+    # Install SDR++
+    # ========================================
     - name: Install SDR++ runtime dependencies
       ansible.builtin.apt:
         name:
-          - libfftw3-3
+          - libfftw3-single3
           - libglfw3
           - libglew2.2
-          - libvolk2.5
           - libzstd1
           - libsoapysdr0.8
           - libairspy0
           - libairspyhf1
           - libiio0
           - libad9361-0
-          - librtaudio6
           - libhackrf0
           - librtlsdr0
-          - libcodec2-1.2
         state: present
-      when: sdrpp_check.rc != 0
+      when: not sdrpp_binary.stat.exists
+
+    - name: Install librtaudio
+      ansible.builtin.apt:
+        name: librtaudio7
+        state: present
+      when: not sdrpp_binary.stat.exists
+      ignore_errors: true
 
     - name: Download SDR++ Debian package
       ansible.builtin.get_url:
         url: "{{ sdrpp_deb_url }}"
         dest: "{{ sdrpp_deb_file }}"
         mode: '0644'
-      when: sdrpp_check.rc != 0
+      when: not sdrpp_binary.stat.exists
 
     - name: Install SDR++ from deb package
-      ansible.builtin.apt:
-        deb: "{{ sdrpp_deb_file }}"
-        state: present
-      when: sdrpp_check.rc != 0
+      ansible.builtin.shell: |
+        dpkg --force-depends -i {{ sdrpp_deb_file }}
+        apt-get install -f -y
+      when: not sdrpp_binary.stat.exists
+      changed_when: true
 
     - name: Clean up downloaded deb file
       ansible.builtin.file:
         path: "{{ sdrpp_deb_file }}"
         state: absent
 
+    - name: Verify SDR++ installation
+      ansible.builtin.stat:
+        path: /usr/bin/sdrpp
+      register: sdrpp_verify
+
     - name: Display SDR++ installation status
       ansible.builtin.debug:
-        msg: "SDR++ installed. Run with: sdrpp"
+        msg: "{{ 'SDR++ installed successfully. Run with: sdrpp' if sdrpp_verify.stat.exists else 'SDR++ installation may have issues' }}"

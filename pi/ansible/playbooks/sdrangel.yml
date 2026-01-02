@@ -1,267 +1,126 @@
 ---
 # Playbook: Install SDRAngel
-# Builds and installs SDRAngel from source (no arm64 prebuilt packages available)
+# Installs SDRAngel from prebuilt .deb package
 # Usage: ansible-playbook playbooks/sdrangel.yml
 # Requires: sdr-base.yml to be run first
-# WARNING: This build takes a VERY long time (1-2+ hours on Pi)
+#
+# To build the .deb package on your Mac:
+#   cd sdrangel
+#   ./build.sh
+#
+# The .deb will be copied to ansible/files/sdrangel_arm64.deb automatically.
 
 - name: Install SDRAngel
   hosts: raspberry_pis
   become: true
 
   vars:
-    sdr_build_dir: /opt/build
-    sdr_install_dir: /opt/install
-    sdrangel_repo: https://github.com/f4exb/sdrangel.git
-    # Compiler optimizations
-    cflags_pi5: "-O3 -mtune=cortex-a76"
-    cflags_pi4: "-O3 -mtune=cortex-a72"
-    cflags_generic: "-O3 -march=native -mtune=native"
+    sdrangel_deb_local: "{{ playbook_dir }}/../files/sdrangel_arm64.deb"
+    sdrangel_deb_remote: /tmp/sdrangel_arm64.deb
 
   tasks:
     - name: Check if SDRAngel is already installed
-      ansible.builtin.stat:
-        path: "{{ sdr_install_dir }}/sdrangel/bin/sdrangel"
-      register: sdrangel_installed
+      ansible.builtin.command: which sdrangel
+      register: sdrangel_check
+      changed_when: false
+      failed_when: false
 
-    - name: Display build warning
+    - name: Copy SDRAngel .deb to target
+      ansible.builtin.copy:
+        src: "{{ sdrangel_deb_local }}"
+        dest: "{{ sdrangel_deb_remote }}"
+        mode: '0644'
+      register: deb_copy
+      when: sdrangel_check.rc != 0
+      ignore_errors: true
+
+    - name: Display skip message if .deb not found
       ansible.builtin.debug:
         msg: |
-          WARNING: SDRAngel build from source takes 1-2+ hours on Raspberry Pi.
-          No prebuilt arm64 packages are available.
-          Consider using SDR++ instead if you need a quick setup.
-      when: not sdrangel_installed.stat.exists
+          SDRAngel .deb file not found at files/sdrangel_arm64.deb
+          
+          Build it first on your Mac:
+            cd sdrangel
+            ./build.sh
+          
+          The .deb will be copied to ansible/files/sdrangel_arm64.deb automatically.
+          
+          Skipping SDRAngel installation.
+      when:
+        - sdrangel_check.rc != 0
+        - deb_copy is failed
 
-    - name: Install SDRAngel build dependencies
+    - name: Install SDRAngel runtime dependencies
       ansible.builtin.apt:
         name:
-          # Build essentials
-          - build-essential
-          - cmake
-          - git
-          - pkg-config
-          # Qt5
-          - qt5-qmake
-          - qtbase5-dev
-          - qtchooser
-          - libqt5multimedia5-plugins
-          - qtmultimedia5-dev
-          - libqt5websockets5-dev
+          - libqt5core5a
+          - libqt5gui5
+          - libqt5widgets5
+          - libqt5multimedia5
+          - libqt5websockets5
+          - libqt5serialport5
+          - libqt5charts5
+          - libqt5texttospeech5
           - libqt5quick5
-          - libqt5serialport5-dev
-          - libqt5charts5-dev
-          - libqt5texttospeech5-dev
-          - qtdeclarative5-dev
-          - qtpositioning5-dev
-          - qtlocation5-dev
-          - qml-module-qtlocation
-          - qml-module-qtpositioning
-          - qml-module-qtquick-controls
-          - qml-module-qtquick-controls2
-          - qml-module-qtquick-dialogs
-          - qml-module-qtquick-layouts
-          - qml-module-qt-labs-folderlistmodel
-          - qml-module-qt-labs-settings
-          # OpenGL
-          - libgl1-mesa-dev
-          - libglu1-mesa-dev
-          # Audio
-          - libpulse-dev
-          - libfaad-dev
-          - libopus-dev
-          - libspeex-dev
-          - libspeexdsp-dev
-          # SDR libraries
-          - librtlsdr-dev
-          - libhackrf-dev
-          - libairspy-dev
-          - libairspyhf-dev
-          - libiio-dev
-          - libad9361-dev
-          - libsoapysdr-dev
-          - libbladerf-dev
-          - liblimesuite-dev
-          # DSP/Math
-          - libfftw3-dev
-          - libboost-all-dev
-          - libavcodec-dev
-          - libavformat-dev
-          - libavutil-dev
-          - libswscale-dev
-          - libswresample-dev
-          - libopencv-dev
-          - libhamlib-dev
-          # Other
-          - libusb-1.0-0-dev
-          - libhidapi-dev
-          - zlib1g-dev
-          - libsamplerate0-dev
+          - libqt5positioning5
+          - libqt5location5
+          - libgl1
+          - libpulse0
+          - libfaad2
+          - libflac14
+          - libopus0
+          - libspeex1
+          - libspeexdsp1
+          - libfftw3-single3
+          - libavcodec61
+          - libavformat61
+          - libswscale8
+          - libusb-1.0-0
+          - librtlsdr0
+          - libhackrf0
+          - libairspy0
+          - libairspyhf1
+          - libiio0
+          - libad9361-0
+          - libsoapysdr0.8
+          - libhamlib4
+          - libhidapi-libusb0
+          - libsamplerate0
         state: present
-      when: not sdrangel_installed.stat.exists
+      when:
+        - sdrangel_check.rc != 0
+        - deb_copy is succeeded
 
-    # Build cm256cc
-    - name: Clone cm256cc
-      ansible.builtin.git:
-        repo: https://github.com/f4exb/cm256cc.git
-        dest: "{{ sdr_build_dir }}/cm256cc"
-        version: HEAD
-        force: true
-      when: not sdrangel_installed.stat.exists
-
-    - name: Build and install cm256cc
+    - name: Install SDRAngel from .deb
       ansible.builtin.shell: |
-        cd {{ sdr_build_dir }}/cm256cc
-        mkdir -p build && cd build
-        cmake -DCMAKE_INSTALL_PREFIX={{ sdr_install_dir }}/cm256cc ..
-        make -j$(nproc)
-        make install
-      args:
-        creates: "{{ sdr_install_dir }}/cm256cc/lib/libcm256cc.so"
-      when: not sdrangel_installed.stat.exists
+        dpkg --force-depends -i {{ sdrangel_deb_remote }}
+        apt-get install -f -y
+      when:
+        - sdrangel_check.rc != 0
+        - deb_copy is succeeded
+      register: sdrangel_install
+      changed_when: "'Setting up sdrangel' in sdrangel_install.stdout"
 
-    # Build mbelib
-    - name: Clone mbelib
-      ansible.builtin.git:
-        repo: https://github.com/szechyjs/mbelib.git
-        dest: "{{ sdr_build_dir }}/mbelib"
-        version: HEAD
-        force: true
-      when: not sdrangel_installed.stat.exists
-
-    - name: Build and install mbelib
-      ansible.builtin.shell: |
-        cd {{ sdr_build_dir }}/mbelib
-        mkdir -p build && cd build
-        cmake ..
-        make -j$(nproc)
-        make install
-      args:
-        creates: /usr/local/lib/libmbe.so
-      when: not sdrangel_installed.stat.exists
-
-    # Build serialDV
-    - name: Clone serialDV
-      ansible.builtin.git:
-        repo: https://github.com/f4exb/serialDV.git
-        dest: "{{ sdr_build_dir }}/serialDV"
-        version: HEAD
-        force: true
-      when: not sdrangel_installed.stat.exists
-
-    - name: Build and install serialDV
-      ansible.builtin.shell: |
-        cd {{ sdr_build_dir }}/serialDV
-        mkdir -p build && cd build
-        cmake -DCMAKE_INSTALL_PREFIX={{ sdr_install_dir }}/serialdv ..
-        make -j$(nproc)
-        make install
-      args:
-        creates: "{{ sdr_install_dir }}/serialdv/lib/libserialdv.so"
-      when: not sdrangel_installed.stat.exists
-
-    # Build dsdcc
-    - name: Clone dsdcc
-      ansible.builtin.git:
-        repo: https://github.com/f4exb/dsdcc.git
-        dest: "{{ sdr_build_dir }}/dsdcc"
-        version: HEAD
-        force: true
-      when: not sdrangel_installed.stat.exists
-
-    - name: Build and install dsdcc
-      ansible.builtin.shell: |
-        cd {{ sdr_build_dir }}/dsdcc
-        mkdir -p build && cd build
-        cmake -DCMAKE_INSTALL_PREFIX={{ sdr_install_dir }}/dsdcc \
-              -DUSE_MBELIB=ON \
-              -DLIBSERIALDV_INCLUDE_DIR={{ sdr_install_dir }}/serialdv/include/serialdv \
-              -DLIBSERIALDV_LIBRARY={{ sdr_install_dir }}/serialdv/lib/libserialdv.so ..
-        make -j$(nproc)
-        make install
-      args:
-        creates: "{{ sdr_install_dir }}/dsdcc/lib/libdsdcc.so"
-      when: not sdrangel_installed.stat.exists
-
-    # Build codec2
-    - name: Clone codec2
-      ansible.builtin.git:
-        repo: https://github.com/drowe67/codec2.git
-        dest: "{{ sdr_build_dir }}/codec2"
-        version: HEAD
-        force: true
-      when: not sdrangel_installed.stat.exists
-
-    - name: Build and install codec2
-      ansible.builtin.shell: |
-        cd {{ sdr_build_dir }}/codec2
-        mkdir -p build && cd build
-        cmake -DCMAKE_INSTALL_PREFIX={{ sdr_install_dir }}/codec2 ..
-        make -j$(nproc)
-        make install
-      args:
-        creates: "{{ sdr_install_dir }}/codec2/lib/libcodec2.so"
-      when: not sdrangel_installed.stat.exists
-
-    # Build SDRAngel
-    - name: Clone SDRAngel
-      ansible.builtin.git:
-        repo: "{{ sdrangel_repo }}"
-        dest: "{{ sdr_build_dir }}/sdrangel"
-        version: HEAD
-        force: true
-      when: not sdrangel_installed.stat.exists
-
-    - name: Build and install SDRAngel (this takes a very long time)
-      ansible.builtin.shell: |
-        cd {{ sdr_build_dir }}/sdrangel
-        mkdir -p build && cd build
-        cmake -DCMAKE_INSTALL_PREFIX={{ sdr_install_dir }}/sdrangel \
-              -DDEBUG_OUTPUT=OFF \
-              -DRX_SAMPLE_24BIT=ON \
-              -DCM256CC_DIR={{ sdr_install_dir }}/cm256cc \
-              -DDSDCC_DIR={{ sdr_install_dir }}/dsdcc \
-              -DSERIALDV_DIR={{ sdr_install_dir }}/serialdv \
-              -DCODEC2_DIR={{ sdr_install_dir }}/codec2 \
-              ..
-        make -j$(nproc)
-        make install
-      args:
-        creates: "{{ sdr_install_dir }}/sdrangel/bin/sdrangel"
-      environment:
-        CFLAGS: "{{ cflags_generic }}"
-        CXXFLAGS: "{{ cflags_generic }}"
-      when: not sdrangel_installed.stat.exists
-
-    - name: Update library cache
+    - name: Run ldconfig to register SDRAngel libraries
       ansible.builtin.command: ldconfig
+      when:
+        - sdrangel_check.rc != 0
+        - deb_copy is succeeded
       changed_when: true
 
-    - name: Create SDRAngel desktop entry
-      ansible.builtin.copy:
-        dest: /usr/share/applications/sdrangel.desktop
-        content: |
-          [Desktop Entry]
-          Name=SDRAngel
-          Comment=SDRAngel Software Defined Radio
-          Exec={{ sdr_install_dir }}/sdrangel/bin/sdrangel
-          Icon=sdrangel
-          Terminal=false
-          Type=Application
-          Categories=Network;HamRadio;
-        mode: '0644'
-
-    - name: Create SDRAngel launch script
-      ansible.builtin.copy:
-        dest: /usr/local/bin/sdrangel
-        content: |
-          #!/bin/bash
-          export LD_LIBRARY_PATH={{ sdr_install_dir }}/cm256cc/lib:{{ sdr_install_dir }}/dsdcc/lib:{{ sdr_install_dir }}/serialdv/lib:{{ sdr_install_dir }}/codec2/lib:$LD_LIBRARY_PATH
-          exec {{ sdr_install_dir }}/sdrangel/bin/sdrangel "$@"
-        mode: '0755'
+    - name: Clean up .deb file
+      ansible.builtin.file:
+        path: "{{ sdrangel_deb_remote }}"
+        state: absent
+      when: deb_copy is succeeded
 
     - name: Display SDRAngel installation status
       ansible.builtin.debug:
         msg: |
-          SDRAngel installed to {{ sdr_install_dir }}/sdrangel
-          Run with: sdrangel
-          Or directly: {{ sdr_install_dir }}/sdrangel/bin/sdrangel
+          {% if sdrangel_check.rc == 0 %}
+          SDRAngel already installed. Run with: sdrangel
+          {% elif deb_copy is succeeded %}
+          SDRAngel installed from prebuilt .deb package. Run with: sdrangel
+          {% else %}
+          SDRAngel NOT installed - .deb file not found. Build it first.
+          {% endif %}

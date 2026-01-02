@@ -39,6 +39,18 @@
 - name: Install Docker
   ansible.builtin.import_playbook: playbooks/docker-install.yml
 
+- name: Install SDR Base Dependencies
+  ansible.builtin.import_playbook: playbooks/sdr-base.yml
+
+- name: Install SDR++
+  ansible.builtin.import_playbook: playbooks/sdrpp.yml
+
+- name: Install Universal Radio Hacker
+  ansible.builtin.import_playbook: playbooks/urh.yml
+
+- name: Install SDRAngel
+  ansible.builtin.import_playbook: playbooks/sdrangel.yml
+
 - name: Setup Complete
   hosts: raspberry_pis
   tasks:
@@ -51,6 +63,12 @@
           {% if wifi_mac_override is defined %}
           WiFi MAC Override: {{ wifi_mac_override }}
           {% endif %}
+          
+          Installed software:
+          - Docker
+          - SDR++ (sdrpp)
+          - Universal Radio Hacker (urh)
+          - SDRAngel (sdrangel)
           
           Next steps:
           - Docker: Log out and back in for docker group to take effect

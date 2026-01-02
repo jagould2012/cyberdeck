@@ -75,7 +75,7 @@
           - libopus-dev
           # Other
           - libzstd-dev
-          - libvolk2-dev
+          - libvolk-dev
           - libavcodec-dev
           - libavformat-dev
           - libswscale-dev

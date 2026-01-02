@@ -25,6 +25,7 @@
           - python3-pyqt5
           - python3-pip
           - python3-setuptools
+          - cython3
           # Build dependencies
           - g++
           - libpython3-dev
@@ -33,9 +34,16 @@
           - libhackrf-dev
           - librtlsdr-dev
           - libuhd-dev
-          # Additional useful packages
-          - libatlas-base-dev
+          # Linear algebra library
+          - libopenblas-dev
         state: present
+
+    - name: Ensure Cython is available via pip
+      ansible.builtin.pip:
+        name: cython
+        state: present
+        executable: pip3
+        extra_args: --break-system-packages
 
     - name: Install URH via pip
       ansible.builtin.pip:

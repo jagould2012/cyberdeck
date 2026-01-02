@@ -1,6 +1,6 @@
 # Ansible Raspberry Pi Setup
 
-Ansible playbooks for automating Raspberry Pi Kali Linux setup and configuration.
+Ansible playbooks for automating Raspberry Pi Kali Linux setup and configuration, including SDR software.
 
 ## Prerequisites
 
@@ -17,6 +17,13 @@ Ansible playbooks for automating Raspberry Pi Kali Linux setup and configuration
    # pip
    pip install ansible
    ```
+
+2. **Build SDRAngel package first** (if you want SDRAngel):
+   ```bash
+   cd ../sdrangel
+   ./build.sh
+   ```
+   This builds the arm64 `.deb` on your Mac and copies it to `ansible/files/`. See `../sdrangel/README.md` for details.
 
 ### On target hosts:
 
@@ -59,6 +66,25 @@ Ansible playbooks for automating Raspberry Pi Kali Linux setup and configuration
    ansible-playbook site.yml --limit cyberdeck-pi1
    ```
 
+## Directory Structure
+
+```
+project/
+├── sdrangel/                # SDRAngel .deb builder (run this first)
+│   ├── Dockerfile
+│   ├── build.sh
+│   └── README.md
+└── ansible/                 # This directory
+    ├── ansible.cfg
+    ├── inventory.yml
+    ├── site.yml
+    ├── files/
+    │   └── sdrangel_arm64.deb  # Created by ../sdrangel/build.sh
+    ├── group_vars/
+    ├── host_vars/
+    └── playbooks/
+```
+
 ## Sudo Password
 
 If a host requires a sudo password, add `-K` (or `--ask-become-pass`):
@@ -69,27 +95,6 @@ ansible-playbook site.yml -K
 To configure passwordless sudo on a host, connect via SSH and run:
 ```bash
 echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
-```
-
-## Project Structure
-
-```
-ansible-pi-setup/
-├── ansible.cfg              # Ansible configuration
-├── inventory.yml            # Host inventory
-├── site.yml                 # Main playbook (runs all)
-├── group_vars/
-│   └── all.yml              # Variables for all hosts
-├── host_vars/               # Per-host variables (if needed)
-└── playbooks/
-    ├── boot-config.yml      # HDMI, fan, sleep settings (pi group only)
-    ├── network-setup.yml    # NetworkManager & mDNS (Avahi)
-    ├── hostname.yml         # Set system hostname
-    ├── ssh-hostkeys.yml     # Generate SSH keys if missing
-    ├── disable-sleep.yml    # Mask sleep targets
-    ├── docker-install.yml   # Install Docker CE
-    ├── wifi-mac-override.yml # Override WiFi MAC (if defined)
-    └── reboot.yml           # Reboot utility
 ```
 
 ## Inventory Groups
@@ -110,6 +115,14 @@ Hardware-specific tasks (HDMI, fan, boot config) only run on the `pi` group.
 | cyberdeck-pi2 | pi | jonathan | cyberdeck-pi2 | WiFi MAC override |
 | test-vm | vm | parallels | cyberdeck-testvm | Skips hardware tasks |
 
+## SDR Software
+
+| Software | Install Method | Notes |
+|----------|----------------|-------|
+| SDR++ | Prebuilt `.deb` from GitHub | Fast install |
+| URH | pip install | Universal Radio Hacker |
+| SDRAngel | Local `.deb` from `../sdrangel/` | Build on Mac first |
+
 ## Individual Playbooks
 
 Run specific playbooks as needed:
@@ -126,6 +139,12 @@ ansible-playbook playbooks/hostname.yml
 
 # Docker installation
 ansible-playbook playbooks/docker-install.yml -K
+
+# SDR software
+ansible-playbook playbooks/sdr-base.yml -K
+ansible-playbook playbooks/sdrpp.yml -K
+ansible-playbook playbooks/urh.yml -K
+ansible-playbook playbooks/sdrangel.yml -K
 
 # Reboot hosts
 ansible-playbook playbooks/reboot.yml --limit test-vm
@@ -145,6 +164,10 @@ ansible-playbook playbooks/reboot.yml --limit test-vm
 | mDNS | all | Avahi daemon enabled |
 | SSH | all | Host keys generated if missing |
 | Docker | all | CE + Compose plugin installed |
+| SDR Base | all | Dependencies, udev rules for RTL-SDR/HackRF/Airspy |
+| SDR++ | all | SDR receiver software |
+| URH | all | Protocol analyzer |
+| SDRAngel | all | Full-featured SDR suite (requires `.deb`) |
 
 ## Customization
 
@@ -197,9 +220,17 @@ ansible-playbook site.yml --check --diff
 ansible-playbook site.yml -vvv
 ```
 
+### SDRAngel not installing
+Make sure you built the `.deb` first:
+```bash
+cd ../sdrangel
+./build.sh
+```
+
 ## Notes
 
 - Playbooks are idempotent - safe to run multiple times
 - SSH keys only generated if they don't exist
 - Docker group membership requires logout/login to take effect
 - A reboot may be required after boot configuration changes on Pis
+- SDRAngel requires building the `.deb` first (see `../sdrangel/README.md`)
