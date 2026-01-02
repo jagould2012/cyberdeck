@@ -39,6 +39,9 @@
 - name: Install Docker
   ansible.builtin.import_playbook: playbooks/docker-install.yml
 
+- name: Install Portainer
+  ansible.builtin.import_playbook: playbooks/portainer.yml
+
 - name: Install SDR Base Dependencies
   ansible.builtin.import_playbook: playbooks/sdr-base.yml
 

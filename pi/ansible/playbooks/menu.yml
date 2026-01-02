@@ -1,17 +1,16 @@
 ---
-# Playbook: Create SDR Menu Category
-# Creates a "17 - SDR" menu in Kali with SDR++, URH, and SDRAngel
-# Usage: ansible-playbook playbooks/sdr-menu.yml
+# Playbook: Create Custom Menu Categories
+# Creates custom menu categories for Kali Linux
+# Usage: ansible-playbook playbooks/menu.yml
 
-- name: Create SDR Menu Category
+- name: Create Custom Menu Categories
   hosts: raspberry_pis
   become: true
 
-  vars:
-    menu_category: "17 - SDR"
-    menu_directory: "sdr-radio.directory"
-
   tasks:
+    # ========================================
+    # 17 - SDR Menu
+    # ========================================
     - name: Create SDR menu directory entry
       ansible.builtin.copy:
         dest: /usr/share/desktop-directories/sdr-radio.directory
@@ -19,7 +18,7 @@
           [Desktop Entry]
           Name=17 - SDR
           Comment=Software Defined Radio Tools
-          Icon=radio
+          Icon=gnuradio-grc
           Type=Directory
         mode: '0644'
 
@@ -51,7 +50,7 @@
           Name=SDR++
           Comment=Cross-Platform SDR Software
           Exec=sdrpp
-          Icon=sdrpp
+          Icon=gqrx
           Terminal=false
           Type=Application
           Categories=SDR-Radio;Network;HamRadio;
@@ -65,7 +64,7 @@
           Name=Universal Radio Hacker
           Comment=Investigate wireless protocols like a boss
           Exec=urh
-          Icon=urh
+          Icon=gnuradio-grc
           Terminal=false
           Type=Application
           Categories=SDR-Radio;Network;HamRadio;Development;
@@ -79,7 +78,7 @@
           Name=SDRAngel
           Comment=SDR Rx/Tx Software
           Exec=sdrangel
-          Icon=sdrangel
+          Icon=kali-gqrx
           Terminal=false
           Type=Application
           Categories=SDR-Radio;Network;HamRadio;
@@ -89,6 +88,56 @@
       ansible.builtin.command: update-desktop-database /usr/share/applications
       changed_when: true
 
+    # ========================================
+    # 18 - Docker Menu
+    # ========================================
+    - name: Create Docker menu directory entry
+      ansible.builtin.copy:
+        dest: /usr/share/desktop-directories/docker-tools.directory
+        content: |
+          [Desktop Entry]
+          Name=18 - Docker
+          Comment=Docker Management Tools
+          Icon=network-server
+          Type=Directory
+        mode: '0644'
+
+    - name: Create Docker menu configuration
+      ansible.builtin.copy:
+        dest: /etc/xdg/menus/applications-merged/docker-tools.menu
+        content: |
+          <!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+            "http://www.freedesktop.org/standards/menu-spec/menu-1.0.dtd">
+          <Menu>
+            <Name>Applications</Name>
+            <Menu>
+              <Name>Docker-Tools</Name>
+              <Directory>docker-tools.directory</Directory>
+              <Include>
+                <Filename>portainer.desktop</Filename>
+              </Include>
+            </Menu>
+          </Menu>
+        mode: '0644'
+
+    - name: Create Portainer desktop entry
+      ansible.builtin.copy:
+        dest: /usr/share/applications/portainer.desktop
+        content: |
+          [Desktop Entry]
+          Name=Portainer
+          Comment=Docker Container Management
+          Exec=xdg-open https://localhost:9443
+          Icon=web-browser
+          Terminal=false
+          Type=Application
+          Categories=Docker-Tools;System;
+        mode: '0644'
+
+    - name: Update menu cache for Docker
+      ansible.builtin.command: update-desktop-database /usr/share/applications
+      changed_when: true
+
     - name: Display completion message
       ansible.builtin.debug:
-        msg: "SDR menu category '{{ menu_category }}' created with SDR++, URH, and SDRAngel"
+        msg: "Custom menu categories created successfully"
