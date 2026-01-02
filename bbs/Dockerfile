@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     perl \
     python3 \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone Synchronet
@@ -78,6 +79,11 @@ RUN mkdir -p /sbbs/data /sbbs/ctrl /sbbs/text \
     /sbbs/node1 /sbbs/node2 /sbbs/node3 /sbbs/node4 \
     /sbbs/xtrn /sbbs/mods
 
+# Create sbbs user with UID 1000 to match typical host user ownership
+RUN groupadd -g 1000 sbbs && \
+    useradd -u 1000 -g 1000 -d /sbbs -s /bin/bash sbbs && \
+    chown -R sbbs:sbbs /sbbs
+
 # Add entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
@@ -85,5 +91,6 @@ RUN chmod +x /entrypoint.sh
 EXPOSE 513 23 22 80 443 21
 
 WORKDIR /sbbs
+# Start as root, entrypoint will drop to sbbs user after bind mount
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/sbbs/exec/sbbs"]

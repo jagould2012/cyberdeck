@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # If password injection is needed, copy and modify just main.ini
+# This must be done as root for the bind mount to work
 if [ -n "$SYSOP_PASSWORD" ] && [ "$SYSOP_PASSWORD" != "changeme" ]; then
     if [ -f /sbbs/ctrl/main.ini ]; then
         # Copy main.ini to a temp location, modify it, then bind mount over original
@@ -29,9 +30,9 @@ fi
 run_cmd() {
     ARCH=$(uname -m)
     if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-        exec setarch "$ARCH" --addr-compat-layout "$@"
+        exec setarch "$ARCH" --addr-compat-layout gosu sbbs "$@"
     else
-        exec "$@"
+        exec gosu sbbs "$@"
     fi
 }
 
