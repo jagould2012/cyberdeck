@@ -1,0 +1,185 @@
+---
+# Playbook: Deploy Synchronet BBS
+# Copies pre-configured BBS files and pre-built Docker image to hosts
+#
+# PREREQUISITES - Run these locally in the bbs/ directory BEFORE deploying:
+#   1. ./install.sh           # Configure BBS (generates ctrl/, text/, xtrn/)
+#   2. ./update-msg-colors.sh # Apply Cyberdeck theme
+#   3. ./copy-ans.sh          # Copy ANSI art to text/
+#   4. docker compose build   # Build the Docker image
+#   5. docker save bbs-synchronet:latest | gzip > bbs-synchronet.tar.gz
+#
+# Deployment behavior:
+#   Pi1 and test-vm: Full deployment with running container
+#   Pi2: Files staged but container not started
+#
+# USAGE (must include localhost for tarball creation):
+#   ansible-playbook playbooks/bbs.yml -K --limit "localhost,test-vm"
+#   ansible-playbook playbooks/bbs.yml -K --limit "localhost,pi"
+#   ansible-playbook playbooks/bbs.yml -K  # All hosts
+
+- name: Prepare BBS deployment archive
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    bbs_src_dir: "{{ inventory_dir }}/../../bbs"
+
+  tasks:
+    - name: Check if Docker image archive exists
+      ansible.builtin.stat:
+        path: "{{ bbs_src_dir }}/bbs-synchronet.tar.gz"
+      register: image_archive
+
+    - name: Fail if Docker image not built
+      ansible.builtin.fail:
+        msg: |
+          Docker image archive not found at {{ bbs_src_dir }}/bbs-synchronet.tar.gz
+          
+          Build and export the image first:
+            cd {{ bbs_src_dir }}
+            docker compose build
+            docker save bbs-synchronet:latest | gzip > bbs-synchronet.tar.gz
+      when: not image_archive.stat.exists
+
+    - name: Create local tarball of BBS files (excluding image archive)
+      ansible.builtin.command:
+        cmd: tar --exclude='.git' --exclude='*.log' --exclude='data' --exclude='bbs-synchronet.tar.gz' -czf /tmp/bbs-deploy.tar.gz -C "{{ bbs_src_dir }}" .
+      changed_when: true
+
+- name: Deploy Synchronet BBS
+  hosts: raspberry_pis
+  become: true
+
+  vars:
+    bbs_dest_dir: /opt/bbs
+    bbs_user: "{{ ansible_user }}"
+    bbs_src_dir: "{{ inventory_dir }}/../../bbs"
+
+  tasks:
+    - name: Check if Docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if Docker is not installed
+      ansible.builtin.fail:
+        msg: "Docker is not installed. Run docker-install.yml first."
+      when: docker_check.rc != 0
+
+    - name: Create BBS directory
+      ansible.builtin.file:
+        path: "{{ bbs_dest_dir }}"
+        state: directory
+        owner: "{{ bbs_user }}"
+        group: "{{ bbs_user }}"
+        mode: '0755'
+
+    - name: Copy BBS tarball to host
+      ansible.builtin.copy:
+        src: /tmp/bbs-deploy.tar.gz
+        dest: /tmp/bbs-deploy.tar.gz
+        mode: '0644'
+
+    - name: Extract BBS files
+      ansible.builtin.unarchive:
+        src: /tmp/bbs-deploy.tar.gz
+        dest: "{{ bbs_dest_dir }}"
+        remote_src: true
+        owner: "{{ bbs_user }}"
+        group: "{{ bbs_user }}"
+
+    - name: Clean up BBS tarball
+      ansible.builtin.file:
+        path: /tmp/bbs-deploy.tar.gz
+        state: absent
+
+    - name: Copy Docker image archive to host
+      ansible.builtin.copy:
+        src: "{{ bbs_src_dir }}/bbs-synchronet.tar.gz"
+        dest: /tmp/bbs-synchronet.tar.gz
+        mode: '0644'
+
+    - name: Load Docker image from archive
+      ansible.builtin.shell: gunzip -c /tmp/bbs-synchronet.tar.gz | docker load
+      register: docker_load
+      changed_when: "'Loaded image' in docker_load.stdout"
+
+    - name: Clean up Docker image archive
+      ansible.builtin.file:
+        path: /tmp/bbs-synchronet.tar.gz
+        state: absent
+
+    - name: Create data directory
+      ansible.builtin.file:
+        path: "{{ bbs_dest_dir }}/data"
+        state: directory
+        owner: "{{ bbs_user }}"
+        group: "{{ bbs_user }}"
+        mode: '0755'
+
+    - name: Set ownership of BBS directories
+      ansible.builtin.file:
+        path: "{{ bbs_dest_dir }}"
+        owner: "{{ bbs_user }}"
+        group: "{{ bbs_user }}"
+        recurse: true
+
+    # Start container only on pi1 and test-vm, NOT on pi2
+    - name: Start BBS container
+      ansible.builtin.shell:
+        cmd: docker compose up -d
+        chdir: "{{ bbs_dest_dir }}"
+      register: docker_up
+      changed_when: true
+      when: inventory_hostname != 'cyberdeck-pi2'
+
+    - name: Wait for BBS container to be ready
+      ansible.builtin.shell:
+        cmd: docker ps -q -f name=SynchronetBBS
+      register: bbs_running
+      until: bbs_running.stdout != ""
+      retries: 10
+      delay: 3
+      when: inventory_hostname != 'cyberdeck-pi2'
+      changed_when: false
+
+    - name: Display BBS status (running hosts)
+      ansible.builtin.debug:
+        msg: |
+          Synchronet BBS deployed and running!
+          
+          Location: {{ bbs_dest_dir }}
+          
+          Connect via:
+            SSH: ssh -p 10022 {{ ansible_host }}
+            SSH: ssh -p 10022 {{ custom_hostname | default(inventory_hostname) }}.local
+          
+          Management:
+            Reconfigure: docker exec -it SynchronetBBS /sbbs/exec/scfg
+            View logs:   docker logs -f SynchronetBBS
+            Stop:        cd {{ bbs_dest_dir }} && docker compose down
+      when: inventory_hostname != 'cyberdeck-pi2'
+
+    - name: Display BBS status (staged hosts)
+      ansible.builtin.debug:
+        msg: |
+          Synchronet BBS files staged (container NOT started)
+          
+          Location: {{ bbs_dest_dir }}
+          
+          To start manually:
+            cd {{ bbs_dest_dir }}
+            docker compose up -d
+      when: inventory_hostname == 'cyberdeck-pi2'
+
+- name: Clean up local tarball
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Remove local tarball
+      ansible.builtin.file:
+        path: /tmp/bbs-deploy.tar.gz
+        state: absent

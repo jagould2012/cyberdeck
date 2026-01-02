@@ -21,3 +21,5 @@ ctrl/*
 .env
 
 .color-backup-*/
+
+*.tar.gz

@@ -25,6 +25,24 @@ Ansible playbooks for automating Raspberry Pi Kali Linux setup and configuration
    ```
    This builds the arm64 `.deb` on your Mac and copies it to `ansible/files/`. See `../sdrangel/README.md` for details.
 
+3. **Configure BBS locally first** (if deploying Synchronet BBS):
+   ```bash
+   cd ../bbs
+   ./install.sh           # Configure BBS (interactive - set up name, settings)
+   ./update-msg-colors.sh # Apply Cyberdeck grayscale theme
+   ./copy-ans.sh          # Copy ANSI art to text/
+   ```
+
+4. **Build and export BBS Docker image** (required before deployment):
+   ```bash
+   cd ../bbs
+   docker compose build
+   docker save bbs-synchronet:latest | gzip > bbs-synchronet.tar.gz
+   ```
+   This builds the amd64 image locally (much faster than building under QEMU on ARM) and exports it for distribution to target hosts. The resulting file is ~300-500MB.
+
+   The ansible playbook copies the pre-configured `ctrl/`, `text/`, and `xtrn/` directories plus the Docker image to the target hosts.
+
 ### On target hosts:
 
 1. Ensure SSH is enabled. If not, connect via console and run:
@@ -56,20 +74,30 @@ Ansible playbooks for automating Raspberry Pi Kali Linux setup and configuration
 
 3. Or run on specific hosts:
    ```bash
-   # Just the test VM
-   ansible-playbook site.yml --limit test-vm -K
+   # Just the test VM (include localhost for BBS tarball creation)
+   ansible-playbook site.yml --limit "localhost,test-vm" -K
 
    # Just physical Pis
-   ansible-playbook site.yml --limit pi
+   ansible-playbook site.yml --limit "localhost,pi" -K
 
    # Single host
-   ansible-playbook site.yml --limit cyberdeck-pi1
+   ansible-playbook site.yml --limit "localhost,cyberdeck-pi1" -K
    ```
 
 ## Directory Structure
 
 ```
 project/
+├── bbs/                     # Synchronet BBS (configure locally first)
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── install.sh           # Run first - interactive setup
+│   ├── update-msg-colors.sh # Run second - apply theme
+│   ├── copy-ans.sh          # Run third - copy ANSI art
+│   ├── bbs-synchronet.tar.gz # Docker image (created by docker save)
+│   ├── ctrl/                # Generated config (after install.sh)
+│   ├── text/                # ANSI screens and menus
+│   └── xtrn/                # External programs/doors
 ├── sdrangel/                # SDRAngel .deb builder (run this first)
 │   ├── Dockerfile
 │   ├── build.sh
@@ -140,15 +168,61 @@ ansible-playbook playbooks/hostname.yml
 # Docker installation
 ansible-playbook playbooks/docker-install.yml -K
 
+# Portainer (Docker web UI)
+ansible-playbook playbooks/portainer.yml -K
+
 # SDR software
 ansible-playbook playbooks/sdr-base.yml -K
 ansible-playbook playbooks/sdrpp.yml -K
 ansible-playbook playbooks/urh.yml -K
 ansible-playbook playbooks/sdrangel.yml -K
 
+# Custom menu categories
+ansible-playbook playbooks/menu.yml -K
+
+# Synchronet BBS (requires local setup first - see Prerequisites)
+# NOTE: Must include localhost in limit for tarball creation
+ansible-playbook playbooks/bbs.yml -K --limit "localhost,test-vm"
+ansible-playbook playbooks/bbs.yml -K --limit "localhost,pi"
+ansible-playbook playbooks/bbs.yml -K  # All hosts
+
 # Reboot hosts
 ansible-playbook playbooks/reboot.yml --limit test-vm
 ```
+
+### BBS Deployment Note
+
+The BBS deployment requires two things before running the playbook:
+
+1. **Configure the BBS locally** (interactive setup):
+   ```bash
+   cd ../bbs
+   ./install.sh           # Configure BBS settings
+   ./update-msg-colors.sh # Apply Cyberdeck theme
+   ./copy-ans.sh          # Copy ANSI art
+   ```
+
+2. **Build and export the Docker image**:
+   ```bash
+   cd ../bbs
+   docker compose build
+   docker save bbs-synchronet:latest | gzip > bbs-synchronet.tar.gz
+   ```
+
+The `bbs.yml` playbook requires `localhost` to be included in the limit because it creates a tarball locally before copying to remote hosts. Always use one of these patterns:
+
+```bash
+# Deploy to specific host (include localhost)
+ansible-playbook playbooks/bbs.yml -K --limit "localhost,test-vm"
+
+# Deploy to all Pis (include localhost)
+ansible-playbook playbooks/bbs.yml -K --limit "localhost,pi"
+
+# Deploy to all hosts (no limit needed)
+ansible-playbook playbooks/bbs.yml -K
+```
+
+**Why pre-build the image?** The BBS runs in an amd64 container (for Synchronet compatibility). Building under QEMU emulation on ARM hosts takes 30-60+ minutes. Pre-building on your Mac/x86 machine takes ~5 minutes and the image is distributed to all hosts.
 
 ## What Gets Configured
 
@@ -164,10 +238,13 @@ ansible-playbook playbooks/reboot.yml --limit test-vm
 | mDNS | all | Avahi daemon enabled |
 | SSH | all | Host keys generated if missing |
 | Docker | all | CE + Compose plugin installed |
+| Portainer | all | Docker web UI at https://localhost:9443 |
 | SDR Base | all | Dependencies, udev rules for RTL-SDR/HackRF/Airspy |
 | SDR++ | all | SDR receiver software |
 | URH | all | Protocol analyzer |
 | SDRAngel | all | Full-featured SDR suite (requires `.deb`) |
+| Menu | all | Custom Kali menu categories (17-SDR, 18-Docker) |
+| BBS | pi1, test-vm | Synchronet BBS (container runs); pi2 staged only |
 
 ## Customization
 

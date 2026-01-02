@@ -90,6 +90,36 @@
         state: started
         enabled: true
 
+    # --- Install QEMU for multi-arch container support ---
+    - name: Fix any broken package dependencies
+      ansible.builtin.command: apt --fix-broken install -y
+      register: fix_broken
+      changed_when: "'0 upgraded' not in fix_broken.stdout"
+      failed_when: false
+
+    - name: Install QEMU user-mode emulation
+      ansible.builtin.apt:
+        name:
+          - qemu-user
+          - qemu-user-binfmt
+        state: present
+
+    - name: Restart systemd-binfmt to register QEMU handlers
+      ansible.builtin.systemd:
+        name: systemd-binfmt
+        state: restarted
+
+    - name: Verify QEMU x86_64 is registered
+      ansible.builtin.command: cat /proc/sys/fs/binfmt_misc/qemu-x86_64
+      register: qemu_check
+      changed_when: false
+      failed_when: "'enabled' not in qemu_check.stdout"
+
+    - name: Restart Docker to apply QEMU changes
+      ansible.builtin.systemd:
+        name: docker
+        state: restarted
+
     - name: Display Docker installation info
       ansible.builtin.debug:
         msg: >
