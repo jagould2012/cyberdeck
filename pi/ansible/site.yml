@@ -54,6 +54,9 @@
 - name: Install SDRAngel
   ansible.builtin.import_playbook: playbooks/sdrangel.yml
 
+- name: Deploy Synchronet BBS
+  ansible.builtin.import_playbook: playbooks/bbs.yml
+
 - name: Create Custom Menu Categories
   ansible.builtin.import_playbook: playbooks/menu.yml
 
@@ -75,6 +78,7 @@
           - SDR++ (sdrpp)
           - Universal Radio Hacker (urh)
           - SDRAngel (sdrangel)
+          - Synchronet BBS
           
           Next steps:
           - Docker: Log out and back in for docker group to take effect

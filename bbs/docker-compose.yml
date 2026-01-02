@@ -1,6 +1,5 @@
 services:
   synchronet:
-    platform: linux/amd64
     build: .
     container_name: SynchronetBBS
     hostname: synchronet
@@ -8,6 +7,9 @@ services:
     restart: unless-stopped
     cap_add:
       - SYS_ADMIN
+    privileged: true
+    security_opt:
+      - seccomp:unconfined
     ports:
       # - "10023:23"       # Telnet
       # Disable all except SSH

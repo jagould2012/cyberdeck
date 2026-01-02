@@ -21,10 +21,24 @@ if [ -n "$SYSOP_PASSWORD" ] && [ "$SYSOP_PASSWORD" != "changeme" ]; then
     fi
 fi
 
+# ARM64 fix: SpiderMonkey 1.8.5 uses NaN-boxing with 47-bit pointers.
+# On ARM64 Linux, memory may be allocated at addresses requiring 48+ bits,
+# causing segfaults in the JS engine. Using setarch --addr-compat-layout
+# forces the kernel to use the legacy memory layout that keeps allocations
+# in the lower address range where 47-bit pointers work correctly.
+run_cmd() {
+    ARCH=$(uname -m)
+    if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+        exec setarch "$ARCH" --addr-compat-layout "$@"
+    else
+        exec "$@"
+    fi
+}
+
 # If no arguments passed, default to sbbs
 if [ $# -eq 0 ]; then
-    exec /sbbs/exec/sbbs
+    run_cmd /sbbs/exec/sbbs
 else
     # Run whatever command was passed
-    exec "$@"
+    run_cmd "$@"
 fi
