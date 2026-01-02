@@ -51,6 +51,9 @@
 - name: Install SDRAngel
   ansible.builtin.import_playbook: playbooks/sdrangel.yml
 
+- name: Create Custom Menu Categories
+  ansible.builtin.import_playbook: playbooks/menu.yml
+
 - name: Setup Complete
   hosts: raspberry_pis
   tasks:

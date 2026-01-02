@@ -1,0 +1,94 @@
+---
+# Playbook: Create SDR Menu Category
+# Creates a "17 - SDR" menu in Kali with SDR++, URH, and SDRAngel
+# Usage: ansible-playbook playbooks/sdr-menu.yml
+
+- name: Create SDR Menu Category
+  hosts: raspberry_pis
+  become: true
+
+  vars:
+    menu_category: "17 - SDR"
+    menu_directory: "sdr-radio.directory"
+
+  tasks:
+    - name: Create SDR menu directory entry
+      ansible.builtin.copy:
+        dest: /usr/share/desktop-directories/sdr-radio.directory
+        content: |
+          [Desktop Entry]
+          Name=17 - SDR
+          Comment=Software Defined Radio Tools
+          Icon=radio
+          Type=Directory
+        mode: '0644'
+
+    - name: Create SDR menu configuration
+      ansible.builtin.copy:
+        dest: /etc/xdg/menus/applications-merged/sdr-radio.menu
+        content: |
+          <!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+            "http://www.freedesktop.org/standards/menu-spec/menu-1.0.dtd">
+          <Menu>
+            <Name>Applications</Name>
+            <Menu>
+              <Name>SDR-Radio</Name>
+              <Directory>sdr-radio.directory</Directory>
+              <Include>
+                <Filename>sdrpp.desktop</Filename>
+                <Filename>urh.desktop</Filename>
+                <Filename>sdrangel.desktop</Filename>
+              </Include>
+            </Menu>
+          </Menu>
+        mode: '0644'
+
+    - name: Update SDR++ desktop entry with SDR category
+      ansible.builtin.copy:
+        dest: /usr/share/applications/sdrpp.desktop
+        content: |
+          [Desktop Entry]
+          Name=SDR++
+          Comment=Cross-Platform SDR Software
+          Exec=sdrpp
+          Icon=sdrpp
+          Terminal=false
+          Type=Application
+          Categories=SDR-Radio;Network;HamRadio;
+        mode: '0644'
+
+    - name: Update URH desktop entry with SDR category
+      ansible.builtin.copy:
+        dest: /usr/share/applications/urh.desktop
+        content: |
+          [Desktop Entry]
+          Name=Universal Radio Hacker
+          Comment=Investigate wireless protocols like a boss
+          Exec=urh
+          Icon=urh
+          Terminal=false
+          Type=Application
+          Categories=SDR-Radio;Network;HamRadio;Development;
+        mode: '0644'
+
+    - name: Update SDRAngel desktop entry with SDR category
+      ansible.builtin.copy:
+        dest: /usr/share/applications/sdrangel.desktop
+        content: |
+          [Desktop Entry]
+          Name=SDRAngel
+          Comment=SDR Rx/Tx Software
+          Exec=sdrangel
+          Icon=sdrangel
+          Terminal=false
+          Type=Application
+          Categories=SDR-Radio;Network;HamRadio;
+        mode: '0644'
+
+    - name: Update menu cache
+      ansible.builtin.command: update-desktop-database /usr/share/applications
+      changed_when: true
+
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg: "SDR menu category '{{ menu_category }}' created with SDR++, URH, and SDRAngel"
