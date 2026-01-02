@@ -1,0 +1,85 @@
+---
+# Main Site Playbook: Complete Raspberry Pi Setup
+# Runs all setup playbooks in the correct order
+# Usage: ansible-playbook site.yml
+#        ansible-playbook site.yml --limit test-vm
+#        ansible-playbook site.yml --limit pi
+
+- name: Complete Raspberry Pi/VM Setup
+  hosts: raspberry_pis
+  become: true
+
+  pre_tasks:
+    - name: Display setup information
+      ansible.builtin.debug:
+        msg: |
+          Starting setup for: {{ inventory_hostname }}
+          Target host: {{ ansible_host }}
+          Hostname: {{ custom_hostname | default('not set') }}
+          Is VM: {{ is_vm | default(false) }}
+
+- name: Configure Boot Settings
+  ansible.builtin.import_playbook: playbooks/boot-config.yml
+
+- name: Configure Network Manager and mDNS
+  ansible.builtin.import_playbook: playbooks/network-setup.yml
+
+- name: Configure Hostname
+  ansible.builtin.import_playbook: playbooks/hostname.yml
+
+- name: Configure WiFi MAC Override (if defined)
+  ansible.builtin.import_playbook: playbooks/wifi-mac-override.yml
+
+- name: Regenerate SSH Host Keys
+  ansible.builtin.import_playbook: playbooks/ssh-hostkeys.yml
+
+- name: Disable Sleep Modes
+  ansible.builtin.import_playbook: playbooks/disable-sleep.yml
+
+- name: Install Docker
+  ansible.builtin.import_playbook: playbooks/docker-install.yml
+
+- name: Install Portainer
+  ansible.builtin.import_playbook: playbooks/portainer.yml
+
+- name: Install SDR Base Dependencies
+  ansible.builtin.import_playbook: playbooks/sdr-base.yml
+
+- name: Install SDR++
+  ansible.builtin.import_playbook: playbooks/sdrpp.yml
+
+- name: Install Universal Radio Hacker
+  ansible.builtin.import_playbook: playbooks/urh.yml
+
+- name: Install SDRAngel
+  ansible.builtin.import_playbook: playbooks/sdrangel.yml
+
+- name: Deploy Synchronet BBS
+  ansible.builtin.import_playbook: playbooks/bbs.yml
+
+- name: Create Custom Menu Categories
+  ansible.builtin.import_playbook: playbooks/menu.yml
+
+- name: Setup Complete
+  hosts: raspberry_pis
+  tasks:
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg: |
+          ✓ Setup complete for {{ inventory_hostname }}!
+          
+          Hostname: {{ custom_hostname | default('not set') }}.local
+          {% if wifi_mac_override is defined %}
+          WiFi MAC Override: {{ wifi_mac_override }}
+          {% endif %}
+          
+          Installed software:
+          - Docker
+          - SDR++ (sdrpp)
+          - Universal Radio Hacker (urh)
+          - SDRAngel (sdrangel)
+          - Synchronet BBS
+          
+          Next steps:
+          - Docker: Log out and back in for docker group to take effect
+          - Reboot if needed: ansible-playbook playbooks/reboot.yml --limit {{ inventory_hostname }}

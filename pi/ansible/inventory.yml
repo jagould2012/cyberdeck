@@ -1,0 +1,46 @@
+# Ansible Inventory for Raspberry Pi Setup
+# Cyberdeck Raspberry Pi Hosts + Test VM
+
+all:
+  children:
+    # Localhost for local tasks (always runs, no sudo)
+    local:
+      hosts:
+        localhost:
+          ansible_connection: local
+          ansible_python_interpreter: "{{ ansible_playbook_python }}"
+          ansible_become: false
+
+    # All hosts that get the full setup
+    raspberry_pis:
+      children:
+        pi:
+        vm:
+
+    # Physical Raspberry Pi hardware
+    pi:
+      hosts:
+        cyberdeck-pi1:
+          ansible_host: cyberdeck-pi1.local
+          custom_hostname: cyberdeck-pi1
+        cyberdeck-pi2:
+          ansible_host: cyberdeck-pi2.local
+          custom_hostname: cyberdeck-pi2
+          wifi_mac_override: "DE:AD:BE:EF:CA:FE"
+      vars:
+        ansible_user: jonathan
+
+    # Virtual machines (skip hardware-specific tasks)
+    vm:
+      hosts:
+        test-vm:
+          ansible_host: 10.211.55.5
+          custom_hostname: cyberdeck-testvm
+      vars:
+        ansible_user: parallels
+        is_vm: true
+
+  vars:
+    ansible_become: true
+    ansible_become_method: sudo
+    ansible_python_interpreter: /usr/bin/python3

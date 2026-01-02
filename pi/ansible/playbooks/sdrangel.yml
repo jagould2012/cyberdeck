@@ -1,0 +1,126 @@
+---
+# Playbook: Install SDRAngel
+# Installs SDRAngel from prebuilt .deb package
+# Usage: ansible-playbook playbooks/sdrangel.yml
+# Requires: sdr-base.yml to be run first
+#
+# To build the .deb package on your Mac:
+#   cd sdrangel
+#   ./build.sh
+#
+# The .deb will be copied to ansible/files/sdrangel_arm64.deb automatically.
+
+- name: Install SDRAngel
+  hosts: raspberry_pis
+  become: true
+
+  vars:
+    sdrangel_deb_local: "{{ playbook_dir }}/../files/sdrangel_arm64.deb"
+    sdrangel_deb_remote: /tmp/sdrangel_arm64.deb
+
+  tasks:
+    - name: Check if SDRAngel is already installed
+      ansible.builtin.command: which sdrangel
+      register: sdrangel_check
+      changed_when: false
+      failed_when: false
+
+    - name: Copy SDRAngel .deb to target
+      ansible.builtin.copy:
+        src: "{{ sdrangel_deb_local }}"
+        dest: "{{ sdrangel_deb_remote }}"
+        mode: '0644'
+      register: deb_copy
+      when: sdrangel_check.rc != 0
+      ignore_errors: true
+
+    - name: Display skip message if .deb not found
+      ansible.builtin.debug:
+        msg: |
+          SDRAngel .deb file not found at files/sdrangel_arm64.deb
+          
+          Build it first on your Mac:
+            cd sdrangel
+            ./build.sh
+          
+          The .deb will be copied to ansible/files/sdrangel_arm64.deb automatically.
+          
+          Skipping SDRAngel installation.
+      when:
+        - sdrangel_check.rc != 0
+        - deb_copy is failed
+
+    - name: Install SDRAngel runtime dependencies
+      ansible.builtin.apt:
+        name:
+          - libqt5core5a
+          - libqt5gui5
+          - libqt5widgets5
+          - libqt5multimedia5
+          - libqt5websockets5
+          - libqt5serialport5
+          - libqt5charts5
+          - libqt5texttospeech5
+          - libqt5quick5
+          - libqt5positioning5
+          - libqt5location5
+          - libgl1
+          - libpulse0
+          - libfaad2
+          - libflac14
+          - libopus0
+          - libspeex1
+          - libspeexdsp1
+          - libfftw3-single3
+          - libavcodec61
+          - libavformat61
+          - libswscale8
+          - libusb-1.0-0
+          - librtlsdr0
+          - libhackrf0
+          - libairspy0
+          - libairspyhf1
+          - libiio0
+          - libad9361-0
+          - libsoapysdr0.8
+          - libhamlib4
+          - libhidapi-libusb0
+          - libsamplerate0
+        state: present
+      when:
+        - sdrangel_check.rc != 0
+        - deb_copy is succeeded
+
+    - name: Install SDRAngel from .deb
+      ansible.builtin.shell: |
+        dpkg --force-depends -i {{ sdrangel_deb_remote }}
+        apt-get install -f -y
+      when:
+        - sdrangel_check.rc != 0
+        - deb_copy is succeeded
+      register: sdrangel_install
+      changed_when: "'Setting up sdrangel' in sdrangel_install.stdout"
+
+    - name: Run ldconfig to register SDRAngel libraries
+      ansible.builtin.command: ldconfig
+      when:
+        - sdrangel_check.rc != 0
+        - deb_copy is succeeded
+      changed_when: true
+
+    - name: Clean up .deb file
+      ansible.builtin.file:
+        path: "{{ sdrangel_deb_remote }}"
+        state: absent
+      when: deb_copy is succeeded
+
+    - name: Display SDRAngel installation status
+      ansible.builtin.debug:
+        msg: |
+          {% if sdrangel_check.rc == 0 %}
+          SDRAngel already installed. Run with: sdrangel
+          {% elif deb_copy is succeeded %}
+          SDRAngel installed from prebuilt .deb package. Run with: sdrangel
+          {% else %}
+          SDRAngel NOT installed - .deb file not found. Build it first.
+          {% endif %}

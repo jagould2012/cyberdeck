@@ -1,0 +1,98 @@
+---
+# Playbook: Configure Network Manager and mDNS
+# Cleans up conflicting network services and ensures NetworkManager/Avahi work properly
+# Usage: ansible-playbook playbooks/network-setup.yml
+
+- name: Configure NetworkManager and mDNS (Avahi)
+  hosts: raspberry_pis
+  become: true
+
+  tasks:
+    # --- Stop and disable conflicting services ---
+    - name: Stop and disable conflicting network services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+        masked: true
+      loop:
+        - netplan-wpa-wlan0.service
+        - systemd-networkd
+        - systemd-networkd-wait-online.service
+        - NetworkManager-wait-online.service
+      failed_when: false  # Some services may not exist
+
+    # --- Backup and clean netplan configs ---
+    - name: Create netplan backup directory
+      ansible.builtin.file:
+        path: /etc/netplan/backup
+        state: directory
+        mode: '0755'
+
+    - name: Find existing netplan configs
+      ansible.builtin.find:
+        paths: /etc/netplan
+        patterns: "*.yaml"
+        file_type: file
+      register: netplan_files
+
+    - name: Backup existing netplan configs
+      ansible.builtin.copy:
+        src: "{{ item.path }}"
+        dest: "/etc/netplan/backup/{{ item.path | basename }}"
+        remote_src: true
+        mode: preserve
+      loop: "{{ netplan_files.files }}"
+      when: 
+        - netplan_files.files | length > 0
+        - "'backup' not in item.path"
+        - "'01-networkmanager.yaml' not in item.path"
+
+    - name: Remove old netplan configs (except our managed one)
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ netplan_files.files }}"
+      when: 
+        - "'backup' not in item.path"
+        - "'01-networkmanager.yaml' not in item.path"
+
+    # --- Create NetworkManager netplan config ---
+    - name: Create NetworkManager netplan config
+      ansible.builtin.copy:
+        dest: /etc/netplan/01-networkmanager.yaml
+        content: |
+          network:
+            version: 2
+            renderer: NetworkManager
+        mode: '0644'
+
+    # --- Configure NetworkManager ---
+    - name: Ensure NetworkManager is unmasked and enabled
+      ansible.builtin.systemd:
+        name: NetworkManager
+        masked: false
+        enabled: true
+        state: started
+
+    - name: Set managed=true in NetworkManager.conf
+      ansible.builtin.lineinfile:
+        path: /etc/NetworkManager/NetworkManager.conf
+        regexp: '^managed='
+        line: 'managed=true'
+        insertafter: '^\[ifupdown\]'
+      notify: Restart NetworkManager
+
+    # --- Configure Avahi (mDNS) ---
+    - name: Ensure avahi-daemon is unmasked and enabled
+      ansible.builtin.systemd:
+        name: avahi-daemon
+        masked: false
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart NetworkManager
+      ansible.builtin.systemd:
+        name: NetworkManager
+        state: restarted

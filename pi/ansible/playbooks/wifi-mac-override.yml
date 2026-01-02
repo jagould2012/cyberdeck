@@ -1,0 +1,36 @@
+---
+# Playbook: Configure WiFi MAC Address Override
+# Automatically applies if wifi_mac_override is defined in host_vars
+# Can also be run manually: ansible-playbook playbooks/wifi-mac-override.yml -e "wifi_mac_override=AA:BB:CC:DD:EE:FF"
+
+- name: Configure WiFi MAC Address Override
+  hosts: raspberry_pis
+  become: true
+
+  tasks:
+    - name: Skip if wifi_mac_override is not defined
+      ansible.builtin.debug:
+        msg: "No WiFi MAC override configured for {{ inventory_hostname }}, skipping"
+      when: wifi_mac_override is not defined
+
+    - name: Configure WiFi MAC override
+      when: wifi_mac_override is defined
+      block:
+        - name: Add cloned MAC address to NetworkManager config
+          ansible.builtin.blockinfile:
+            path: /etc/NetworkManager/NetworkManager.conf
+            marker: "# {mark} ANSIBLE MANAGED - WiFi MAC Override"
+            block: |
+              [connection]
+              wifi.cloned-mac-address={{ wifi_mac_override }}
+          notify: Restart NetworkManager
+
+        - name: Display MAC override configuration
+          ansible.builtin.debug:
+            msg: "WiFi MAC address for {{ inventory_hostname }} set to {{ wifi_mac_override }}"
+
+  handlers:
+    - name: Restart NetworkManager
+      ansible.builtin.systemd:
+        name: NetworkManager
+        state: restarted

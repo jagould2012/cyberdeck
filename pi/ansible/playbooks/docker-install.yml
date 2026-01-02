@@ -1,0 +1,128 @@
+---
+# Playbook: Install Docker
+# Installs Docker CE on Debian-based systems (Kali/Raspberry Pi)
+# Usage: ansible-playbook playbooks/docker-install.yml
+
+- name: Install Docker
+  hosts: raspberry_pis
+  become: true
+
+  vars:
+    docker_apt_release_channel: stable
+    docker_apt_arch: arm64
+    docker_apt_repository: "deb [arch={{ docker_apt_arch }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm {{ docker_apt_release_channel }}"
+
+  tasks:
+    # --- Install prerequisites ---
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Docker prerequisites
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+
+    # --- Add Docker GPG key ---
+    - name: Create keyrings directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Check if Docker GPG key exists
+      ansible.builtin.stat:
+        path: /etc/apt/keyrings/docker.gpg
+      register: docker_gpg_key
+
+    - name: Download Docker GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /tmp/docker.gpg.key
+        mode: '0644'
+      when: not docker_gpg_key.stat.exists
+
+    - name: Dearmor and install Docker GPG key
+      ansible.builtin.shell: |
+        gpg --dearmor -o /etc/apt/keyrings/docker.gpg < /tmp/docker.gpg.key
+        chmod a+r /etc/apt/keyrings/docker.gpg
+      args:
+        creates: /etc/apt/keyrings/docker.gpg
+      when: not docker_gpg_key.stat.exists
+
+    # --- Add Docker repository ---
+    - name: Add Docker apt repository
+      ansible.builtin.apt_repository:
+        repo: "{{ docker_apt_repository }}"
+        state: present
+        filename: docker
+
+    # --- Install Docker ---
+    - name: Update apt cache after adding Docker repo
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Docker packages
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    # --- Configure Docker users ---
+    - name: Add user to docker group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+
+    - name: Ensure Docker service is started and enabled
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+
+    # --- Install QEMU for multi-arch container support ---
+    - name: Fix any broken package dependencies
+      ansible.builtin.command: apt --fix-broken install -y
+      register: fix_broken
+      changed_when: "'0 upgraded' not in fix_broken.stdout"
+      failed_when: false
+
+    - name: Install QEMU user-mode emulation
+      ansible.builtin.apt:
+        name:
+          - qemu-user
+          - qemu-user-binfmt
+        state: present
+
+    - name: Restart systemd-binfmt to register QEMU handlers
+      ansible.builtin.systemd:
+        name: systemd-binfmt
+        state: restarted
+
+    - name: Verify QEMU x86_64 is registered
+      ansible.builtin.command: cat /proc/sys/fs/binfmt_misc/qemu-x86_64
+      register: qemu_check
+      changed_when: false
+      failed_when: "'enabled' not in qemu_check.stdout"
+
+    - name: Restart Docker to apply QEMU changes
+      ansible.builtin.systemd:
+        name: docker
+        state: restarted
+
+    - name: Display Docker installation info
+      ansible.builtin.debug:
+        msg: >
+          Docker installed successfully. User {{ ansible_user }} 
+          has been added to the docker group. Log out and 
+          back in for group membership to take effect.

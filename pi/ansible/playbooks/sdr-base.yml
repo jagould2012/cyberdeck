@@ -1,0 +1,139 @@
+---
+# Playbook: Install SDR Base Dependencies
+# Common dependencies for SDR software (SDRAngel, SDR++, URH)
+# Usage: ansible-playbook playbooks/sdr-base.yml
+
+- name: Install SDR Base Dependencies
+  hosts: raspberry_pis
+  become: true
+
+  vars:
+    sdr_build_dir: /opt/build
+    sdr_install_dir: /opt/install
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install build essentials
+      ansible.builtin.apt:
+        name:
+          - build-essential
+          - cmake
+          - git
+          - pkg-config
+          - g++
+        state: present
+
+    - name: Install common SDR libraries
+      ansible.builtin.apt:
+        name:
+          # Core libraries
+          - libusb-1.0-0-dev
+          - libfftw3-dev
+          - libboost-all-dev
+          # Audio
+          - libpulse-dev
+          - portaudio19-dev
+          - librtaudio-dev
+          # Graphics/UI
+          - libglfw3-dev
+          - libglew-dev
+          - libgl1-mesa-dev
+          # Qt5
+          - qt5-qmake
+          - qtbase5-dev
+          - qtmultimedia5-dev
+          - libqt5multimedia5-plugins
+          - libqt5svg5-dev
+          - libqt5serialport5-dev
+          - libqt5websockets5-dev
+          - libqt5charts5-dev
+          - qtdeclarative5-dev
+          - qtpositioning5-dev
+          - qtlocation5-dev
+          - libqt5texttospeech5-dev
+          - qml-module-qtlocation
+          - qml-module-qtpositioning
+          - qml-module-qtquick-controls
+          - qml-module-qtquick-controls2
+          # SDR device libraries
+          - librtlsdr-dev
+          - libhackrf-dev
+          - libairspy-dev
+          - libairspyhf-dev
+          - libiio-dev
+          - libad9361-dev
+          - libsoapysdr-dev
+          - soapysdr-tools
+          # Codec/DSP
+          - libcodec2-dev
+          - libspeexdsp-dev
+          - libsamplerate0-dev
+          - libopus-dev
+          # Other
+          - libzstd-dev
+          - libvolk-dev
+          - libavcodec-dev
+          - libavformat-dev
+          - libswscale-dev
+          - libswresample-dev
+          - libavutil-dev
+          # Python
+          - python3-dev
+          - python3-pip
+          - python3-numpy
+          - python3-mako
+        state: present
+
+    - name: Create build directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ sdr_build_dir }}"
+        - "{{ sdr_install_dir }}"
+
+    - name: Blacklist DVB drivers for RTL-SDR
+      ansible.builtin.copy:
+        dest: /etc/modprobe.d/blacklist-rtlsdr.conf
+        content: |
+          # Blacklist default DVB drivers for RTL-SDR
+          blacklist dvb_usb_rtl28xxu
+          blacklist rtl2832
+          blacklist rtl2830
+        mode: '0644'
+      notify: Update initramfs
+
+    - name: Add udev rules for SDR devices
+      ansible.builtin.copy:
+        dest: /etc/udev/rules.d/99-sdr.rules
+        content: |
+          # RTL-SDR
+          SUBSYSTEM=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2838", MODE="0666"
+          SUBSYSTEM=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2832", MODE="0666"
+          # HackRF
+          SUBSYSTEM=="usb", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6089", MODE="0666"
+          SUBSYSTEM=="usb", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="604b", MODE="0666"
+          # Airspy
+          SUBSYSTEM=="usb", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="60a1", MODE="0666"
+        mode: '0644'
+      notify: Reload udev
+
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg: "SDR base dependencies installed. Build directory: {{ sdr_build_dir }}"
+
+  handlers:
+    - name: Update initramfs
+      ansible.builtin.command: update-initramfs -u
+      changed_when: true
+
+    - name: Reload udev
+      ansible.builtin.shell: |
+        udevadm control --reload-rules
+        udevadm trigger
+      changed_when: true

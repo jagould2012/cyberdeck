@@ -1,0 +1,82 @@
+---
+# Playbook: Install Portainer
+# Installs Portainer CE (Community Edition) for Docker management
+# Usage: ansible-playbook playbooks/portainer.yml
+# Requires: docker-install.yml to be run first
+#
+# Access Portainer at: https://<hostname>:9443
+
+- name: Install Portainer
+  hosts: raspberry_pis
+  become: true
+
+  vars:
+    portainer_data_volume: portainer_data
+    portainer_container_name: portainer
+    portainer_image: portainer/portainer-ce:latest
+    portainer_http_port: 9000
+    portainer_https_port: 9443
+
+  tasks:
+    - name: Check if Docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if Docker is not installed
+      ansible.builtin.fail:
+        msg: "Docker is not installed. Run docker-install.yml first."
+      when: docker_check.rc != 0
+
+    - name: Check if Portainer is already running
+      ansible.builtin.command: docker ps -q -f name={{ portainer_container_name }}
+      register: portainer_running
+      changed_when: false
+
+    - name: Create Portainer data volume
+      ansible.builtin.command: docker volume create {{ portainer_data_volume }}
+      register: volume_create
+      changed_when: portainer_data_volume in volume_create.stdout
+      when: portainer_running.stdout == ""
+
+    - name: Pull Portainer image
+      ansible.builtin.command: docker pull {{ portainer_image }}
+      register: pull_result
+      changed_when: "'Downloaded newer image' in pull_result.stdout or 'Pull complete' in pull_result.stdout"
+      when: portainer_running.stdout == ""
+
+    - name: Start Portainer container
+      ansible.builtin.command: >
+        docker run -d
+        --name {{ portainer_container_name }}
+        --restart=always
+        -p {{ portainer_http_port }}:9000
+        -p {{ portainer_https_port }}:9443
+        -v /var/run/docker.sock:/var/run/docker.sock
+        -v {{ portainer_data_volume }}:/data
+        {{ portainer_image }}
+      when: portainer_running.stdout == ""
+      changed_when: true
+
+    - name: Wait for Portainer to be ready
+      ansible.builtin.uri:
+        url: "https://localhost:{{ portainer_https_port }}"
+        validate_certs: false
+        status_code: [200, 302]
+      register: portainer_health
+      until: portainer_health.status in [200, 302]
+      retries: 10
+      delay: 3
+      when: portainer_running.stdout == ""
+
+    - name: Display Portainer access information
+      ansible.builtin.debug:
+        msg: |
+          Portainer installed successfully!
+          
+          Access Portainer at:
+            https://{{ ansible_host }}:{{ portainer_https_port }}
+            https://{{ custom_hostname | default(inventory_hostname) }}.local:{{ portainer_https_port }}
+          
+          On first access, you'll need to create an admin user.

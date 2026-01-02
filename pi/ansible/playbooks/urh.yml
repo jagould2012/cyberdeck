@@ -1,0 +1,72 @@
+---
+# Playbook: Install Universal Radio Hacker (URH)
+# Installs URH via pip with native SDR device support
+# Usage: ansible-playbook playbooks/urh.yml
+# Requires: sdr-base.yml to be run first
+
+- name: Install Universal Radio Hacker
+  hosts: raspberry_pis
+  become: true
+
+  tasks:
+    - name: Check if URH is already installed
+      ansible.builtin.command: which urh
+      register: urh_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install URH dependencies
+      ansible.builtin.apt:
+        name:
+          # Python dependencies
+          - python3-numpy
+          - python3-psutil
+          - python3-zmq
+          - python3-pyqt5
+          - python3-pip
+          - python3-setuptools
+          - cython3
+          # Build dependencies
+          - g++
+          - libpython3-dev
+          # SDR device libraries for native backend support
+          - libairspy-dev
+          - libhackrf-dev
+          - librtlsdr-dev
+          - libuhd-dev
+          # Linear algebra library
+          - libopenblas-dev
+        state: present
+
+    - name: Ensure Cython is available via pip
+      ansible.builtin.pip:
+        name: cython
+        state: present
+        executable: pip3
+        extra_args: --break-system-packages
+
+    - name: Install URH via pip
+      ansible.builtin.pip:
+        name: urh
+        state: present
+        executable: pip3
+        extra_args: --break-system-packages
+      when: urh_check.rc != 0
+
+    - name: Create URH desktop entry
+      ansible.builtin.copy:
+        dest: /usr/share/applications/urh.desktop
+        content: |
+          [Desktop Entry]
+          Name=Universal Radio Hacker
+          Comment=Investigate wireless protocols like a boss
+          Exec=urh
+          Icon=urh
+          Terminal=false
+          Type=Application
+          Categories=Network;HamRadio;Development;
+        mode: '0644'
+
+    - name: Display URH installation status
+      ansible.builtin.debug:
+        msg: "Universal Radio Hacker installed. Run with: urh"
