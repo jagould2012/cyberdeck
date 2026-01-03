@@ -1,0 +1,27 @@
+{
+	"name": "cyberdeck-login-server",
+	"version": "1.0.0",
+	"description": "BLE-based remote authentication server for Linux/Raspberry Pi",
+	"main": "src/index.js",
+	"type": "module",
+	"scripts": {
+		"start": "node src/index.js",
+		"dev": "node --watch src/index.js",
+		"register": "node src/register-mode.js"
+	},
+	"keywords": [
+		"ble",
+		"bluetooth",
+		"authentication",
+		"pam",
+		"raspberry-pi"
+	],
+	"author": "",
+	"license": "MIT",
+	"dependencies": {
+		"@abandonware/noble": "^1.9.2-15",
+		"@abandonware/bleno": "^0.5.1-4",
+		"tweetnacl": "^1.0.3",
+		"tweetnacl-util": "^0.15.1"
+	}
+}

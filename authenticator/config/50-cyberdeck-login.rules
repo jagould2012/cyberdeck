@@ -1,0 +1,8 @@
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.login1.lock-sessions" ||
+        action.id == "org.freedesktop.login1.unlock-sessions") {
+        if (subject.user == "pi") {
+            return polkit.Result.YES;
+        }
+    }
+});
