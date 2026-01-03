@@ -189,6 +189,19 @@
         group: "{{ login_user }}"
         mode: '0600'
 
+    - name: Create config.json
+      ansible.builtin.copy:
+        content: |
+          {
+            "computerName": "{{ computer_name }}",
+            "loginUser": "{{ login_user }}",
+            "nonceRotationIntervalMs": 30000
+          }
+        dest: "{{ login_dest_dir }}/data/config.json"
+        owner: "{{ login_user }}"
+        group: "{{ login_user }}"
+        mode: '0644'
+
     - name: Run PAM install script
       ansible.builtin.command:
         cmd: "{{ config_dest_dir }}/install-pam.sh {{ login_user }}"

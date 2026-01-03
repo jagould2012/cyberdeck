@@ -1,6 +1,6 @@
 services:
   cyberdeck-login-server:
-    build: .
+    image: cyberdeck-login:latest
     container_name: cyberdeck-login-server
     restart: unless-stopped
     
