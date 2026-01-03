@@ -4,7 +4,7 @@ import CoreBluetooth
 /// Represents a discovered Cyberdeck device
 struct CyberdeckDevice: Identifiable, Equatable, Hashable {
     let id: UUID
-    let peripheral: CBPeripheral
+    let peripheral: CBPeripheral?
     var name: String
     var rssi: Int
     var lastSeen: Date
@@ -18,6 +18,17 @@ struct CyberdeckDevice: Identifiable, Equatable, Hashable {
         self.rssi = rssi
         self.lastSeen = Date()
     }
+    
+    #if targetEnvironment(simulator)
+    /// Mock initializer for simulator testing
+    init(mockId: UUID, name: String, rssi: Int) {
+        self.id = mockId
+        self.peripheral = nil
+        self.name = name
+        self.rssi = rssi
+        self.lastSeen = Date()
+    }
+    #endif
     
     static func == (lhs: CyberdeckDevice, rhs: CyberdeckDevice) -> Bool {
         lhs.id == rhs.id

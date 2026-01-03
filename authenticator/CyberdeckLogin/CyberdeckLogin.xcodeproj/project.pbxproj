@@ -6,14 +6,82 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AB4068202F09779C00A917A2 /* CyberdeckLoginWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AB4068132F09779A00A917A2 /* CyberdeckLoginWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AB4068362F09788400A917A2 /* ENTERPRISE_DISTRIBUTION.md in Sources */ = {isa = PBXBuildFile; fileRef = AB4068352F09787A00A917A2 /* ENTERPRISE_DISTRIBUTION.md */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AB40681E2F09779C00A917A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB4067D02F09272400A917A2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AB4068122F09779A00A917A2;
+			remoteInfo = "CyberdeckLoginWatch Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AB4068242F09779C00A917A2 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				AB4068202F09779C00A917A2 /* CyberdeckLoginWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		AB4067D82F09272400A917A2 /* CyberdeckLogin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CyberdeckLogin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB4068132F09779A00A917A2 /* CyberdeckLoginWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CyberdeckLoginWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB4068352F09787A00A917A2 /* ENTERPRISE_DISTRIBUTION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ENTERPRISE_DISTRIBUTION.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AB4068312F09784600A917A2 /* Exceptions for "CyberdeckLoginWatch Watch App" folder in "CyberdeckLogin" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WatchDevice.swift,
+			);
+			target = AB4067D72F09272400A917A2 /* CyberdeckLogin */;
+		};
+		AB4068322F09784600A917A2 /* Exceptions for "CyberdeckLoginWatch Watch App" folder in "CyberdeckLoginWatch Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SETUP.md,
+			);
+			target = AB4068122F09779A00A917A2 /* CyberdeckLoginWatch Watch App */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		AB4068392F0978B000A917A2 /* Exceptions for "CyberdeckLoginWatch Watch App" folder in "Compile Sources" phase from "CyberdeckLoginWatch Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = AB40680F2F09779A00A917A2 /* Sources */;
+			membershipExceptions = (
+				SETUP.md,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AB4067DA2F09272400A917A2 /* CyberdeckLogin */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = CyberdeckLogin;
+			sourceTree = "<group>";
+		};
+		AB4068142F09779A00A917A2 /* CyberdeckLoginWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AB4068312F09784600A917A2 /* Exceptions for "CyberdeckLoginWatch Watch App" folder in "CyberdeckLogin" target */,
+				AB4068322F09784600A917A2 /* Exceptions for "CyberdeckLoginWatch Watch App" folder in "CyberdeckLoginWatch Watch App" target */,
+				AB4068392F0978B000A917A2 /* Exceptions for "CyberdeckLoginWatch Watch App" folder in "Compile Sources" phase from "CyberdeckLoginWatch Watch App" target */,
+			);
+			path = "CyberdeckLoginWatch Watch App";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,13 +94,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AB4068102F09779A00A917A2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		AB4067CF2F09272400A917A2 = {
 			isa = PBXGroup;
 			children = (
+				AB4068352F09787A00A917A2 /* ENTERPRISE_DISTRIBUTION.md */,
 				AB4067DA2F09272400A917A2 /* CyberdeckLogin */,
+				AB4068142F09779A00A917A2 /* CyberdeckLoginWatch Watch App */,
 				AB4067D92F09272400A917A2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				AB4067D82F09272400A917A2 /* CyberdeckLogin.app */,
+				AB4068132F09779A00A917A2 /* CyberdeckLoginWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -55,10 +133,12 @@
 				AB4067D42F09272400A917A2 /* Sources */,
 				AB4067D52F09272400A917A2 /* Frameworks */,
 				AB4067D62F09272400A917A2 /* Resources */,
+				AB4068242F09779C00A917A2 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				AB40681F2F09779C00A917A2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				AB4067DA2F09272400A917A2 /* CyberdeckLogin */,
@@ -68,6 +148,28 @@
 			);
 			productName = CyberdeckLogin;
 			productReference = AB4067D82F09272400A917A2 /* CyberdeckLogin.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AB4068122F09779A00A917A2 /* CyberdeckLoginWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB4068212F09779C00A917A2 /* Build configuration list for PBXNativeTarget "CyberdeckLoginWatch Watch App" */;
+			buildPhases = (
+				AB40680F2F09779A00A917A2 /* Sources */,
+				AB4068102F09779A00A917A2 /* Frameworks */,
+				AB4068112F09779A00A917A2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AB4068142F09779A00A917A2 /* CyberdeckLoginWatch Watch App */,
+			);
+			name = "CyberdeckLoginWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "CyberdeckLoginWatch Watch App";
+			productReference = AB4068132F09779A00A917A2 /* CyberdeckLoginWatch Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -81,6 +183,9 @@
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
 					AB4067D72F09272400A917A2 = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					AB4068122F09779A00A917A2 = {
 						CreatedOnToolsVersion = 16.1;
 					};
 				};
@@ -100,12 +205,20 @@
 			projectRoot = "";
 			targets = (
 				AB4067D72F09272400A917A2 /* CyberdeckLogin */,
+				AB4068122F09779A00A917A2 /* CyberdeckLoginWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AB4067D62F09272400A917A2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB4068112F09779A00A917A2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,10 +232,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB4068362F09788400A917A2 /* ENTERPRISE_DISTRIBUTION.md in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB40680F2F09779A00A917A2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AB40681F2F09779C00A917A2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AB4068122F09779A00A917A2 /* CyberdeckLoginWatch Watch App */;
+			targetProxy = AB40681E2F09779C00A917A2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AB4067E42F09272500A917A2 /* Debug */ = {
@@ -310,6 +439,66 @@
 			};
 			name = Release;
 		};
+		AB4068222F09779C00A917A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"CyberdeckLoginWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = ADHV5U8CDC;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = CyberdeckLoginWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.gouldtechconsulting.CyberdeckLogin;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gouldtechconsulting.CyberdeckLogin.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.1;
+			};
+			name = Debug;
+		};
+		AB4068232F09779C00A917A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"CyberdeckLoginWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = ADHV5U8CDC;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = CyberdeckLoginWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.gouldtechconsulting.CyberdeckLogin;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gouldtechconsulting.CyberdeckLogin.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -327,6 +516,15 @@
 			buildConfigurations = (
 				AB4067E72F09272500A917A2 /* Debug */,
 				AB4067E82F09272500A917A2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AB4068212F09779C00A917A2 /* Build configuration list for PBXNativeTarget "CyberdeckLoginWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB4068222F09779C00A917A2 /* Debug */,
+				AB4068232F09779C00A917A2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -52,13 +52,24 @@ class BLEManager: NSObject, ObservableObject {
     
     override init() {
         super.init()
+        #if targetEnvironment(simulator)
+        // In simulator, pretend Bluetooth is enabled and provide mock devices
+        isBluetoothEnabled = true
+        print("📱 Running in simulator - using mock BLE")
+        #else
         centralManager = CBCentralManager(delegate: self, queue: .main)
+        #endif
     }
     
     // MARK: - Public Methods
     
     /// Start scanning for Cyberdeck devices
     func startScanning() {
+        #if targetEnvironment(simulator)
+        startMockScanning()
+        return
+        #endif
+        
         guard isBluetoothEnabled else {
             lastError = "Bluetooth is not enabled"
             return
@@ -80,18 +91,103 @@ class BLEManager: NSObject, ObservableObject {
     
     /// Stop scanning for devices
     func stopScanning() {
+        #if targetEnvironment(simulator)
+        isScanning = false
+        return
+        #endif
+        
         centralManager.stopScan()
         isScanning = false
     }
+    
+    #if targetEnvironment(simulator)
+    // MARK: - Simulator Mock Support
+    
+    private func startMockScanning() {
+        isScanning = true
+        discoveredDevices.removeAll()
+        
+        let mockData = [
+            ("cyberdeck-pi1", -45),
+            ("cyberdeck-pi2", -52),
+            ("cyberdeck-testvm", -38)
+        ]
+        
+        for (index, (name, rssi)) in mockData.enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.5) { [weak self] in
+                guard let self = self, self.isScanning else { return }
+                
+                let device = CyberdeckDevice(mockId: UUID(), name: name, rssi: rssi)
+                self.discoveredDevices.append(device)
+                
+                // Notify Watch of updated devices
+                WatchConnectivityService.shared.sendDevicesToWatch(self.discoveredDevices)
+            }
+        }
+        
+        // Auto-stop after 5 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            self?.stopScanning()
+        }
+    }
+    
+    func mockConnect(to device: CyberdeckDevice) {
+        authenticationState = .connecting
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            
+            if let index = self.discoveredDevices.firstIndex(where: { $0.id == device.id }) {
+                self.discoveredDevices[index].isConnected = true
+                self.connectedDevice = self.discoveredDevices[index]
+            }
+            self.authenticationState = .idle
+        }
+    }
+    
+    func mockAuthenticate(completion: @escaping (Bool, String?) -> Void) {
+        authenticationState = .readingChallenge
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.authenticationState = .signing
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                self?.authenticationState = .authenticating
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.authenticationState = .success
+                    completion(true, nil)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                        self?.authenticationState = .idle
+                    }
+                }
+            }
+        }
+    }
+    #endif
     
     /// Connect to a device
     func connect(to device: CyberdeckDevice) {
         print("🔗 BLE: Connecting to \(device.name)...")
         stopScanning()
+        
+        #if targetEnvironment(simulator)
+        mockConnect(to: device)
+        return
+        #endif
+        
         authenticationState = .connecting
-        currentPeripheral = device.peripheral
+        
+        guard let peripheral = device.peripheral else {
+            print("❌ BLE: No peripheral available (mock device?)")
+            authenticationState = .failed("No peripheral available")
+            return
+        }
+        
+        currentPeripheral = peripheral
         currentPeripheral?.delegate = self
-        centralManager.connect(device.peripheral, options: nil)
+        centralManager.connect(peripheral, options: nil)
     }
     
     /// Disconnect from current device
@@ -105,6 +201,12 @@ class BLEManager: NSObject, ObservableObject {
     /// Authenticate with connected device
     func authenticate(using cryptoService: CryptoService, completion: @escaping (Bool, String?) -> Void) {
         print("🔐 BLE: Starting authentication...")
+        
+        #if targetEnvironment(simulator)
+        mockAuthenticate(completion: completion)
+        return
+        #endif
+        
         self.cryptoService = cryptoService
         self.authCompletion = completion
         
@@ -269,7 +371,7 @@ extension BLEManager: CBCentralManagerDelegate {
         peripheral.delegate = self
         
         // Update connected device
-        if let index = discoveredDevices.firstIndex(where: { $0.peripheral == peripheral }) {
+        if let index = discoveredDevices.firstIndex(where: { $0.peripheral?.identifier == peripheral.identifier }) {
             var device = discoveredDevices[index]
             device.isConnected = true
             connectedDevice = device
