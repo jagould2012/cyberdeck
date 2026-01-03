@@ -3,59 +3,44 @@ services:
     build: .
     container_name: cyberdeck-login-server
     restart: unless-stopped
-
-    # Required for Bluetooth access
+    
+    # Required for Bluetooth access (native mode only)
     privileged: true
     network_mode: host
-
+    
     volumes:
       # Configuration and public keys
       - ./data:/data
-
+      
       # D-Bus access for lock screen monitoring
       - /var/run/dbus:/var/run/dbus
-
-      # Bluetooth device access
+      
+      # Bluetooth device access (native mode)
       - /dev:/dev
-
+      
       # X11 access for idle detection (optional)
       - /tmp/.X11-unix:/tmp/.X11-unix
-
+      
       # PAM trigger file location
       - /tmp:/tmp
-
-      # Control socket
-      - /tmp/cyberdeck-login.sock:/tmp/cyberdeck-login.sock
-
+    
     environment:
       - NODE_ENV=production
       - CONFIG_PATH=/data/config.json
       - PUBLIC_KEYS_DIR=/data/publicKeys
       - COMPUTER_NAME=${COMPUTER_NAME:-cyberdeck}
       - LOGIN_USER=${LOGIN_USER:-pi}
+      - BLE_MODE=${BLE_MODE:-native}
+      - TCP_PORT=${TCP_PORT:-3100}
       - DISPLAY=${DISPLAY:-:0}
       - DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}
-
+      - CONTAINER_MODE=true
+    
     # Use host's D-Bus session
     pid: host
-
+    
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
-
-  # Optional: Helper for registration mode
-  register:
-    build: .
-    container_name: cyberdeck-register
-    profiles:
-      - registration
-
-    volumes:
-      - /tmp/cyberdeck-login.sock:/tmp/cyberdeck-login.sock
-
-    command: [ "node", "src/register-mode.js", "60" ]
-
-    # Remove after execution
-    restart: "no"

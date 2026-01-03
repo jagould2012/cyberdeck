@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { spawn, execSync } from 'child_process';
 import { writeFile, unlink } from 'fs/promises';
 
 /**
@@ -9,6 +9,27 @@ export class PamAuth {
 	constructor(loginUser) {
 		this.loginUser = loginUser;
 		this.triggerFile = '/tmp/cyberdeck-login-trigger';
+		// Check if running in container (PID 1 is not init)
+		this.inContainer = this.detectContainer();
+		if (this.inContainer) {
+			console.log('🐳 Running in container, using nsenter for host commands');
+		}
+	}
+
+	detectContainer() {
+		// Check for CONTAINER_MODE env var set in docker-compose
+		return process.env.CONTAINER_MODE === 'true';
+	}
+
+	/**
+	 * Run a command, using nsenter if in container to access host
+	 */
+	hostSpawn(cmd, args) {
+		if (this.inContainer) {
+			// Use nsenter to run in host namespaces (requires --pid=host and --privileged)
+			return spawn('nsenter', ['-t', '1', '-m', '-u', '-i', '-n', cmd, ...args]);
+		}
+		return spawn(cmd, args);
 	}
 
 	/**
@@ -54,12 +75,16 @@ export class PamAuth {
 	 */
 	async unlockViaLoginctl() {
 		// First try generic unlock-sessions
-		await this.tryCommand('loginctl', ['unlock-sessions']);
+		await this.tryCommand('/usr/bin/loginctl', ['unlock-sessions']);
 
 		// Also try to unlock specific sessions for this user
 		try {
-			const { execSync } = await import('child_process');
-			const output = execSync('loginctl list-sessions --no-legend', { encoding: 'utf-8' });
+			let output;
+			if (this.inContainer) {
+				output = execSync('nsenter -t 1 -m -u -i -n /usr/bin/loginctl list-sessions --no-legend', { encoding: 'utf-8' });
+			} else {
+				output = execSync('loginctl list-sessions --no-legend', { encoding: 'utf-8' });
+			}
 			const lines = output.trim().split('\n');
 
 			for (const line of lines) {
@@ -68,7 +93,7 @@ export class PamAuth {
 					const sessionId = parts[0];
 					const user = parts[2];
 					if (user === this.loginUser) {
-						await this.tryCommand('loginctl', ['unlock-session', sessionId]);
+						await this.tryCommand('/usr/bin/loginctl', ['unlock-session', sessionId]);
 					}
 				}
 			}
@@ -82,7 +107,7 @@ export class PamAuth {
 	 */
 	async unlockViaDbus() {
 		// Try GNOME screensaver
-		await this.tryCommand('dbus-send', [
+		await this.tryCommand('/usr/bin/dbus-send', [
 			'--session',
 			'--type=method_call',
 			'--dest=org.gnome.ScreenSaver',
@@ -92,7 +117,7 @@ export class PamAuth {
 		]);
 
 		// Try freedesktop screensaver
-		await this.tryCommand('dbus-send', [
+		await this.tryCommand('/usr/bin/dbus-send', [
 			'--session',
 			'--type=method_call',
 			'--dest=org.freedesktop.ScreenSaver',
@@ -102,7 +127,7 @@ export class PamAuth {
 		]);
 
 		// Try KDE screensaver
-		await this.tryCommand('dbus-send', [
+		await this.tryCommand('/usr/bin/dbus-send', [
 			'--session',
 			'--type=method_call',
 			'--dest=org.kde.screensaver',
@@ -112,19 +137,19 @@ export class PamAuth {
 		]);
 
 		// Try xscreensaver
-		await this.tryCommand('xscreensaver-command', ['-deactivate']);
+		await this.tryCommand('/usr/bin/xscreensaver-command', ['-deactivate']);
 
 		// Try light-locker
-		await this.tryCommand('light-locker-command', ['-l']);
+		await this.tryCommand('/usr/bin/light-locker-command', ['-l']);
 
 		// Try cinnamon screensaver
-		await this.tryCommand('cinnamon-screensaver-command', ['-d']);
+		await this.tryCommand('/usr/bin/cinnamon-screensaver-command', ['-d']);
 
 		// Try mate screensaver  
-		await this.tryCommand('mate-screensaver-command', ['-d']);
+		await this.tryCommand('/usr/bin/mate-screensaver-command', ['-d']);
 
 		// Try xdotool to simulate activity (fallback)
-		await this.tryCommand('xdotool', ['key', 'shift']);
+		await this.tryCommand('/usr/bin/xdotool', ['key', 'shift']);
 	}
 
 	/**
@@ -132,7 +157,7 @@ export class PamAuth {
 	 */
 	async tryCommand(cmd, args) {
 		return new Promise((resolve) => {
-			const proc = spawn(cmd, args);
+			const proc = this.hostSpawn(cmd, args);
 			proc.on('close', () => resolve());
 			proc.on('error', () => resolve());
 		});
@@ -140,23 +165,18 @@ export class PamAuth {
 
 	/**
 	 * Auto-submit login on the greeter
+	/**
+	 * Auto-submit login on the greeter
 	 * Key insight: trigger file must exist BEFORE greeter calls PAM
 	 * Sequence: write trigger -> restart greeter -> wait -> submit
 	 */
 	async autoSubmitLogin() {
-		const xdotoolCmd = [
-			'/usr/bin/env',
-			'DISPLAY=:0',
-			'XAUTHORITY=/var/lib/lightdm/.Xauthority',
-			'/usr/bin/xdotool'
-		];
-
 		// Step 1: Write trigger file FIRST
 		await this.writeTriggerFile();
 
 		// Step 2: Sync to ensure file is on disk
 		await new Promise((resolve) => {
-			const proc = spawn('sync');
+			const proc = this.hostSpawn('sync', []);
 			proc.on('close', () => resolve());
 			proc.on('error', () => resolve());
 		});
@@ -166,9 +186,9 @@ export class PamAuth {
 
 		// Step 4: Find and terminate greeter session to force respawn with fresh PAM
 		await new Promise((resolve) => {
-			const proc = spawn('bash', ['-c',
-				'GREETER=$(loginctl list-sessions --no-legend | grep greeter | awk \'{print $1}\'); ' +
-				'if [ -n "$GREETER" ]; then sudo loginctl terminate-session $GREETER; fi'
+			const proc = this.hostSpawn('/bin/bash', ['-c',
+				'GREETER=$(/usr/bin/loginctl list-sessions --no-legend | grep greeter | awk \'{print $1}\'); ' +
+				'if [ -n "$GREETER" ]; then /usr/bin/sudo /usr/bin/loginctl terminate-session $GREETER; fi'
 			]);
 			proc.on('close', () => resolve());
 			proc.on('error', () => resolve());
@@ -179,7 +199,10 @@ export class PamAuth {
 
 		// Step 6: Wake screen / move mouse to ensure focus
 		await new Promise((resolve) => {
-			const proc = spawn('sudo', [...xdotoolCmd, 'mousemove', '500', '300']);
+			const proc = this.hostSpawn('/usr/bin/sudo', [
+				'/usr/bin/env', 'DISPLAY=:0', 'XAUTHORITY=/var/lib/lightdm/.Xauthority',
+				'/usr/bin/xdotool', 'mousemove', '500', '300'
+			]);
 			proc.on('close', () => resolve());
 			proc.on('error', () => resolve());
 		});
@@ -189,7 +212,10 @@ export class PamAuth {
 
 		// Step 8: Send Enter to submit login
 		await new Promise((resolve) => {
-			const proc = spawn('sudo', [...xdotoolCmd, 'key', 'Return']);
+			const proc = this.hostSpawn('/usr/bin/sudo', [
+				'/usr/bin/env', 'DISPLAY=:0', 'XAUTHORITY=/var/lib/lightdm/.Xauthority',
+				'/usr/bin/xdotool', 'key', 'Return'
+			]);
 			proc.on('close', () => resolve());
 			proc.on('error', () => resolve());
 		});
