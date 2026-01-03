@@ -6,9 +6,15 @@ struct ContentView: View {
     
     @State private var showingSettings = false
     @State private var selectedDevice: CyberdeckDevice?
+    @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
+    @State private var showDetailBackground = true
+    
+    private var isIPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
     
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             Group {
                 if !cryptoService.hasKeyPair {
                     NoKeyPairView(showingSettings: $showingSettings)
@@ -52,17 +58,27 @@ struct ContentView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(white: 0.05))
+            .background(
+                Group {
+                    if isIPad && !showDetailBackground {
+                        Color.black.ignoresSafeArea()
+                    } else {
+                        Image("Background")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .ignoresSafeArea()
+                    }
+                }
+            )
+            .onAppear {
+                if isIPad {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        showDetailBackground = false
+                    }
+                }
+            }
         }
         .tint(CyberdeckTheme.matrixGreen)
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .environmentObject(BLEManager())
-            .environmentObject(CryptoService())
     }
 }
 
@@ -77,10 +93,11 @@ struct NoKeyPairView: View {
             
             Text("Setup Required")
                 .font(.title)
+                .foregroundColor(.white)
             
             Text("Generate a key pair to start using Cyberdeck Login")
                 .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color(white: 0.6))
                 .padding(.horizontal)
             
             Button(action: { showingSettings = true }) {
@@ -104,12 +121,21 @@ struct BluetoothDisabledView: View {
             
             Text("Bluetooth Disabled")
                 .font(.title)
+                .foregroundColor(.white)
             
             Text("Please enable Bluetooth in Settings to scan for devices")
                 .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color(white: 0.6))
                 .padding(.horizontal)
         }
         .padding()
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environmentObject(BLEManager())
+            .environmentObject(CryptoService())
     }
 }
