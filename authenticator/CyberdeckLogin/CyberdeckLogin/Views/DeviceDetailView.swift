@@ -18,7 +18,7 @@ struct DeviceDetailView: View {
             VStack(spacing: 12) {
                 Image(systemName: "desktopcomputer")
                     .font(.system(size: 64))
-                    .foregroundColor(.blue)
+                    .foregroundColor(CyberdeckTheme.matrixGreen)
                 
                 Text(device.name)
                     .font(.title)
@@ -63,21 +63,17 @@ struct DeviceDetailView: View {
             Text(errorMessage)
         }
         .onAppear {
-            // Connect when view appears
             if bleManager.connectedDevice?.id != device.id {
                 bleManager.connect(to: device)
             }
         }
         .onDisappear {
-            // Disconnect when leaving
             if bleManager.authenticationState != .success {
                 bleManager.disconnect()
             }
         }
         .onChange(of: bleManager.connectedDevice) { oldValue, newValue in
-            // Auto-reconnect if disconnected while still on this view (unless user cancelled)
             if oldValue != nil && newValue == nil && !userCancelled && bleManager.authenticationState != .success {
-                print("🔄 Auto-reconnecting after disconnect...")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     if !userCancelled {
                         bleManager.connect(to: device)
@@ -86,9 +82,7 @@ struct DeviceDetailView: View {
             }
         }
         .onChange(of: bleManager.authenticationState) { oldValue, newValue in
-            // Auto-reconnect on failure (unless user cancelled)
             if case .failed(_) = newValue, !userCancelled {
-                print("🔄 Auth failed, will reconnect...")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     if !userCancelled {
                         bleManager.connect(to: device)
@@ -119,8 +113,9 @@ struct DeviceDetailView: View {
                 Text("Authenticating...")
             case .success:
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
+                    .foregroundColor(CyberdeckTheme.matrixGreen)
                 Text("Authenticated!")
+                    .foregroundColor(CyberdeckTheme.matrixGreen)
             case .failed(let message):
                 Image(systemName: "xmark.circle.fill")
                     .foregroundColor(.red)
@@ -136,12 +131,12 @@ struct DeviceDetailView: View {
         Button(action: authenticate) {
             HStack {
                 Image(systemName: "lock.open.fill")
-                Text("Authenticate")
+                Text("Unlock")
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(bleManager.connectedDevice == nil ? Color.gray : Color.blue)
-            .foregroundColor(.white)
+            .background(bleManager.connectedDevice == nil ? Color.gray : CyberdeckTheme.matrixGreen)
+            .foregroundColor(bleManager.connectedDevice == nil ? .white : .black)
             .cornerRadius(12)
         }
         .disabled(bleManager.connectedDevice == nil)
@@ -179,7 +174,7 @@ struct DeviceDetailView: View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 64))
-                .foregroundColor(.green)
+                .foregroundColor(CyberdeckTheme.matrixGreen)
             
             Text("Successfully Authenticated!")
                 .font(.headline)
@@ -188,7 +183,6 @@ struct DeviceDetailView: View {
                 .foregroundColor(.secondary)
         }
         .onAppear {
-            // Auto-reset after 5 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                 if bleManager.authenticationState == .success {
                     bleManager.authenticationState = .idle
@@ -223,12 +217,9 @@ struct DeviceDetailView: View {
     }
 }
 
-// Preview requires a real CBPeripheral which can't be mocked easily
-// Test on device or use a mock wrapper
 #if DEBUG
 struct DeviceDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        // Preview placeholder - actual testing requires a real device
         Text("DeviceDetailView Preview - Test on device")
             .environmentObject(BLEManager())
             .environmentObject(CryptoService())

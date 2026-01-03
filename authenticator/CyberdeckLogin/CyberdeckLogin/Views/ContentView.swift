@@ -9,23 +9,27 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView {
-            VStack {
+            Group {
                 if !cryptoService.hasKeyPair {
-                    // No key pair - show setup prompt
                     NoKeyPairView(showingSettings: $showingSettings)
                 } else if !bleManager.isBluetoothEnabled {
-                    // Bluetooth not available
                     BluetoothDisabledView()
                 } else {
-                    // Main device list
                     DeviceListView(selectedDevice: $selectedDevice)
                 }
             }
+            .background(
+                Image("Background")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .ignoresSafeArea()
+            )
             .navigationTitle("Cyberdeck Login")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingSettings = true }) {
                         Image(systemName: "gear")
+                            .foregroundColor(CyberdeckTheme.matrixGreen)
                     }
                 }
             }
@@ -33,13 +37,30 @@ struct ContentView: View {
                 SettingsView()
             }
         } detail: {
-            if let device = selectedDevice {
-                DeviceDetailView(device: device, selectedDevice: $selectedDevice)
-            } else {
-                Text("Select a device")
-                    .foregroundColor(.secondary)
+            Group {
+                if let device = selectedDevice {
+                    DeviceDetailView(device: device, selectedDevice: $selectedDevice)
+                } else {
+                    Text("Select a device")
+                        .foregroundColor(.secondary)
+                }
             }
+            .background(
+                Image("Background")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .ignoresSafeArea()
+            )
         }
+        .tint(CyberdeckTheme.matrixGreen)
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environmentObject(BLEManager())
+            .environmentObject(CryptoService())
     }
 }
 
@@ -50,7 +71,7 @@ struct NoKeyPairView: View {
         VStack(spacing: 20) {
             Image(systemName: "key.fill")
                 .font(.system(size: 60))
-                .foregroundColor(.orange)
+                .foregroundColor(CyberdeckTheme.matrixGreen)
             
             Text("Setup Required")
                 .font(.title)
@@ -63,8 +84,8 @@ struct NoKeyPairView: View {
             Button(action: { showingSettings = true }) {
                 Label("Go to Settings", systemImage: "gear")
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .background(CyberdeckTheme.matrixGreen)
+                    .foregroundColor(.black)
                     .cornerRadius(10)
             }
         }
@@ -88,13 +109,5 @@ struct BluetoothDisabledView: View {
                 .padding(.horizontal)
         }
         .padding()
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .environmentObject(BLEManager())
-            .environmentObject(CryptoService())
     }
 }
