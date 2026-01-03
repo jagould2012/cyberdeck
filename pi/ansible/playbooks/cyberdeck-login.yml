@@ -1,0 +1,248 @@
+---
+# Playbook: Deploy Cyberdeck Login
+# Deploys BLE authentication system for passwordless login
+#
+# For Raspberry Pi hosts: Uses native BLE radio
+# For test-vm: Uses proxy mode (requires Mac BLE proxy running)
+#
+# PREREQUISITES:
+#   1. Docker installed on target hosts (run docker-install.yml first)
+#   2. For VMs: Mac BLE proxy running (cd tools/ble-proxy && node mac-proxy.js)
+#
+# USAGE:
+#   ansible-playbook playbooks/cyberdeck-login.yml -K --limit "localhost,test-vm"
+#   ansible-playbook playbooks/cyberdeck-login.yml -K --limit "localhost,pi"
+#   ansible-playbook playbooks/cyberdeck-login.yml -K  # All hosts
+
+- name: Prepare Cyberdeck Login deployment
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    login_src_dir: "{{ inventory_dir }}/../../authenticator/server"
+    config_src_dir: "{{ inventory_dir }}/../../authenticator/config"
+
+  tasks:
+    - name: Check if server directory exists
+      ansible.builtin.stat:
+        path: "{{ login_src_dir }}/package.json"
+      register: server_dir
+
+    - name: Fail if server directory not found
+      ansible.builtin.fail:
+        msg: |
+          Server directory not found at {{ login_src_dir }}
+          Make sure the authenticator/server directory exists.
+      when: not server_dir.stat.exists
+
+    - name: Build Docker image locally
+      ansible.builtin.command:
+        cmd: docker build -t cyberdeck-login:latest .
+        chdir: "{{ login_src_dir }}"
+      changed_when: true
+
+    - name: Save Docker image to archive
+      ansible.builtin.shell:
+        cmd: docker save cyberdeck-login:latest | gzip > /tmp/cyberdeck-login.tar.gz
+      changed_when: true
+
+    - name: Create deployment tarball (server files)
+      ansible.builtin.command:
+        cmd: >
+          tar --exclude='.git' 
+              --exclude='node_modules' 
+              --exclude='*.log' 
+              --exclude='.env'
+              --exclude='data/publicKeys/*'
+              --exclude='data/registered/*'
+              -czf /tmp/cyberdeck-login-deploy.tar.gz 
+              -C "{{ login_src_dir }}" .
+      changed_when: true
+
+    - name: Create config tarball (PAM scripts)
+      ansible.builtin.command:
+        cmd: tar -czf /tmp/cyberdeck-login-config.tar.gz -C "{{ config_src_dir }}" .
+      changed_when: true
+
+- name: Deploy Cyberdeck Login
+  hosts: raspberry_pis
+  become: true
+
+  vars:
+    login_dest_dir: /opt/cyberdeck-login
+    config_dest_dir: /opt/cyberdeck-login/config
+    login_user: "{{ ansible_user }}"
+    # BLE mode: native for Pi, tcp for VM (check inventory is_vm var)
+    ble_mode: "{{ 'tcp' if (is_vm | default(false) | bool) else 'native' }}"
+    computer_name: "{{ custom_hostname | default(inventory_hostname) }}"
+
+  tasks:
+    - name: Display deployment configuration
+      ansible.builtin.debug:
+        msg: |
+          Host: {{ inventory_hostname }}
+          is_vm: {{ is_vm | default(false) }}
+          ble_mode: {{ ble_mode }}
+          login_user: {{ login_user }}
+
+    - name: Check if Docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if Docker is not installed
+      ansible.builtin.fail:
+        msg: "Docker is not installed. Run docker-install.yml first."
+      when: docker_check.rc != 0
+
+    - name: Create directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ login_user }}"
+        group: "{{ login_user }}"
+        mode: '0755'
+      loop:
+        - "{{ login_dest_dir }}"
+        - "{{ login_dest_dir }}/data"
+        - "{{ login_dest_dir }}/data/publicKeys"
+        - "{{ login_dest_dir }}/data/registered"
+        - "{{ config_dest_dir }}"
+
+    - name: Copy server tarball to host
+      ansible.builtin.copy:
+        src: /tmp/cyberdeck-login-deploy.tar.gz
+        dest: "{{ login_dest_dir }}/deploy.tar.gz"
+        mode: '0644'
+
+    - name: Extract server files
+      ansible.builtin.unarchive:
+        src: "{{ login_dest_dir }}/deploy.tar.gz"
+        dest: "{{ login_dest_dir }}"
+        remote_src: true
+        owner: "{{ login_user }}"
+        group: "{{ login_user }}"
+
+    - name: Clean up server tarball
+      ansible.builtin.file:
+        path: "{{ login_dest_dir }}/deploy.tar.gz"
+        state: absent
+
+    - name: Copy config tarball to host
+      ansible.builtin.copy:
+        src: /tmp/cyberdeck-login-config.tar.gz
+        dest: "{{ config_dest_dir }}/config.tar.gz"
+        mode: '0644'
+
+    - name: Extract config files
+      ansible.builtin.unarchive:
+        src: "{{ config_dest_dir }}/config.tar.gz"
+        dest: "{{ config_dest_dir }}"
+        remote_src: true
+        owner: root
+        group: root
+
+    - name: Clean up config tarball
+      ansible.builtin.file:
+        path: "{{ config_dest_dir }}/config.tar.gz"
+        state: absent
+
+    - name: Copy Docker image archive to host
+      ansible.builtin.copy:
+        src: /tmp/cyberdeck-login.tar.gz
+        dest: "{{ login_dest_dir }}/cyberdeck-login.tar.gz"
+        mode: '0644'
+
+    - name: Load Docker image from archive
+      ansible.builtin.shell: gunzip -c {{ login_dest_dir }}/cyberdeck-login.tar.gz | docker load
+      register: docker_load
+      changed_when: "'Loaded image' in docker_load.stdout"
+
+    - name: Clean up Docker image archive
+      ansible.builtin.file:
+        path: "{{ login_dest_dir }}/cyberdeck-login.tar.gz"
+        state: absent
+
+    - name: Create .env file
+      ansible.builtin.template:
+        src: cyberdeck-login-env.j2
+        dest: "{{ login_dest_dir }}/.env"
+        owner: "{{ login_user }}"
+        group: "{{ login_user }}"
+        mode: '0600'
+
+    - name: Run PAM install script
+      ansible.builtin.command:
+        cmd: "{{ config_dest_dir }}/install-pam.sh {{ login_user }}"
+        chdir: "{{ config_dest_dir }}"
+      register: pam_install
+      changed_when: true
+
+    - name: Display PAM install output
+      ansible.builtin.debug:
+        var: pam_install.stdout_lines
+
+    - name: Stop and remove existing container if present
+      ansible.builtin.shell:
+        cmd: |
+          docker compose down 2>/dev/null || true
+          docker rm -f cyberdeck-login-server 2>/dev/null || true
+        chdir: "{{ login_dest_dir }}"
+      changed_when: false
+
+    - name: Start Cyberdeck Login container
+      ansible.builtin.shell:
+        cmd: docker compose up -d
+        chdir: "{{ login_dest_dir }}"
+      register: docker_up
+      changed_when: true
+
+    - name: Wait for container to be ready
+      ansible.builtin.shell:
+        cmd: docker ps -q -f name=cyberdeck-login-server
+      register: login_running
+      until: login_running.stdout != ""
+      retries: 10
+      delay: 3
+      changed_when: false
+
+    - name: Display deployment status
+      ansible.builtin.debug:
+        msg: |
+          Cyberdeck Login deployed and running!
+          
+          Location: {{ login_dest_dir }}
+          BLE Mode: {{ ble_mode }}
+          Computer Name: {{ computer_name }}
+          Login User: {{ login_user }}
+          
+          {% if ble_mode == 'tcp' %}
+          PROXY MODE: Make sure Mac BLE proxy is running:
+            cd tools/ble-proxy && node mac-proxy.js
+          {% endif %}
+          
+          Device Registration:
+            1. Open iOS app and scan for "{{ computer_name }}"
+            2. Tap Register - public key saved to data/publicKeys/
+            3. Approve: cp data/publicKeys/<file> data/registered/
+            4. Device can now authenticate
+          
+          Management:
+            View logs:   docker logs -f cyberdeck-login-server
+            Stop:        cd {{ login_dest_dir }} && docker compose down
+            Restart:     cd {{ login_dest_dir }} && docker compose restart
+
+- name: Clean up local files
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Remove local tarballs
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/cyberdeck-login.tar.gz
+        - /tmp/cyberdeck-login-deploy.tar.gz
+        - /tmp/cyberdeck-login-config.tar.gz
