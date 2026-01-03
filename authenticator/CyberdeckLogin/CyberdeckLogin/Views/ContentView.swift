@@ -41,16 +41,18 @@ struct ContentView: View {
                 if let device = selectedDevice {
                     DeviceDetailView(device: device, selectedDevice: $selectedDevice)
                 } else {
-                    Text("Select a device")
-                        .foregroundColor(.secondary)
+                    VStack {
+                        Image(systemName: "desktopcomputer")
+                            .font(.system(size: 64))
+                            .foregroundColor(CyberdeckTheme.matrixGreen.opacity(0.5))
+                        Text("Select a device")
+                            .font(.title2)
+                            .foregroundColor(Color(white: 0.6))
+                    }
                 }
             }
-            .background(
-                Image("Background")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .ignoresSafeArea()
-            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(white: 0.05))
         }
         .tint(CyberdeckTheme.matrixGreen)
     }

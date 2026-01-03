@@ -56,7 +56,7 @@
 			);
 			target = AB4068122F09779A00A917A2 /* CyberdeckLoginWatch Watch App */;
 		};
-		AB4068432F098B5000A917A2 /* Exceptions for "CyberdeckLogin" folder in "CyberdeckLogin" target */ = {
+		AB4068DA2F099AB000A917A2 /* Exceptions for "CyberdeckLogin" folder in "CyberdeckLogin" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -79,7 +79,7 @@
 		AB4067DA2F09272400A917A2 /* CyberdeckLogin */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				AB4068432F098B5000A917A2 /* Exceptions for "CyberdeckLogin" folder in "CyberdeckLogin" target */,
+				AB4068DA2F099AB000A917A2 /* Exceptions for "CyberdeckLogin" folder in "CyberdeckLogin" target */,
 			);
 			path = CyberdeckLogin;
 			sourceTree = "<group>";

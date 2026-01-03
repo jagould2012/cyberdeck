@@ -35,9 +35,13 @@ struct DeviceListView: View {
                 }
                 .padding(.vertical, 4)
             }
-            .listRowBackground(Color(white: 0.12))
+            .listRowBackground(Color(white: 0.12).opacity(0.8))
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
         }
+        .listStyle(.plain)
         .scrollContentBackground(.hidden)
+        .padding(.top, 12)
         .onAppear {
             if !bleManager.isScanning && bleManager.discoveredDevices.isEmpty {
                 bleManager.startScanning()

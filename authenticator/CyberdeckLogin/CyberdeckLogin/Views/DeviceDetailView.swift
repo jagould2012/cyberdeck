@@ -22,9 +22,10 @@ struct DeviceDetailView: View {
                 
                 Text(device.name)
                     .font(.title)
+                    .foregroundColor(.white)
                 
                 Text("Signal: \(device.rssi) dBm")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color(white: 0.6))
             }
             .padding(.top, 32)
             
@@ -98,19 +99,29 @@ struct DeviceDetailView: View {
             switch bleManager.authenticationState {
             case .idle:
                 Image(systemName: "circle")
+                    .foregroundColor(Color(white: 0.6))
                 Text("Ready")
+                    .foregroundColor(Color(white: 0.6))
             case .connecting:
                 ProgressView()
+                    .tint(CyberdeckTheme.matrixGreen)
                 Text("Connecting...")
+                    .foregroundColor(.white)
             case .readingChallenge:
                 ProgressView()
+                    .tint(CyberdeckTheme.matrixGreen)
                 Text("Reading challenge...")
+                    .foregroundColor(.white)
             case .signing:
                 ProgressView()
+                    .tint(CyberdeckTheme.matrixGreen)
                 Text("Signing...")
+                    .foregroundColor(.white)
             case .authenticating:
                 ProgressView()
+                    .tint(CyberdeckTheme.matrixGreen)
                 Text("Authenticating...")
+                    .foregroundColor(.white)
             case .success:
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(CyberdeckTheme.matrixGreen)
@@ -120,10 +131,11 @@ struct DeviceDetailView: View {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundColor(.red)
                 Text("Failed: \(message)")
+                    .foregroundColor(.red)
             }
         }
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color(white: 0.12).opacity(0.8))
         .cornerRadius(12)
     }
     
@@ -135,8 +147,8 @@ struct DeviceDetailView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(bleManager.connectedDevice == nil ? Color.gray : CyberdeckTheme.matrixGreen)
-            .foregroundColor(bleManager.connectedDevice == nil ? .white : .black)
+            .background(bleManager.connectedDevice == nil ? Color(white: 0.3) : CyberdeckTheme.matrixGreen)
+            .foregroundColor(bleManager.connectedDevice == nil ? Color(white: 0.6) : .black)
             .cornerRadius(12)
         }
         .disabled(bleManager.connectedDevice == nil)
@@ -150,8 +162,8 @@ struct DeviceDetailView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color(.systemGray5))
-            .foregroundColor(.primary)
+            .background(Color(white: 0.2))
+            .foregroundColor(.white)
             .cornerRadius(12)
         }
     }
@@ -164,8 +176,8 @@ struct DeviceDetailView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color(.systemGray5))
-            .foregroundColor(.primary)
+            .background(Color(white: 0.2))
+            .foregroundColor(.white)
             .cornerRadius(12)
         }
     }
@@ -178,9 +190,10 @@ struct DeviceDetailView: View {
             
             Text("Successfully Authenticated!")
                 .font(.headline)
+                .foregroundColor(.white)
             
             Text("Your device should now be unlocked")
-                .foregroundColor(.secondary)
+                .foregroundColor(Color(white: 0.6))
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
