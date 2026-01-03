@@ -22,6 +22,7 @@ async function main() {
 		// Initialize components
 		const configManager = new ConfigManager(CONFIG_PATH, PUBLIC_KEYS_DIR);
 		await configManager.load();
+		await configManager.startWatching();
 
 		const nonceManager = new NonceManager({
 			rotationIntervalMs: configManager.get('nonceRotationIntervalMs', 30000)

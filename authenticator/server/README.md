@@ -4,112 +4,181 @@ Node.js BLE server that handles authentication requests from the iOS app.
 
 ## Prerequisites
 
-- Docker and Docker Compose
-- Bluetooth 4.0+ adapter
+- Docker and Docker Compose (for production)
+- Node.js 18+ (for development)
+- Bluetooth 4.0+ adapter (or use proxy mode for VMs)
 - Linux system with D-Bus (for lock screen monitoring)
 
 ## Quick Start
 
 1. **Configure environment**
 
-   Create a `.env` file:
    ```bash
-   COMPUTER_NAME=my-raspberry-pi
-   LOGIN_USER=pi
+   cp .env.example .env
+   nano .env
    ```
 
-2. **Build and start**
+2. **Install dependencies**
 
    ```bash
-   docker-compose up -d
+   npm install
    ```
 
-3. **Check logs**
+3. **Start the server**
 
    ```bash
-   docker-compose logs -f
+   npm run dev
    ```
 
 ## Configuration
 
-Configuration is stored in `data/config.json`:
+### Environment Variables (`.env`)
+
+```bash
+# Path to config.json
+CONFIG_PATH=./data/config.json
+
+# Directory for captured public keys during registration
+PUBLIC_KEYS_DIR=./data/publicKeys
+
+# Computer name shown in BLE advertisement
+COMPUTER_NAME=cyberdeck
+
+# Linux user to log in
+LOGIN_USER=pi
+
+# BLE Mode: 'native' for real Bluetooth, 'tcp' for proxy mode
+BLE_MODE=native
+
+# TCP port for proxy mode (only used when BLE_MODE=tcp)
+TCP_PORT=3100
+```
+
+### Server Settings (`data/config.json`)
 
 ```json
 {
   "computerName": "my-raspberry-pi",
   "loginUser": "pi",
-  "nonceRotationIntervalMs": 30000,
-  "registeredDevices": [
-    {
-      "name": "My iPhone",
-      "publicKey": "base64-encoded-ed25519-public-key"
-    }
-  ]
+  "nonceRotationIntervalMs": 30000
 }
 ```
 
-### Options
+## Directory Structure
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `computerName` | Name shown in BLE advertisement | `cyberdeck` |
-| `loginUser` | Linux user to log in | `pi` |
-| `nonceRotationIntervalMs` | How often to rotate the nonce | `30000` (30s) |
-| `registeredDevices` | Array of registered device public keys | `[]` |
+```
+data/
+├── config.json      # Server settings
+├── publicKeys/      # Captured keys from registration attempts
+│   └── <device-id>.json
+└── registered/      # Approved devices (copy files here to enable)
+    └── <device-id>.json
+```
 
-## Registering Devices
+## Device Registration
 
-1. **Enter registration mode**
+Registration is always enabled. When an iPhone registers, its public key is saved to `publicKeys/`. To approve a device, copy its file to `registered/`.
 
-   ```bash
-   # Option 1: Via docker exec
-   docker exec cyberdeck-login-server node src/register-mode.js 60
+1. **Register from iPhone app** (Settings → Register Device)
    
-   # Option 2: Via docker-compose
-   docker-compose --profile registration up register
+   Server logs:
+   ```
+   📝 Registration request from: Jonathan's iPhone
+   📝 Captured public key saved to ./data/publicKeys/ABC123.json
+      To register: cp ./data/publicKeys/ABC123.json ./data/registered/
    ```
 
-2. **On your iPhone**, open the Cyberdeck Login app and go to Settings → Register Device
-
-3. **Check captured keys**
+2. **Review the captured key**
 
    ```bash
-   ls data/publicKeys/
-   cat data/publicKeys/<device-id>.json
+   cat data/publicKeys/ABC123.json
    ```
 
-4. **Add to config.json**
-
-   Copy the public key to the `registeredDevices` array:
-   
-   ```json
-   {
-     "registeredDevices": [
-       {
-         "name": "My iPhone 15",
-         "publicKey": "<the-captured-public-key>"
-       }
-     ]
-   }
-   ```
-
-5. **Restart the server**
+3. **Approve the device**
 
    ```bash
-   docker-compose restart
+   cp data/publicKeys/ABC123.json data/registered/
    ```
+
+   Server auto-detects and logs:
+   ```
+   🔑 1 registered device(s) in ./data/registered
+      ✨ New device(s) added!
+   ```
+
+4. **Revoke a device**
+
+   ```bash
+   rm data/registered/ABC123.json
+   ```
+
+   Server logs:
+   ```
+   🔑 0 registered device(s) in ./data/registered
+      🗑️  Device(s) removed
+   ```
+
+## Proxy Mode (for VMs)
+
+If running in a VM without Bluetooth access, use proxy mode. A Mac with Bluetooth acts as a BLE bridge.
+
+### Architecture
+
+```
+iPhone ←→ BLE ←→ Mac (proxy) ←→ WebSocket ←→ VM (server)
+```
+
+### Setup
+
+**On the VM:**
+
+```bash
+# Set proxy mode in .env
+echo "BLE_MODE=tcp" >> .env
+echo "TCP_PORT=3100" >> .env
+
+# Start server
+npm run dev
+```
+
+Output:
+```
+📡 BLE Mode: tcp
+📡 WebSocket server listening on port 3100
+✅ Cyberdeck Login Server running (proxy mode)
+   Waiting for proxy connection on port 3100...
+```
+
+**On the Mac:**
+
+```bash
+cd tools/ble-proxy
+npm install
+npm start -- --server <VM_IP>:3100
+```
+
+Output:
+```
+🔗 BLE Proxy - connecting to ws://<VM_IP>:3100
+✅ Connected to server
+🔗 Server ready
+📡 Bluetooth: poweredOn
+✅ BLE advertising - iPhone can now connect
+```
+
+Now the iPhone app will see "CyberdeckProxy" and can authenticate through the VM.
 
 ## BLE Service Details
 
-### Service UUID: `cd10`
+### Service UUID: `CD10`
 
 ### Characteristics
 
 | UUID | Name | Properties | Description |
 |------|------|------------|-------------|
-| `cd11` | Challenge | Read | Returns current challenge (nonce, timestamp, computerName) |
-| `cd12` | Auth | Write | Accepts signed authentication response |
-| `cd13` | Register | Write | Accepts public key during registration mode |
+| `CD11` | Challenge | Read | Returns current challenge (nonce, timestamp, computerName) |
+| `CD12` | Auth | Write | Accepts signed authentication response |
+| `CD13` | Register | Write | Accepts public key registration |
 
 ### Challenge Format (JSON)
 
@@ -130,13 +199,16 @@ Configuration is stored in `data/config.json`:
 }
 ```
 
-The `signedNonce` is the Ed25519 signature of:
-```json
-{
-  "nonce": "<nonce-from-challenge>",
-  "timestamp": <current-timestamp>
-}
+## Docker Deployment
+
+```bash
+docker-compose up -d
 ```
+
+The container needs:
+- Privileged mode (for Bluetooth)
+- Host network (for BLE)
+- Volume mounts for `/data` and D-Bus
 
 ## Troubleshooting
 
@@ -149,42 +221,37 @@ bluetoothctl show
 # Restart Bluetooth service
 sudo systemctl restart bluetooth
 
-# Check container can see Bluetooth
-docker exec cyberdeck-login-server hciconfig
+# Verify adapter is visible
+hciconfig
 ```
 
 ### D-Bus errors
 
-Make sure to pass the D-Bus session address:
-
 ```bash
 export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
-docker-compose up -d
+npm run dev
 ```
 
 ### Lock screen not detected
 
-The server supports multiple methods:
+The server supports:
 - systemd-logind (via `loginctl`)
 - GNOME Screensaver (via D-Bus)
 - KDE Screensaver (via D-Bus)
 - freedesktop.org Screensaver standard
 
-For headless systems or unusual setups, you may need to manually configure lock detection.
-
-## Development
-
-Run without Docker:
+### Proxy mode connection issues
 
 ```bash
-npm install
-npm run dev
-```
+# Check VM is reachable
+ping <VM_IP>
 
-Run tests:
+# Check port is open
+nc -zv <VM_IP> 3100
 
-```bash
-npm test
+# Check server is listening
+# On VM:
+ss -tlnp | grep 3100
 ```
 
 ## Architecture
@@ -193,29 +260,26 @@ npm test
 ┌─────────────────────────────────────────────────────┐
 │                   CyberdeckLoginServer              │
 ├─────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌────────────┐  │
-│  │ BleAdvertiser│  │BlePeripheral│  │LockMonitor │  │
-│  │ (advertising)│  │(GATT server)│  │(D-Bus/idle)│  │
-│  └──────┬──────┘  └──────┬──────┘  └─────┬──────┘  │
-│         │                │               │          │
-│  ┌──────┴────────────────┴───────────────┴──────┐  │
-│  │              NonceManager                     │  │
-│  │         (nonce generation/validation)        │  │
-│  └──────────────────────┬───────────────────────┘  │
-│                         │                           │
-│  ┌──────────────────────┴───────────────────────┐  │
-│  │              AuthService                      │  │
-│  │         (Ed25519 verification)               │  │
-│  └──────────────────────┬───────────────────────┘  │
-│                         │                           │
-│  ┌──────────────────────┴───────────────────────┐  │
-│  │              ConfigManager                    │  │
-│  │         (device registration)                │  │
-│  └──────────────────────┬───────────────────────┘  │
-│                         │                           │
-│  ┌──────────────────────┴───────────────────────┐  │
-│  │              PamAuth                          │  │
-│  │         (trigger system login)               │  │
-│  └──────────────────────────────────────────────┘  │
+│                                                     │
+│  Native Mode:           Proxy Mode:                 │
+│  ┌─────────────┐        ┌─────────────┐            │
+│  │BleAdvertiser│        │ WsBleServer │            │
+│  │BlePeripheral│        │ (WebSocket) │            │
+│  └──────┬──────┘        └──────┬──────┘            │
+│         │                      │                    │
+│  ┌──────┴──────────────────────┴──────┐            │
+│  │            AuthService             │            │
+│  │       (Ed25519 verification)       │            │
+│  └──────────────────┬─────────────────┘            │
+│                     │                               │
+│  ┌──────────────────┴─────────────────┐            │
+│  │           ConfigManager            │            │
+│  │    (watches registered/ folder)    │            │
+│  └──────────────────┬─────────────────┘            │
+│                     │                               │
+│  ┌──────────────────┴─────────────────┐            │
+│  │             PamAuth                │            │
+│  │      (trigger system login)        │            │
+│  └────────────────────────────────────┘            │
 └─────────────────────────────────────────────────────┘
 ```
