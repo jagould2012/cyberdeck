@@ -1,62 +1,62 @@
-import net from 'net';
+import { WebSocketServer } from 'ws';
 
 /**
- * TCP server that receives BLE requests from the Mac proxy
+ * WebSocket server that receives BLE requests from the Mac proxy
+ * Maintains a persistent connection for cleaner communication
  */
-export class TcpBleServer {
+export class WsBleServer {
 	constructor({ authService, pamAuth, configManager, port = 3100 }) {
 		this.authService = authService;
 		this.pamAuth = pamAuth;
 		this.configManager = configManager;
 		this.port = port;
-		this.server = null;
+		this.wss = null;
 		this.registrationMode = false;
+		this.connectedProxy = null;
 	}
 
 	start() {
 		return new Promise((resolve, reject) => {
-			this.server = net.createServer((socket) => {
-				console.log(`📡 TCP client connected: ${socket.remoteAddress}`);
+			this.wss = new WebSocketServer({ port: this.port });
 
-				let buffer = '';
-
-				socket.on('data', async (data) => {
-					buffer += data.toString();
-
-					// Process complete messages (newline-delimited)
-					const lines = buffer.split('\n');
-					buffer = lines.pop(); // Keep incomplete line in buffer
-
-					for (const line of lines) {
-						if (line.trim()) {
-							await this.handleMessage(socket, line.trim());
-						}
-					}
-				});
-
-				socket.on('error', (err) => {
-					console.error('TCP socket error:', err.message);
-				});
-
-				socket.on('close', () => {
-					console.log('📡 TCP client disconnected');
-				});
+			this.wss.on('listening', () => {
+				console.log(`📡 WebSocket server listening on port ${this.port}`);
+				resolve();
 			});
 
-			this.server.on('error', (err) => {
+			this.wss.on('error', (err) => {
 				reject(err);
 			});
 
-			this.server.listen(this.port, '0.0.0.0', () => {
-				console.log(`📡 TCP BLE server listening on port ${this.port}`);
-				resolve();
+			this.wss.on('connection', (ws, req) => {
+				const clientIp = req.socket.remoteAddress;
+				console.log(`✅ Proxy connected from: ${clientIp}`);
+				console.log('🔗 Ready for BLE requests');
+
+				this.connectedProxy = ws;
+
+				ws.on('message', async (data) => {
+					await this.handleMessage(ws, data.toString());
+				});
+
+				ws.on('close', () => {
+					console.log('📡 Proxy disconnected');
+					this.connectedProxy = null;
+				});
+
+				ws.on('error', (err) => {
+					console.error('WebSocket error:', err.message);
+				});
+
+				// Send welcome message
+				ws.send(JSON.stringify({ type: 'connected', message: 'Server ready' }));
 			});
 		});
 	}
 
-	async handleMessage(socket, message) {
+	async handleMessage(ws, message) {
 		try {
-			const { action, data } = JSON.parse(message);
+			const { id, action, data } = JSON.parse(message);
 			let response;
 
 			switch (action) {
@@ -72,20 +72,25 @@ export class TcpBleServer {
 					response = await this.handleRegister(data);
 					break;
 
+				case 'ping':
+					response = { success: true, pong: true };
+					break;
+
 				default:
 					response = { success: false, error: 'Unknown action' };
 			}
 
-			socket.write(JSON.stringify(response) + '\n');
+			// Include request id for correlation
+			ws.send(JSON.stringify({ id, ...response }));
 		} catch (error) {
-			console.error('TCP message error:', error);
-			socket.write(JSON.stringify({ success: false, error: error.message }) + '\n');
+			console.error('Message error:', error);
+			ws.send(JSON.stringify({ success: false, error: error.message }));
 		}
 	}
 
 	handleGetChallenge() {
 		const challenge = this.authService.generateChallenge();
-		console.log('📤 Sending challenge:', challenge.nonce.substring(0, 16) + '...');
+		console.log('📤 Challenge requested');
 		return { success: true, challenge };
 	}
 
@@ -130,13 +135,21 @@ export class TcpBleServer {
 
 	setRegistrationMode(enabled) {
 		this.registrationMode = enabled;
-		console.log(`📝 TCP Registration mode: ${enabled ? 'enabled' : 'disabled'}`);
+		console.log(`📝 Registration mode: ${enabled ? 'enabled' : 'disabled'}`);
+
+		// Notify connected proxy
+		if (this.connectedProxy) {
+			this.connectedProxy.send(JSON.stringify({
+				type: 'registrationMode',
+				enabled
+			}));
+		}
 	}
 
 	stop() {
-		if (this.server) {
-			this.server.close();
-			this.server = null;
+		if (this.wss) {
+			this.wss.close();
+			this.wss = null;
 		}
 	}
 }

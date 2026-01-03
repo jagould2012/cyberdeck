@@ -7,7 +7,7 @@ import { BleAdvertiser } from './ble-advertiser.js';
 import { BlePeripheral } from './ble-peripheral.js';
 import { LockScreenMonitor } from './lock-monitor.js';
 import { PamAuth } from './pam-auth.js';
-import { TcpBleServer } from './tcp-server.js';
+import { WsBleServer } from './ws-server.js';
 
 const CONFIG_PATH = process.env.CONFIG_PATH || '/data/config.json';
 const PUBLIC_KEYS_DIR = process.env.PUBLIC_KEYS_DIR || '/data/publicKeys';
@@ -35,35 +35,35 @@ async function main() {
 		nonceManager.startRotation();
 
 		if (BLE_MODE === 'tcp') {
-			// TCP mode - receive BLE requests from Mac proxy
-			console.log('📡 Starting TCP BLE server (proxy mode)...');
+			// WebSocket mode - receive BLE requests from Mac proxy
+			console.log('📡 Starting WebSocket server (proxy mode)...');
 
-			const tcpServer = new TcpBleServer({
+			const wsServer = new WsBleServer({
 				authService,
 				pamAuth,
 				configManager,
 				port: TCP_PORT
 			});
 
-			await tcpServer.start();
+			await wsServer.start();
 
 			// Handle shutdown
 			process.on('SIGINT', async () => {
 				console.log('\n🛑 Shutting down...');
 				nonceManager.stopRotation();
-				tcpServer.stop();
+				wsServer.stop();
 				process.exit(0);
 			});
 
 			process.on('SIGTERM', async () => {
 				console.log('\n🛑 Shutting down...');
 				nonceManager.stopRotation();
-				tcpServer.stop();
+				wsServer.stop();
 				process.exit(0);
 			});
 
-			console.log('✅ Cyberdeck Login Server running (TCP mode)');
-			console.log(`   Connect Mac proxy to port ${TCP_PORT}`);
+			console.log('✅ Cyberdeck Login Server running (proxy mode)');
+			console.log(`   Waiting for proxy connection on port ${TCP_PORT}...`);
 
 		} else {
 			// Native BLE mode
