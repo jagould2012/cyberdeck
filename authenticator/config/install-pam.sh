@@ -21,13 +21,13 @@ fi
 # Install dependencies
 echo "📦 Installing dependencies..."
 if command -v apt &> /dev/null; then
-    apt install -y jq > /dev/null 2>&1 && echo "   ✅ jq installed" || echo "   ℹ️  jq already installed"
+    apt install -y jq xdotool > /dev/null 2>&1 && echo "   ✅ Dependencies installed" || echo "   ℹ️  Dependencies already installed"
 elif command -v yum &> /dev/null; then
-    yum install -y jq > /dev/null 2>&1 && echo "   ✅ jq installed" || echo "   ℹ️  jq already installed"
+    yum install -y jq xdotool > /dev/null 2>&1 && echo "   ✅ Dependencies installed" || echo "   ℹ️  Dependencies already installed"
 elif command -v pacman &> /dev/null; then
-    pacman -S --noconfirm jq > /dev/null 2>&1 && echo "   ✅ jq installed" || echo "   ℹ️  jq already installed"
+    pacman -S --noconfirm jq xdotool > /dev/null 2>&1 && echo "   ✅ Dependencies installed" || echo "   ℹ️  Dependencies already installed"
 else
-    echo "   ⚠️  Could not install jq automatically. Please install it manually."
+    echo "   ⚠️  Could not install dependencies automatically. Please install jq and xdotool manually."
 fi
 
 # Install auth script
@@ -56,15 +56,17 @@ if [ -d "/etc/polkit-1/rules.d" ]; then
     echo "📝 Installing polkit rules..."
     cat > /etc/polkit-1/rules.d/50-cyberdeck-login.rules << EOF
 // Polkit rules for Cyberdeck Login
+// Only affects session lock/unlock for cyberdeck-login user
 polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.login1.lock-sessions" ||
-        action.id == "org.freedesktop.login1.unlock-sessions" ||
-        action.id == "org.freedesktop.login1.lock-session" ||
-        action.id == "org.freedesktop.login1.unlock-session") {
-        if (subject.user == "$TARGET_USER") {
+    if (subject.user == "$TARGET_USER") {
+        if (action.id == "org.freedesktop.login1.lock-sessions" ||
+            action.id == "org.freedesktop.login1.unlock-sessions" ||
+            action.id == "org.freedesktop.login1.lock-session" ||
+            action.id == "org.freedesktop.login1.unlock-session") {
             return polkit.Result.YES;
         }
     }
+    return null;
 });
 EOF
     chmod 644 /etc/polkit-1/rules.d/50-cyberdeck-login.rules
@@ -83,6 +85,13 @@ $TARGET_USER ALL=(ALL) NOPASSWD: /usr/local/bin/cyberdeck-pam-helper
 # Allow the helper to run loginctl without password
 $TARGET_USER ALL=(ALL) NOPASSWD: /usr/bin/loginctl unlock-sessions
 $TARGET_USER ALL=(ALL) NOPASSWD: /bin/loginctl unlock-sessions
+$TARGET_USER ALL=(ALL) NOPASSWD: /usr/bin/loginctl unlock-session *
+$TARGET_USER ALL=(ALL) NOPASSWD: /usr/bin/loginctl activate *
+$TARGET_USER ALL=(ALL) NOPASSWD: /usr/bin/loginctl terminate-session *
+
+# Allow xdotool with lightdm's X authority for auto-submit (specific commands)
+$TARGET_USER ALL=(ALL) NOPASSWD: /usr/bin/env DISPLAY\=\:0 XAUTHORITY\=/var/lib/lightdm/.Xauthority /usr/bin/xdotool mousemove *
+$TARGET_USER ALL=(ALL) NOPASSWD: /usr/bin/env DISPLAY\=\:0 XAUTHORITY\=/var/lib/lightdm/.Xauthority /usr/bin/xdotool key *
 EOF
 chmod 440 /etc/sudoers.d/cyberdeck-login
 chown root:root /etc/sudoers.d/cyberdeck-login

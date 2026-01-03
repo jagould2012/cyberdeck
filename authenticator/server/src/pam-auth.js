@@ -19,23 +19,14 @@ export class PamAuth {
 		console.log(`🔓 Triggering PAM login for user: ${this.loginUser}`);
 
 		try {
-			// Method 1: Write trigger file for PAM module
-			await this.writeTriggerFile();
-
-			// Method 2: Try to unlock via loginctl (systemd)
+			// Method 1: Try to unlock via loginctl (systemd)
 			await this.unlockViaLoginctl();
 
-			// Method 3: Try to unlock via D-Bus
+			// Method 2: Try to unlock via D-Bus screensavers
 			await this.unlockViaDbus();
 
-			// Clean up trigger file after a delay
-			setTimeout(async () => {
-				try {
-					await unlink(this.triggerFile);
-				} catch {
-					// Ignore
-				}
-			}, 5000);
+			// Method 3: Wake screen, write trigger file, and auto-submit
+			await this.autoSubmitLogin();
 
 		} catch (error) {
 			console.error('Failed to trigger login:', error);
@@ -54,54 +45,165 @@ export class PamAuth {
 		};
 
 		await writeFile(this.triggerFile, JSON.stringify(triggerData), {
-			mode: 0o600
+			mode: 0o666
 		});
-		console.log('📝 Trigger file written');
 	}
 
 	/**
 	 * Try to unlock session via loginctl
 	 */
 	async unlockViaLoginctl() {
-		return new Promise((resolve) => {
-			const proc = spawn('loginctl', ['unlock-sessions']);
+		// First try generic unlock-sessions
+		await this.tryCommand('loginctl', ['unlock-sessions']);
 
-			proc.on('close', (code) => {
-				if (code === 0) {
-					console.log('🔓 Sessions unlocked via loginctl');
+		// Also try to unlock specific sessions for this user
+		try {
+			const { execSync } = await import('child_process');
+			const output = execSync('loginctl list-sessions --no-legend', { encoding: 'utf-8' });
+			const lines = output.trim().split('\n');
+
+			for (const line of lines) {
+				const parts = line.trim().split(/\s+/);
+				if (parts.length >= 3) {
+					const sessionId = parts[0];
+					const user = parts[2];
+					if (user === this.loginUser) {
+						await this.tryCommand('loginctl', ['unlock-session', sessionId]);
+					}
 				}
-				resolve();
-			});
-
-			proc.on('error', () => {
-				resolve();
-			});
-		});
+			}
+		} catch (err) {
+			// Ignore errors
+		}
 	}
 
 	/**
 	 * Try to unlock via D-Bus screensaver interface
 	 */
 	async unlockViaDbus() {
+		// Try GNOME screensaver
+		await this.tryCommand('dbus-send', [
+			'--session',
+			'--type=method_call',
+			'--dest=org.gnome.ScreenSaver',
+			'/org/gnome/ScreenSaver',
+			'org.gnome.ScreenSaver.SetActive',
+			'boolean:false'
+		]);
+
+		// Try freedesktop screensaver
+		await this.tryCommand('dbus-send', [
+			'--session',
+			'--type=method_call',
+			'--dest=org.freedesktop.ScreenSaver',
+			'/org/freedesktop/ScreenSaver',
+			'org.freedesktop.ScreenSaver.SetActive',
+			'boolean:false'
+		]);
+
+		// Try KDE screensaver
+		await this.tryCommand('dbus-send', [
+			'--session',
+			'--type=method_call',
+			'--dest=org.kde.screensaver',
+			'/ScreenSaver',
+			'org.freedesktop.ScreenSaver.SetActive',
+			'boolean:false'
+		]);
+
+		// Try xscreensaver
+		await this.tryCommand('xscreensaver-command', ['-deactivate']);
+
+		// Try light-locker
+		await this.tryCommand('light-locker-command', ['-l']);
+
+		// Try cinnamon screensaver
+		await this.tryCommand('cinnamon-screensaver-command', ['-d']);
+
+		// Try mate screensaver  
+		await this.tryCommand('mate-screensaver-command', ['-d']);
+
+		// Try xdotool to simulate activity (fallback)
+		await this.tryCommand('xdotool', ['key', 'shift']);
+	}
+
+	/**
+	 * Helper to try a command without failing (silent)
+	 */
+	async tryCommand(cmd, args) {
 		return new Promise((resolve) => {
-			// Try GNOME screensaver
-			const proc = spawn('dbus-send', [
-				'--session',
-				'--type=method_call',
-				'--dest=org.gnome.ScreenSaver',
-				'/org/gnome/ScreenSaver',
-				'org.gnome.ScreenSaver.SetActive',
-				'boolean:false'
-			]);
-
-			proc.on('close', () => {
-				resolve();
-			});
-
-			proc.on('error', () => {
-				resolve();
-			});
+			const proc = spawn(cmd, args);
+			proc.on('close', () => resolve());
+			proc.on('error', () => resolve());
 		});
+	}
+
+	/**
+	 * Auto-submit login on the greeter
+	 * Key insight: trigger file must exist BEFORE greeter calls PAM
+	 * Sequence: write trigger -> restart greeter -> wait -> submit
+	 */
+	async autoSubmitLogin() {
+		const xdotoolCmd = [
+			'/usr/bin/env',
+			'DISPLAY=:0',
+			'XAUTHORITY=/var/lib/lightdm/.Xauthority',
+			'/usr/bin/xdotool'
+		];
+
+		// Step 1: Write trigger file FIRST
+		await this.writeTriggerFile();
+
+		// Step 2: Sync to ensure file is on disk
+		await new Promise((resolve) => {
+			const proc = spawn('sync');
+			proc.on('close', () => resolve());
+			proc.on('error', () => resolve());
+		});
+
+		// Step 3: Small delay to ensure file is visible
+		await new Promise(resolve => setTimeout(resolve, 200));
+
+		// Step 4: Find and terminate greeter session to force respawn with fresh PAM
+		await new Promise((resolve) => {
+			const proc = spawn('bash', ['-c',
+				'GREETER=$(loginctl list-sessions --no-legend | grep greeter | awk \'{print $1}\'); ' +
+				'if [ -n "$GREETER" ]; then sudo loginctl terminate-session $GREETER; fi'
+			]);
+			proc.on('close', () => resolve());
+			proc.on('error', () => resolve());
+		});
+
+		// Step 5: Wait for new greeter to spawn and initialize (longer wait)
+		await new Promise(resolve => setTimeout(resolve, 4000));
+
+		// Step 6: Wake screen / move mouse to ensure focus
+		await new Promise((resolve) => {
+			const proc = spawn('sudo', [...xdotoolCmd, 'mousemove', '500', '300']);
+			proc.on('close', () => resolve());
+			proc.on('error', () => resolve());
+		});
+
+		// Step 7: Small delay
+		await new Promise(resolve => setTimeout(resolve, 300));
+
+		// Step 8: Send Enter to submit login
+		await new Promise((resolve) => {
+			const proc = spawn('sudo', [...xdotoolCmd, 'key', 'Return']);
+			proc.on('close', () => resolve());
+			proc.on('error', () => resolve());
+		});
+
+		// Clean up trigger file after a delay (in case login failed)
+		setTimeout(async () => {
+			try {
+				await unlink(this.triggerFile);
+			} catch {
+				// Ignore
+			}
+		}, 5000);
+
+		console.log('🔓 Screen unlocked');
 	}
 
 	/**

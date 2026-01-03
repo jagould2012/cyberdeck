@@ -2,200 +2,187 @@
 
 This directory contains the PAM module and scripts needed to enable passwordless login triggered by the Cyberdeck Login server.
 
-## Overview
+## Quick Install
 
-The PAM (Pluggable Authentication Modules) integration allows the server to unlock your Linux session without requiring a password. This works by:
+```bash
+sudo ./install-pam.sh <username>
+```
 
-1. The server writes a trigger file when authentication succeeds
-2. A PAM module checks for this trigger file
-3. If valid, the session is unlocked without password
+For example:
+```bash
+sudo ./install-pam.sh parallels
+```
 
-## Installation
+The script will:
+1. Install required dependencies (jq)
+2. Install authentication scripts
+3. Configure PAM for your display manager
+4. Set up sudoers and polkit rules
 
-### Method 1: Using the PAM Helper Script
+### Supported Display Managers
 
-This is the simpler approach that works with most Linux systems.
+The install script auto-detects and configures:
+- **LightDM** (Kali, Raspberry Pi OS, Xubuntu)
+- **GDM** (GNOME/Ubuntu)
+- **SDDM** (KDE)
+- **LXDM**, **XDM**
 
-1. **Copy the helper script**
+And screen lockers:
+- XScreenSaver
+- light-locker
+- i3lock
+- GNOME Screensaver
+
+## After Installation
+
+1. **Restart your display manager or reboot**
 
    ```bash
-   sudo cp cyberdeck-pam-helper.sh /usr/local/bin/cyberdeck-pam-helper
-   sudo chmod 755 /usr/local/bin/cyberdeck-pam-helper
-   sudo chown root:root /usr/local/bin/cyberdeck-pam-helper
+   sudo systemctl restart lightdm
+   # or
+   sudo reboot
    ```
 
-2. **Install the PAM configuration**
+2. **Verify installation**
 
    ```bash
-   sudo cp cyberdeck-login /etc/pam.d/cyberdeck-login
+   ./test-pam-setup.sh
    ```
 
-3. **Add sudoers entry** (allows trigger without password)
+## How It Works
 
-   ```bash
-   echo "pi ALL=(ALL) NOPASSWD: /usr/local/bin/cyberdeck-pam-helper" | sudo tee /etc/sudoers.d/cyberdeck-login
-   sudo chmod 440 /etc/sudoers.d/cyberdeck-login
-   ```
+1. iPhone app sends signed authentication via BLE
+2. Server verifies signature against registered public keys
+3. Server writes a trigger file to `/tmp/cyberdeck-login-trigger`
+4. PAM module detects trigger file and allows passwordless login
+5. Server also calls `loginctl unlock-sessions` for immediate unlock
 
-### Method 2: Using pam_exec
+## Files Installed
+
+| File | Location | Purpose |
+|------|----------|---------|
+| `cyberdeck-auth` | `/usr/local/bin/` | PAM authentication script |
+| `cyberdeck-pam-helper` | `/usr/local/bin/` | Session unlock helper |
+| `cyberdeck-login` | `/etc/pam.d/` | PAM configuration |
+| `cyberdeck-login` | `/etc/sudoers.d/` | Passwordless sudo rules |
+| `50-cyberdeck-login.rules` | `/etc/polkit-1/rules.d/` | Polkit rules for session unlock |
+
+## Uninstall
+
+```bash
+sudo rm /usr/local/bin/cyberdeck-auth
+sudo rm /usr/local/bin/cyberdeck-pam-helper
+sudo rm /etc/pam.d/cyberdeck-login
+sudo rm /etc/sudoers.d/cyberdeck-login
+sudo rm /etc/polkit-1/rules.d/50-cyberdeck-login.rules
+```
+
+You'll also need to manually remove the PAM line from your display manager config (e.g., `/etc/pam.d/lightdm`).
+
+## Security Considerations
+
+⚠️ **Important**: This bypasses normal password authentication.
+
+- **Physical security**: Only deploy on devices in secure locations
+- **BLE range**: Bluetooth has ~10m range - proximity provides some security
+- **Key protection**: Protect the private key on your iPhone
+- **Trigger file**: Created with mode 600 and 10-second validity window
+- **Registration**: Keys must be manually approved by copying to `registered/` folder
+
+---
+
+## Appendix: Manual Configuration
+
+If the install script doesn't work for your setup, you can configure PAM manually.
+
+### Manual PAM Configuration
+
+Add this line to your display manager's PAM file (before other auth lines):
+
+```
+auth sufficient pam_exec.so quiet /usr/local/bin/cyberdeck-auth
+```
+
+**PAM file locations by display manager:**
+
+| Display Manager | PAM File |
+|-----------------|----------|
+| LightDM | `/etc/pam.d/lightdm` |
+| GDM | `/etc/pam.d/gdm-password` |
+| SDDM | `/etc/pam.d/sddm` |
+| XDM | `/etc/pam.d/xdm` |
+| LXDM | `/etc/pam.d/lxdm` |
+| Console | `/etc/pam.d/login` |
+
+### Alternative: Using pam_exec Directly
 
 For systems that support `pam_exec`:
 
-1. **Copy the auth script**
-
+1. Copy the auth script:
    ```bash
    sudo cp cyberdeck-auth.sh /usr/local/bin/cyberdeck-auth
    sudo chmod 755 /usr/local/bin/cyberdeck-auth
    ```
 
-2. **Configure PAM for your display manager**
-
-   Add to `/etc/pam.d/lightdm` (or `gdm`, `sddm`, etc.):
-
+2. Add to your display manager's PAM file:
    ```
    auth sufficient pam_exec.so quiet /usr/local/bin/cyberdeck-auth
    ```
 
-   Place this line BEFORE other auth lines.
+### Alternative: Using loginctl Only
 
-### Method 3: Using loginctl (systemd)
+For systems using systemd-logind, the server can unlock sessions directly without PAM configuration:
 
-For systems using systemd-logind, the server can unlock sessions directly:
-
-```bash
-loginctl unlock-sessions
-```
-
-This is already implemented in the server and requires no additional PAM configuration, but you need to:
-
-1. Ensure the user running the server has permission to unlock sessions
-2. Add polkit rule for passwordless unlock
-
-Create `/etc/polkit-1/rules.d/50-cyberdeck-login.rules`:
-
-```javascript
-polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.login1.lock-sessions" ||
-        action.id == "org.freedesktop.login1.unlock-sessions") {
-        if (subject.user == "pi") {
-            return polkit.Result.YES;
-        }
-    }
-});
-```
-
-## Files
-
-### cyberdeck-auth.sh
-
-Authentication script that checks for valid trigger file:
-
-```bash
-#!/bin/bash
-TRIGGER_FILE="/tmp/cyberdeck-login-trigger"
-
-if [ -f "$TRIGGER_FILE" ]; then
-    # Verify file is recent (within last 10 seconds)
-    FILE_AGE=$(($(date +%s) - $(stat -c %Y "$TRIGGER_FILE")))
-    if [ $FILE_AGE -lt 10 ]; then
-        # Verify correct user
-        TRIGGER_USER=$(cat "$TRIGGER_FILE" | jq -r '.user')
-        if [ "$PAM_USER" = "$TRIGGER_USER" ]; then
-            rm -f "$TRIGGER_FILE"
-            exit 0  # Success - allow login
-        fi
-    fi
-    rm -f "$TRIGGER_FILE"
-fi
-
-exit 1  # Fail - require normal auth
-```
-
-### cyberdeck-pam-helper.sh
-
-Helper that can be called to unlock the session:
-
-```bash
-#!/bin/bash
-# Unlock sessions via loginctl
-loginctl unlock-sessions
-
-# Also try D-Bus method for GNOME
-dbus-send --session --type=method_call \
-    --dest=org.gnome.ScreenSaver \
-    /org/gnome/ScreenSaver \
-    org.gnome.ScreenSaver.SetActive \
-    boolean:false 2>/dev/null
-
-exit 0
-```
-
-### cyberdeck-login (PAM config)
-
-```
-#%PAM-1.0
-auth    sufficient   pam_exec.so quiet /usr/local/bin/cyberdeck-auth
-auth    include      system-auth
-```
-
-## Security Considerations
-
-⚠️ **Warning**: This bypasses normal password authentication. Ensure:
-
-1. **Physical security**: Only deploy on devices in secure locations
-2. **BLE range**: Remember BLE has ~10m range - anyone within range with your phone could authenticate
-3. **Key protection**: Protect the private key on your iPhone
-4. **Trigger file**: The trigger file is created with mode 600 and short validity window
-5. **Audit logging**: Consider enabling PAM audit logging
-
-## Troubleshooting
-
-### Authentication not working
-
-1. Check trigger file is being created:
-   ```bash
-   ls -la /tmp/cyberdeck-login-trigger
+1. Create polkit rule `/etc/polkit-1/rules.d/50-cyberdeck-login.rules`:
+   ```javascript
+   polkit.addRule(function(action, subject) {
+       if (action.id == "org.freedesktop.login1.lock-sessions" ||
+           action.id == "org.freedesktop.login1.unlock-sessions") {
+           if (subject.user == "your-username") {
+               return polkit.Result.YES;
+           }
+       }
+   });
    ```
 
-2. Check PAM logs:
-   ```bash
-   sudo journalctl -u lightdm  # or your display manager
-   ```
+2. The server will call `loginctl unlock-sessions` on successful auth.
 
-3. Test auth script manually:
-   ```bash
-   echo '{"user":"pi","timestamp":1234567890}' > /tmp/cyberdeck-login-trigger
-   PAM_USER=pi /usr/local/bin/cyberdeck-auth && echo "Success" || echo "Failed"
-   ```
+Note: This method only works for unlocking, not for initial login.
 
-### Permission denied
+### Manual Sudoers Configuration
 
-Ensure scripts are owned by root and have correct permissions:
+Create `/etc/sudoers.d/cyberdeck-login`:
 
-```bash
-sudo chown root:root /usr/local/bin/cyberdeck-*
-sudo chmod 755 /usr/local/bin/cyberdeck-*
+```
+your-username ALL=(ALL) NOPASSWD: /usr/local/bin/cyberdeck-pam-helper
+your-username ALL=(ALL) NOPASSWD: /usr/bin/loginctl unlock-sessions
 ```
 
-### Display manager specific issues
-
-Different display managers require different PAM configurations:
-
-- **LightDM**: `/etc/pam.d/lightdm`
-- **GDM**: `/etc/pam.d/gdm-password`
-- **SDDM**: `/etc/pam.d/sddm`
-- **XDM**: `/etc/pam.d/xdm`
-
-## Testing
-
-Run the test script to verify your setup:
-
+Set permissions:
 ```bash
-./test-pam-setup.sh
+sudo chmod 440 /etc/sudoers.d/cyberdeck-login
 ```
 
-This will:
-1. Check required files exist
-2. Verify permissions
-3. Test trigger file creation
-4. Simulate authentication flow
+### Testing PAM Manually
+
+```bash
+# Create test trigger
+echo '{"user":"your-username","timestamp":'$(date +%s)'000,"action":"unlock"}' > /tmp/cyberdeck-login-trigger
+
+# Test auth script
+PAM_USER=your-username /usr/local/bin/cyberdeck-auth && echo "Success" || echo "Failed"
+```
+
+### Debugging
+
+Check PAM logs:
+```bash
+sudo journalctl -u lightdm -f
+# or
+sudo tail -f /var/log/auth.log
+```
+
+Enable verbose PAM logging by changing `quiet` to `debug` in the PAM line:
+```
+auth sufficient pam_exec.so debug /usr/local/bin/cyberdeck-auth
+```

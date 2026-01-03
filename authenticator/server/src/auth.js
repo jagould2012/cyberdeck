@@ -1,6 +1,7 @@
 import nacl from 'tweetnacl';
 import pkg from 'tweetnacl-util';
 const { decodeBase64, encodeBase64 } = pkg;
+
 /**
  * Handles cryptographic authentication
  * Uses Ed25519 for signing/verification
@@ -52,7 +53,7 @@ export class AuthService {
 
 			return {
 				valid: true,
-				deviceName: device.name
+				deviceName: device.deviceName || device.name || 'Unknown Device'
 			};
 
 		} catch (error) {

@@ -11,7 +11,6 @@ export class WsBleServer {
 		this.configManager = configManager;
 		this.port = port;
 		this.wss = null;
-		this.registrationMode = false;
 		this.connectedProxy = null;
 	}
 
@@ -116,12 +115,8 @@ export class WsBleServer {
 	}
 
 	async handleRegister(data) {
-		if (!this.registrationMode) {
-			return { success: false, error: 'Registration mode not enabled' };
-		}
-
 		const { deviceId, publicKey, deviceName } = data;
-		console.log(`📝 Registration from: ${deviceName || deviceId}`);
+		console.log(`📝 Registration request from: ${deviceName || deviceId}`);
 
 		try {
 			await this.configManager.saveCapturedPublicKey(deviceId, publicKey, {
@@ -130,19 +125,6 @@ export class WsBleServer {
 			return { success: true };
 		} catch (error) {
 			return { success: false, error: error.message };
-		}
-	}
-
-	setRegistrationMode(enabled) {
-		this.registrationMode = enabled;
-		console.log(`📝 Registration mode: ${enabled ? 'enabled' : 'disabled'}`);
-
-		// Notify connected proxy
-		if (this.connectedProxy) {
-			this.connectedProxy.send(JSON.stringify({
-				type: 'registrationMode',
-				enabled
-			}));
 		}
 	}
 

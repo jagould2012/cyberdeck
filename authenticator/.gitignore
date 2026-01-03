@@ -17,7 +17,9 @@ yarn-error.log*
 # Server data (keep structure only)
 server/data/config.json
 server/data/publicKeys/*.json
+server/data/registered/*.json
 !server/data/publicKeys/.gitkeep
+!server/data/registered/.gitkeep
 !server/data/config.example.json
 
 # ===================
