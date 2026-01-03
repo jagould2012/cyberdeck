@@ -56,6 +56,13 @@
 			);
 			target = AB4068122F09779A00A917A2 /* CyberdeckLoginWatch Watch App */;
 		};
+		AB4068432F098B5000A917A2 /* Exceptions for "CyberdeckLogin" folder in "CyberdeckLogin" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = AB4067D72F09272400A917A2 /* CyberdeckLogin */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -71,6 +78,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AB4067DA2F09272400A917A2 /* CyberdeckLogin */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AB4068432F098B5000A917A2 /* Exceptions for "CyberdeckLogin" folder in "CyberdeckLogin" target */,
+			);
 			path = CyberdeckLogin;
 			sourceTree = "<group>";
 		};
@@ -384,6 +394,7 @@
 				DEVELOPMENT_TEAM = ADHV5U8CDC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CyberdeckLogin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Cyberdeck Login";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Cyberdeck Login uses Bluetooth to discover and authenticate with your devices.";
@@ -418,6 +429,7 @@
 				DEVELOPMENT_TEAM = ADHV5U8CDC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CyberdeckLogin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Cyberdeck Login";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Cyberdeck Login uses Bluetooth to discover and authenticate with your devices.";
