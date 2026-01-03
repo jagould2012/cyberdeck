@@ -11,6 +11,7 @@ yarn-error.log*
 # Environment and secrets
 .env
 .env.*
+!.env.example
 *.local
 
 # Server data (keep structure only)

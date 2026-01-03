@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { CyberdeckLoginServer } from './server.js';
 import { ConfigManager } from './config.js';
 import { NonceManager } from './nonce.js';
@@ -6,12 +7,16 @@ import { BleAdvertiser } from './ble-advertiser.js';
 import { BlePeripheral } from './ble-peripheral.js';
 import { LockScreenMonitor } from './lock-monitor.js';
 import { PamAuth } from './pam-auth.js';
+import { TcpBleServer } from './tcp-server.js';
 
 const CONFIG_PATH = process.env.CONFIG_PATH || '/data/config.json';
 const PUBLIC_KEYS_DIR = process.env.PUBLIC_KEYS_DIR || '/data/publicKeys';
+const BLE_MODE = process.env.BLE_MODE || 'native'; // 'native' or 'tcp'
+const TCP_PORT = parseInt(process.env.TCP_PORT, 10) || 3100;
 
 async function main() {
 	console.log('🔐 Cyberdeck Login Server starting...');
+	console.log(`📡 BLE Mode: ${BLE_MODE}`);
 
 	try {
 		// Initialize components
@@ -24,48 +29,87 @@ async function main() {
 
 		const authService = new AuthService(configManager, nonceManager);
 		const pamAuth = new PamAuth(configManager.get('loginUser', 'pi'));
-		const lockMonitor = new LockScreenMonitor();
 
-		const bleAdvertiser = new BleAdvertiser({
-			computerName: configManager.get('computerName', 'cyberdeck'),
-			nonceManager
-		});
+		// Start nonce rotation
+		console.log('🔄 Starting nonce rotation...');
+		nonceManager.startRotation();
 
-		const blePeripheral = new BlePeripheral({
-			authService,
-			pamAuth,
-			configManager,
-			onSuccessfulAuth: () => {
-				console.log('✅ Authentication successful, triggering login...');
-			}
-		});
+		if (BLE_MODE === 'tcp') {
+			// TCP mode - receive BLE requests from Mac proxy
+			console.log('📡 Starting TCP BLE server (proxy mode)...');
 
-		// Create and start server
-		const server = new CyberdeckLoginServer({
-			configManager,
-			nonceManager,
-			authService,
-			bleAdvertiser,
-			blePeripheral,
-			lockMonitor,
-			pamAuth
-		});
+			const tcpServer = new TcpBleServer({
+				authService,
+				pamAuth,
+				configManager,
+				port: TCP_PORT
+			});
 
-		// Handle shutdown gracefully
-		process.on('SIGINT', async () => {
-			console.log('\n🛑 Shutting down...');
-			await server.stop();
-			process.exit(0);
-		});
+			await tcpServer.start();
 
-		process.on('SIGTERM', async () => {
-			console.log('\n🛑 Shutting down...');
-			await server.stop();
-			process.exit(0);
-		});
+			// Handle shutdown
+			process.on('SIGINT', async () => {
+				console.log('\n🛑 Shutting down...');
+				nonceManager.stopRotation();
+				tcpServer.stop();
+				process.exit(0);
+			});
 
-		await server.start();
-		console.log('✅ Cyberdeck Login Server running');
+			process.on('SIGTERM', async () => {
+				console.log('\n🛑 Shutting down...');
+				nonceManager.stopRotation();
+				tcpServer.stop();
+				process.exit(0);
+			});
+
+			console.log('✅ Cyberdeck Login Server running (TCP mode)');
+			console.log(`   Connect Mac proxy to port ${TCP_PORT}`);
+
+		} else {
+			// Native BLE mode
+			const lockMonitor = new LockScreenMonitor();
+
+			const bleAdvertiser = new BleAdvertiser({
+				computerName: configManager.get('computerName', 'cyberdeck'),
+				nonceManager
+			});
+
+			const blePeripheral = new BlePeripheral({
+				authService,
+				pamAuth,
+				configManager,
+				onSuccessfulAuth: () => {
+					console.log('✅ Authentication successful, triggering login...');
+				}
+			});
+
+			// Create and start server
+			const server = new CyberdeckLoginServer({
+				configManager,
+				nonceManager,
+				authService,
+				bleAdvertiser,
+				blePeripheral,
+				lockMonitor,
+				pamAuth
+			});
+
+			// Handle shutdown gracefully
+			process.on('SIGINT', async () => {
+				console.log('\n🛑 Shutting down...');
+				await server.stop();
+				process.exit(0);
+			});
+
+			process.on('SIGTERM', async () => {
+				console.log('\n🛑 Shutting down...');
+				await server.stop();
+				process.exit(0);
+			});
+
+			await server.start();
+			console.log('✅ Cyberdeck Login Server running (native BLE)');
+		}
 
 	} catch (error) {
 		console.error('❌ Failed to start server:', error);

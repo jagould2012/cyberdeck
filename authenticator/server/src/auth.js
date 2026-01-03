@@ -1,6 +1,6 @@
 import nacl from 'tweetnacl';
-import { decodeBase64, encodeBase64 } from 'tweetnacl-util';
-
+import pkg from 'tweetnacl-util';
+const { decodeBase64, encodeBase64 } = pkg;
 /**
  * Handles cryptographic authentication
  * Uses Ed25519 for signing/verification
