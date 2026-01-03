@@ -116,6 +116,14 @@
         dest: "{{ login_dest_dir }}/deploy.tar.gz"
         mode: '0644'
 
+    - name: Backup existing registered devices
+      ansible.builtin.shell:
+        cmd: |
+          if [ -d "{{ login_dest_dir }}/data/registered" ] && [ "$(ls -A {{ login_dest_dir }}/data/registered 2>/dev/null)" ]; then
+            cp -r {{ login_dest_dir }}/data/registered /tmp/cyberdeck-registered-backup
+          fi
+      changed_when: false
+
     - name: Extract server files
       ansible.builtin.unarchive:
         src: "{{ login_dest_dir }}/deploy.tar.gz"
@@ -123,6 +131,15 @@
         remote_src: true
         owner: "{{ login_user }}"
         group: "{{ login_user }}"
+
+    - name: Restore registered devices
+      ansible.builtin.shell:
+        cmd: |
+          if [ -d /tmp/cyberdeck-registered-backup ]; then
+            cp -r /tmp/cyberdeck-registered-backup/* {{ login_dest_dir }}/data/registered/ 2>/dev/null || true
+            rm -rf /tmp/cyberdeck-registered-backup
+          fi
+      changed_when: false
 
     - name: Clean up server tarball
       ansible.builtin.file:
