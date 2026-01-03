@@ -115,6 +115,19 @@ function sendRequest(action, data = {}) {
 // Create characteristics
 const { Characteristic, PrimaryService } = bleno;
 
+// Safe callback wrapper to prevent crashes
+function safeCallback(callback, result, data = null) {
+	try {
+		if (data !== null) {
+			callback(result, data);
+		} else {
+			callback(result);
+		}
+	} catch (err) {
+		console.error('   ⚠️ Callback error (client may have disconnected)');
+	}
+}
+
 const challengeCharacteristic = new Characteristic({
 	uuid: CHALLENGE_CHAR_UUID,
 	properties: ['read'],
@@ -124,10 +137,10 @@ const challengeCharacteristic = new Characteristic({
 			const response = await sendRequest('getChallenge');
 			console.log('   ✓ Challenge sent to iPhone');
 			const data = Buffer.from(JSON.stringify(response.challenge), 'utf-8');
-			callback(Characteristic.RESULT_SUCCESS, data.slice(offset));
+			safeCallback(callback, Characteristic.RESULT_SUCCESS, data.slice(offset));
 		} catch (error) {
 			console.error('   ✗ Challenge error:', error.message);
-			callback(Characteristic.RESULT_UNLIKELY_ERROR);
+			safeCallback(callback, Characteristic.RESULT_UNLIKELY_ERROR);
 		}
 	}
 });
@@ -143,14 +156,14 @@ const authCharacteristic = new Characteristic({
 
 			if (response.success) {
 				console.log('   ✓ Auth successful!');
-				callback(Characteristic.RESULT_SUCCESS);
+				safeCallback(callback, Characteristic.RESULT_SUCCESS);
 			} else {
 				console.log('   ✗ Auth failed:', response.error);
-				callback(Characteristic.RESULT_UNLIKELY_ERROR);
+				safeCallback(callback, Characteristic.RESULT_UNLIKELY_ERROR);
 			}
 		} catch (error) {
 			console.error('   ✗ Auth error:', error.message);
-			callback(Characteristic.RESULT_UNLIKELY_ERROR);
+			safeCallback(callback, Characteristic.RESULT_UNLIKELY_ERROR);
 		}
 	}
 });
@@ -166,14 +179,14 @@ const registerCharacteristic = new Characteristic({
 
 			if (response.success) {
 				console.log('   ✓ Registration successful!');
-				callback(Characteristic.RESULT_SUCCESS);
+				safeCallback(callback, Characteristic.RESULT_SUCCESS);
 			} else {
 				console.log('   ✗ Registration failed:', response.error);
-				callback(Characteristic.RESULT_UNLIKELY_ERROR);
+				safeCallback(callback, Characteristic.RESULT_UNLIKELY_ERROR);
 			}
 		} catch (error) {
 			console.error('   ✗ Register error:', error.message);
-			callback(Characteristic.RESULT_UNLIKELY_ERROR);
+			safeCallback(callback, Characteristic.RESULT_UNLIKELY_ERROR);
 		}
 	}
 });

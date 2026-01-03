@@ -78,13 +78,26 @@ struct DeviceRow: View {
     var signalStrength: String {
         switch device.rssi {
         case -50...0:
-            return "wifi.3"
+            return "wifi"
         case -70 ... -51:
-            return "wifi.2"
+            return "wifi"
         case -90 ... -71:
-            return "wifi.1"
+            return "wifi"
         default:
             return "wifi.exclamationmark"
+        }
+    }
+    
+    var signalBars: Int {
+        switch device.rssi {
+        case -50...0:
+            return 3
+        case -70 ... -51:
+            return 2
+        case -90 ... -71:
+            return 1
+        default:
+            return 0
         }
     }
     
