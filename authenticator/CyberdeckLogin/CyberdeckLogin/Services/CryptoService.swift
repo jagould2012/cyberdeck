@@ -74,6 +74,11 @@ class CryptoService: ObservableObject {
         )
     }
     
+    /// Get raw private key data for syncing to Watch
+    func getPrivateKeyData() -> Data? {
+        return signingKey?.rawRepresentation
+    }
+    
     /// Sign data using Ed25519
     func sign(_ data: Data) -> Data? {
         guard let key = signingKey else {

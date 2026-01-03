@@ -3,6 +3,7 @@ import WatchConnectivity
 import Combine
 
 /// Handles communication between iPhone and Apple Watch
+/// Primarily used for syncing the private key to Watch
 class WatchConnectivityService: NSObject, ObservableObject {
     static let shared = WatchConnectivityService()
     
@@ -12,6 +13,7 @@ class WatchConnectivityService: NSObject, ObservableObject {
     
     private var session: WCSession?
     private var bleManager: BLEManager?
+    private var cryptoService: CryptoService?
     
     private override init() {
         super.init()
@@ -23,11 +25,35 @@ class WatchConnectivityService: NSObject, ObservableObject {
         }
     }
     
-    func configure(bleManager: BLEManager) {
+    func configure(bleManager: BLEManager, cryptoService: CryptoService? = nil) {
         self.bleManager = bleManager
+        self.cryptoService = cryptoService
     }
     
-    /// Send list of known devices to Watch
+    /// Push key to Watch (call when user wants to sync)
+    func pushKeyToWatch() {
+        guard let session = session, session.isReachable else {
+            print("Watch not reachable")
+            return
+        }
+        
+        guard let cryptoService = cryptoService ?? (try? CryptoService()),
+              let privateKeyData = cryptoService.getPrivateKeyData() else {
+            print("No private key to send")
+            return
+        }
+        
+        let message: [String: Any] = [
+            "type": "pushKey",
+            "privateKey": privateKeyData.base64EncodedString()
+        ]
+        
+        session.sendMessage(message, replyHandler: nil) { error in
+            print("Failed to push key to watch: \(error.localizedDescription)")
+        }
+    }
+    
+    /// Send list of known devices to Watch (legacy - Watch now scans directly)
     func sendDevicesToWatch(_ devices: [CyberdeckDevice]) {
         guard let session = session, session.isReachable else { return }
         
@@ -49,59 +75,6 @@ class WatchConnectivityService: NSObject, ObservableObject {
         
         session.sendMessage(["type": "devices", "devices": deviceData], replyHandler: nil) { error in
             print("Failed to send devices to watch: \(error.localizedDescription)")
-        }
-    }
-    
-    /// Send authentication result to Watch
-    func sendAuthResultToWatch(deviceId: String, success: Bool, error: String? = nil) {
-        guard let session = session, session.isReachable else { return }
-        
-        var message: [String: Any] = [
-            "type": "authResult",
-            "deviceId": deviceId,
-            "success": success
-        ]
-        
-        if let error = error {
-            message["error"] = error
-        }
-        
-        session.sendMessage(message, replyHandler: nil) { error in
-            print("Failed to send auth result to watch: \(error.localizedDescription)")
-        }
-    }
-    
-    /// Handle authentication request from Watch
-    private func handleAuthRequest(deviceId: String, replyHandler: @escaping ([String: Any]) -> Void) {
-        guard let bleManager = bleManager else {
-            replyHandler(["success": false, "error": "BLE not configured"])
-            return
-        }
-        
-        // Find the device by UUID string
-        guard let device = bleManager.discoveredDevices.first(where: { $0.id.uuidString == deviceId }) else {
-            replyHandler(["success": false, "error": "Device not found"])
-            return
-        }
-        
-        // Get or create crypto service
-        guard let cryptoService = try? CryptoService() else {
-            replyHandler(["success": false, "error": "Failed to initialize crypto"])
-            return
-        }
-        
-        // Connect if needed
-        if !device.isConnected {
-            bleManager.connect(to: device)
-        }
-        
-        // Authenticate with completion handler
-        bleManager.authenticate(using: cryptoService) { success, error in
-            var response: [String: Any] = ["success": success]
-            if let error = error {
-                response["error"] = error
-            }
-            replyHandler(response)
         }
     }
 }
@@ -128,7 +101,6 @@ extension WatchConnectivityService: WCSessionDelegate {
     
     func sessionDidDeactivate(_ session: WCSession) {
         print("WCSession deactivated")
-        // Reactivate for switching watches
         session.activate()
     }
     
@@ -146,16 +118,19 @@ extension WatchConnectivityService: WCSessionDelegate {
         }
         
         switch type {
-        case "authenticate":
-            if let deviceId = message["deviceId"] as? String {
-                DispatchQueue.main.async {
-                    self.handleAuthRequest(deviceId: deviceId, replyHandler: replyHandler)
+        case "requestKey":
+            // Watch is requesting the private key
+            DispatchQueue.main.async {
+                if let cryptoService = self.cryptoService ?? (try? CryptoService()),
+                   let privateKeyData = cryptoService.getPrivateKeyData() {
+                    replyHandler(["privateKey": privateKeyData.base64EncodedString()])
+                } else {
+                    replyHandler(["error": "No key pair on iPhone"])
                 }
-            } else {
-                replyHandler(["success": false, "error": "Missing deviceId"])
             }
             
         case "getDevices":
+            // Legacy - Watch now scans directly
             DispatchQueue.main.async {
                 if let bleManager = self.bleManager {
                     let deviceData = bleManager.discoveredDevices.map { device -> [String: Any] in
@@ -179,12 +154,6 @@ extension WatchConnectivityService: WCSessionDelegate {
                 }
             }
             
-        case "startScanning":
-            DispatchQueue.main.async {
-                self.bleManager?.startScanning()
-            }
-            replyHandler(["success": true])
-            
         default:
             replyHandler(["error": "Unknown message type: \(type)"])
         }
@@ -192,15 +161,6 @@ extension WatchConnectivityService: WCSessionDelegate {
     
     // Handle messages without reply
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
-        guard let type = message["type"] as? String else { return }
-        
-        switch type {
-        case "startScanning":
-            DispatchQueue.main.async {
-                self.bleManager?.startScanning()
-            }
-        default:
-            break
-        }
+        // No-reply messages not currently used
     }
 }

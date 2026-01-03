@@ -1,9 +1,9 @@
 import SwiftUI
+import WatchKit
 
 struct WatchDeviceDetailView: View {
     let device: WatchDevice
-    @EnvironmentObject var connectivityService: PhoneConnectivityService
-    @State private var showingResult = false
+    @ObservedObject var bleManager: WatchBLEManager
     
     var body: some View {
         ScrollView {
@@ -21,71 +21,119 @@ struct WatchDeviceDetailView: View {
                 // Status indicator
                 HStack(spacing: 4) {
                     Circle()
-                        .fill(device.isConnected ? Color.green : Color.gray)
+                        .fill(statusColor)
                         .frame(width: 6, height: 6)
-                    Text(device.isConnected ? "Connected" : "Available")
+                    Text(statusText)
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
                 
-                // Authenticate button or progress
-                if connectivityService.isAuthenticating {
-                    ProgressView()
-                        .padding(.top, 8)
-                } else {
-                    Button(action: authenticate) {
-                        HStack {
-                            Image(systemName: "lock.open.fill")
-                            Text("Unlock")
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.green)
+                // Action button
+                actionButton
                     .padding(.top, 8)
-                }
                 
-                // Result display
-                if let result = connectivityService.lastAuthResult, result.deviceId == device.id {
-                    AuthResultView(result: result)
+                // Error display
+                if let error = bleManager.lastError {
+                    Text(error)
+                        .font(.caption2)
+                        .foregroundColor(.red)
+                        .lineLimit(2)
                 }
             }
             .padding(.horizontal, 4)
         }
-        .navigationTitle("Unlock")
-        .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: connectivityService.lastAuthResult?.deviceId) { _ in
-            if connectivityService.lastAuthResult?.deviceId == device.id {
-                WKInterfaceDevice.current().play(
-                    connectivityService.lastAuthResult?.success == true ? .success : .failure
-                )
+        .onChange(of: bleManager.authenticationState) { newState in
+            if newState == .success {
+                WKInterfaceDevice.current().play(.success)
+            } else if case .failed(_) = newState {
+                WKInterfaceDevice.current().play(.failure)
             }
         }
     }
     
+    private var statusColor: Color {
+        switch bleManager.authenticationState {
+        case .success:
+            return .green
+        case .failed(_):
+            return .red
+        default:
+            return device.isConnected ? .green : .gray
+        }
+    }
+    
+    private var statusText: String {
+        switch bleManager.authenticationState {
+        case .connecting:
+            return "Connecting..."
+        case .readingChallenge, .signing, .authenticating:
+            return "Authenticating..."
+        case .success:
+            return "Unlocked!"
+        case .failed(let msg):
+            return msg
+        default:
+            return device.isConnected ? "Connected" : "Available"
+        }
+    }
+    
+    @ViewBuilder
+    private var actionButton: some View {
+        switch bleManager.authenticationState {
+        case .idle:
+            if device.isConnected || bleManager.connectedDevice?.id == device.id {
+                Button(action: authenticate) {
+                    HStack {
+                        Image(systemName: "lock.open.fill")
+                        Text("Unlock")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.green)
+            } else {
+                Button(action: connect) {
+                    HStack {
+                        Image(systemName: "link")
+                        Text("Connect")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            
+        case .connecting, .readingChallenge, .signing, .authenticating:
+            ProgressView()
+            
+        case .success:
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 32))
+                .foregroundColor(.green)
+            
+        case .failed(_):
+            Button(action: connect) {
+                Text("Retry")
+            }
+            .buttonStyle(.bordered)
+        }
+    }
+    
+    private func connect() {
+        WKInterfaceDevice.current().play(.click)
+        bleManager.connect(to: device)
+    }
+    
     private func authenticate() {
         WKInterfaceDevice.current().play(.click)
-        connectivityService.authenticate(deviceId: device.id)
-    }
-}
-
-struct AuthResultView: View {
-    let result: PhoneConnectivityService.AuthResult
-    
-    var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundColor(result.success ? .green : .red)
-            Text(result.success ? "Unlocked!" : (result.error ?? "Failed"))
-                .font(.caption2)
-                .foregroundColor(result.success ? .green : .red)
-                .lineLimit(1)
+        bleManager.authenticate { success, error in
+            // State is already updated via @Published
         }
-        .padding(.top, 4)
     }
 }
 
 #Preview {
-    WatchDeviceDetailView(device: WatchDevice(id: "test", name: "cyberdeck-pi1", isConnected: true))
-        .environmentObject(PhoneConnectivityService.shared)
+    WatchDeviceDetailView(
+        device: WatchDevice(id: "test", name: "cyberdeck-pi1", isConnected: true),
+        bleManager: WatchBLEManager()
+    )
 }

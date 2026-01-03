@@ -1,64 +1,98 @@
 import SwiftUI
 
 struct WatchContentView: View {
+    @StateObject private var bleManager = WatchBLEManager()
+    @StateObject private var keyManager = WatchKeyManager.shared
     @EnvironmentObject var connectivityService: PhoneConnectivityService
     
     var body: some View {
         NavigationView {
             Group {
-                if !connectivityService.isPhoneReachable {
-                    PhoneNotReachableView()
-                } else if connectivityService.devices.isEmpty {
-                    NoDevicesView(onRefresh: {
-                        connectivityService.requestDevices()
-                        connectivityService.requestStartScanning()
-                    })
+                if !keyManager.hasKeyPair {
+                    KeySyncView()
+                } else if !bleManager.isBluetoothEnabled {
+                    BluetoothDisabledView()
+                } else if bleManager.discoveredDevices.isEmpty && !bleManager.isScanning {
+                    NoDevicesView(onScan: { bleManager.startScanning() })
                 } else {
-                    DeviceListView()
+                    DeviceListView(bleManager: bleManager)
                 }
-            }
-            .navigationTitle("Cyberdeck")
-        }
-        .onAppear {
-            if connectivityService.isPhoneReachable {
-                connectivityService.requestDevices()
             }
         }
     }
 }
 
-struct PhoneNotReachableView: View {
+struct KeySyncView: View {
+    @EnvironmentObject var connectivityService: PhoneConnectivityService
+    
     var body: some View {
         VStack(spacing: 12) {
-            Image(systemName: "iphone.slash")
-                .font(.system(size: 40))
-                .foregroundColor(.gray)
+            Image(systemName: "key.fill")
+                .font(.system(size: 36))
+                .foregroundColor(.orange)
             
-            Text("iPhone Not Reachable")
+            Text("Setup Required")
                 .font(.headline)
             
-            Text("Open the Cyberdeck app on your iPhone")
+            Text("Sync key from iPhone")
                 .font(.caption)
                 .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
+            
+            Button(action: {
+                connectivityService.requestKeySync()
+            }) {
+                Text("Sync Key")
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(!connectivityService.isPhoneReachable)
+            
+            if !connectivityService.keySyncStatus.isEmpty {
+                Text(connectivityService.keySyncStatus)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            
+            if !connectivityService.isPhoneReachable {
+                Text("Open iPhone app")
+                    .font(.caption2)
+                    .foregroundColor(.red)
+            }
+        }
+        .padding()
+    }
+}
+
+struct BluetoothDisabledView: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "antenna.radiowaves.left.and.right.slash")
+                .font(.system(size: 36))
+                .foregroundColor(.red)
+            
+            Text("Bluetooth Off")
+                .font(.headline)
+            
+            Text("Enable in Settings")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
         .padding()
     }
 }
 
 struct NoDevicesView: View {
-    let onRefresh: () -> Void
+    let onScan: () -> Void
     
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: "antenna.radiowaves.left.and.right")
-                .font(.system(size: 40))
+                .font(.system(size: 36))
                 .foregroundColor(.gray)
             
             Text("No Devices")
                 .font(.headline)
             
-            Button(action: onRefresh) {
+            Button(action: onScan) {
                 Label("Scan", systemImage: "arrow.clockwise")
             }
             .buttonStyle(.borderedProminent)
@@ -68,18 +102,32 @@ struct NoDevicesView: View {
 }
 
 struct DeviceListView: View {
-    @EnvironmentObject var connectivityService: PhoneConnectivityService
+    @ObservedObject var bleManager: WatchBLEManager
     
     var body: some View {
         List {
-            ForEach(connectivityService.devices) { device in
-                NavigationLink(destination: WatchDeviceDetailView(device: device)) {
+            if bleManager.isScanning {
+                HStack {
+                    ProgressView()
+                    Text("Scanning...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            ForEach(bleManager.discoveredDevices) { device in
+                NavigationLink(destination: WatchDeviceDetailView(device: device, bleManager: bleManager)) {
                     DeviceRowView(device: device)
                 }
             }
-        }
-        .refreshable {
-            connectivityService.requestDevices()
+            
+            Button(action: { bleManager.startScanning() }) {
+                HStack {
+                    Image(systemName: "arrow.clockwise")
+                    Text("Refresh")
+                }
+            }
+            .disabled(bleManager.isScanning)
         }
     }
 }
@@ -98,7 +146,7 @@ struct DeviceRowView: View {
                     .lineLimit(1)
                 
                 Text(device.isConnected ? "Connected" : "Available")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundColor(.secondary)
             }
         }

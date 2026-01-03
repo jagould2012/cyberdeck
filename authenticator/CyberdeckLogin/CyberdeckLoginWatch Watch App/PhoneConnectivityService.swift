@@ -3,21 +3,15 @@ import WatchConnectivity
 import Combine
 
 /// Watch-side connectivity service for communicating with iPhone
+/// Now primarily used for key syncing - BLE is handled directly on Watch
 class PhoneConnectivityService: NSObject, ObservableObject {
     static let shared = PhoneConnectivityService()
     
     @Published var isPhoneReachable = false
-    @Published var devices: [WatchDevice] = []
-    @Published var isAuthenticating = false
-    @Published var lastAuthResult: AuthResult?
+    @Published var hasKey: Bool = false
+    @Published var keySyncStatus: String = ""
     
     private var session: WCSession?
-    
-    struct AuthResult {
-        let deviceId: String
-        let success: Bool
-        let error: String?
-    }
     
     private override init() {
         super.init()
@@ -27,55 +21,48 @@ class PhoneConnectivityService: NSObject, ObservableObject {
             session?.delegate = self
             session?.activate()
         }
+        
+        // Check if we have a key
+        hasKey = WatchKeyManager.shared.hasKeyPair
     }
     
-    /// Request device list from iPhone
-    func requestDevices() {
+    /// Request private key from iPhone
+    func requestKeySync() {
         guard let session = session, session.isReachable else {
-            print("Phone not reachable")
+            keySyncStatus = "iPhone not reachable"
             return
         }
         
-        session.sendMessage(["type": "getDevices"], replyHandler: { response in
-            if let deviceData = response["devices"] as? [[String: Any]] {
-                DispatchQueue.main.async {
-                    self.devices = deviceData.compactMap { WatchDevice(from: $0) }
+        keySyncStatus = "Requesting key..."
+        
+        session.sendMessage(["type": "requestKey"], replyHandler: { [weak self] response in
+            DispatchQueue.main.async {
+                if let keyBase64 = response["privateKey"] as? String,
+                   let keyData = Data(base64Encoded: keyBase64) {
+                    if WatchKeyManager.shared.saveKey(privateKeyData: keyData) {
+                        self?.hasKey = true
+                        self?.keySyncStatus = "Key synced!"
+                    } else {
+                        self?.keySyncStatus = "Failed to save key"
+                    }
+                } else if let error = response["error"] as? String {
+                    self?.keySyncStatus = error
+                } else {
+                    self?.keySyncStatus = "Invalid response"
                 }
             }
-        }) { error in
-            print("Failed to get devices: \(error.localizedDescription)")
+        }) { [weak self] error in
+            DispatchQueue.main.async {
+                self?.keySyncStatus = "Error: \(error.localizedDescription)"
+            }
         }
     }
     
-    /// Request iPhone to start scanning for devices
-    func requestStartScanning() {
-        guard let session = session, session.isReachable else { return }
-        session.sendMessage(["type": "startScanning"], replyHandler: nil, errorHandler: nil)
-    }
-    
-    /// Request authentication for a device
-    func authenticate(deviceId: String) {
-        guard let session = session, session.isReachable else {
-            lastAuthResult = AuthResult(deviceId: deviceId, success: false, error: "Phone not reachable")
-            return
-        }
-        
-        isAuthenticating = true
-        lastAuthResult = nil
-        
-        session.sendMessage(["type": "authenticate", "deviceId": deviceId], replyHandler: { response in
-            DispatchQueue.main.async {
-                self.isAuthenticating = false
-                let success = response["success"] as? Bool ?? false
-                let error = response["error"] as? String
-                self.lastAuthResult = AuthResult(deviceId: deviceId, success: success, error: error)
-            }
-        }) { error in
-            DispatchQueue.main.async {
-                self.isAuthenticating = false
-                self.lastAuthResult = AuthResult(deviceId: deviceId, success: false, error: error.localizedDescription)
-            }
-        }
+    /// Delete synced key
+    func deleteKey() {
+        WatchKeyManager.shared.deleteKey()
+        hasKey = false
+        keySyncStatus = "Key deleted"
     }
 }
 
@@ -84,44 +71,31 @@ extension PhoneConnectivityService: WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         DispatchQueue.main.async {
             self.isPhoneReachable = session.isReachable
-        }
-        
-        if activationState == .activated {
-            requestDevices()
+            self.hasKey = WatchKeyManager.shared.hasKeyPair
         }
     }
     
     func sessionReachabilityDidChange(_ session: WCSession) {
         DispatchQueue.main.async {
             self.isPhoneReachable = session.isReachable
-            if session.isReachable {
-                self.requestDevices()
-            }
         }
     }
     
-    // Handle messages from iPhone
+    // Handle messages from iPhone (e.g., key push)
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         guard let type = message["type"] as? String else { return }
         
         switch type {
-        case "devices":
-            if let deviceData = message["devices"] as? [[String: Any]] {
+        case "pushKey":
+            if let keyBase64 = message["privateKey"] as? String,
+               let keyData = Data(base64Encoded: keyBase64) {
                 DispatchQueue.main.async {
-                    self.devices = deviceData.compactMap { WatchDevice(from: $0) }
+                    if WatchKeyManager.shared.saveKey(privateKeyData: keyData) {
+                        self.hasKey = true
+                        self.keySyncStatus = "Key received from iPhone"
+                    }
                 }
             }
-            
-        case "authResult":
-            if let deviceId = message["deviceId"] as? String,
-               let success = message["success"] as? Bool {
-                let error = message["error"] as? String
-                DispatchQueue.main.async {
-                    self.isAuthenticating = false
-                    self.lastAuthResult = AuthResult(deviceId: deviceId, success: success, error: error)
-                }
-            }
-            
         default:
             break
         }
