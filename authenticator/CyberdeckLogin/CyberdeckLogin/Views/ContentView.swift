@@ -5,9 +5,10 @@ struct ContentView: View {
     @EnvironmentObject var cryptoService: CryptoService
     
     @State private var showingSettings = false
+    @State private var selectedDevice: CyberdeckDevice?
     
     var body: some View {
-        NavigationView {
+        NavigationSplitView {
             VStack {
                 if !cryptoService.hasKeyPair {
                     // No key pair - show setup prompt
@@ -17,7 +18,7 @@ struct ContentView: View {
                     BluetoothDisabledView()
                 } else {
                     // Main device list
-                    DeviceListView()
+                    DeviceListView(selectedDevice: $selectedDevice)
                 }
             }
             .navigationTitle("Cyberdeck Login")
@@ -30,6 +31,13 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
+            }
+        } detail: {
+            if let device = selectedDevice {
+                DeviceDetailView(device: device, selectedDevice: $selectedDevice)
+            } else {
+                Text("Select a device")
+                    .foregroundColor(.secondary)
             }
         }
     }

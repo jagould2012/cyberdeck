@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DeviceListView: View {
     @EnvironmentObject var bleManager: BLEManager
+    @Binding var selectedDevice: CyberdeckDevice?
     
     var body: some View {
         VStack {
@@ -55,8 +56,8 @@ struct DeviceListView: View {
                 .frame(maxHeight: .infinity)
             } else {
                 // Device list
-                List(bleManager.discoveredDevices) { device in
-                    NavigationLink(destination: DeviceDetailView(device: device)) {
+                List(bleManager.discoveredDevices, selection: $selectedDevice) { device in
+                    NavigationLink(value: device) {
                         DeviceRow(device: device)
                     }
                 }
@@ -127,8 +128,8 @@ struct DeviceRow: View {
 
 struct DeviceListView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            DeviceListView()
+        NavigationStack {
+            DeviceListView(selectedDevice: .constant(nil))
                 .environmentObject(BLEManager())
         }
     }

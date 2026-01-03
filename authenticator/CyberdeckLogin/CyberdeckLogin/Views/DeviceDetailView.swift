@@ -6,6 +6,7 @@ struct DeviceDetailView: View {
     @Environment(\.dismiss) var dismiss
     
     let device: CyberdeckDevice
+    @Binding var selectedDevice: CyberdeckDevice?
     
     @State private var showingError = false
     @State private var errorMessage = ""
@@ -186,6 +187,14 @@ struct DeviceDetailView: View {
             Text("Your device should now be unlocked")
                 .foregroundColor(.secondary)
         }
+        .onAppear {
+            // Auto-reset after 5 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                if bleManager.authenticationState == .success {
+                    bleManager.authenticationState = .idle
+                }
+            }
+        }
     }
     
     var isAuthenticating: Bool {
@@ -210,8 +219,7 @@ struct DeviceDetailView: View {
     func cancelAuthentication() {
         userCancelled = true
         bleManager.disconnect()
-        bleManager.connectedDevice = nil
-        dismiss()
+        selectedDevice = nil
     }
 }
 

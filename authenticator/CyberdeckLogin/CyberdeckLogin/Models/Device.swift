@@ -2,7 +2,7 @@ import Foundation
 import CoreBluetooth
 
 /// Represents a discovered Cyberdeck device
-struct CyberdeckDevice: Identifiable, Equatable {
+struct CyberdeckDevice: Identifiable, Equatable, Hashable {
     let id: UUID
     let peripheral: CBPeripheral
     var name: String
@@ -21,6 +21,10 @@ struct CyberdeckDevice: Identifiable, Equatable {
     
     static func == (lhs: CyberdeckDevice, rhs: CyberdeckDevice) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
