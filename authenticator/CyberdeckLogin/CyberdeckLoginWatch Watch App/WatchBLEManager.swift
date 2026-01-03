@@ -405,11 +405,21 @@ extension WatchBLEManager: CBPeripheralDelegate {
     }
     
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
-        if let error = error {
-            lastError = error.localizedDescription
-            authenticationState = .failed(error.localizedDescription)
-            authCompletion?(false, error.localizedDescription)
+        if characteristic.uuid == WatchCyberdeckBLE.authCharUUID {
+            if let error = error {
+                lastError = error.localizedDescription
+                authenticationState = .failed(error.localizedDescription)
+                authCompletion?(false, error.localizedDescription)
+            } else {
+                // Write succeeded = auth succeeded
+                authenticationState = .success
+                authCompletion?(true, nil)
+                
+                // Reset after delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                    self?.authenticationState = .idle
+                }
+            }
         }
-        // Success response will come via notification
     }
 }

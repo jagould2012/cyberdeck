@@ -87,9 +87,15 @@ class WatchKeyManager: ObservableObject {
         do {
             let signature = try privateKey.signature(for: messageData)
             
+            // Ed25519 signature format: signature || message
+            // This matches the format expected by tweetnacl.sign() and iPhone
+            var signedMessage = Data()
+            signedMessage.append(signature)
+            signedMessage.append(messageData)
+            
             // Create auth request
             let authRequest = AuthRequest(
-                signedNonce: signature.base64EncodedString(),
+                signedNonce: signedMessage.base64EncodedString(),
                 publicKey: privateKey.publicKey.rawRepresentation.base64EncodedString()
             )
             
