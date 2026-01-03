@@ -46,6 +46,7 @@ class BLEManager: NSObject, ObservableObject {
     private var cryptoService: CryptoService?
     private var authCompletion: ((Bool, String?) -> Void)?
     private var registerCompletion: ((Bool, String?) -> Void)?
+    private var authTimeout: Timer?
     
     // MARK: - Initialization
     
@@ -85,9 +86,11 @@ class BLEManager: NSObject, ObservableObject {
     
     /// Connect to a device
     func connect(to device: CyberdeckDevice) {
+        print("🔗 BLE: Connecting to \(device.name)...")
         stopScanning()
         authenticationState = .connecting
         currentPeripheral = device.peripheral
+        currentPeripheral?.delegate = self
         centralManager.connect(device.peripheral, options: nil)
     }
     
@@ -101,20 +104,37 @@ class BLEManager: NSObject, ObservableObject {
     
     /// Authenticate with connected device
     func authenticate(using cryptoService: CryptoService, completion: @escaping (Bool, String?) -> Void) {
+        print("🔐 BLE: Starting authentication...")
         self.cryptoService = cryptoService
         self.authCompletion = completion
         
         guard let peripheral = currentPeripheral else {
+            print("❌ BLE: No peripheral")
             completion(false, "No device connected")
             return
         }
         
+        print("🔐 BLE: Peripheral state: \(peripheral.state.rawValue)")
+        print("🔐 BLE: Challenge characteristic: \(challengeCharacteristic != nil ? "found" : "nil")")
+        
         authenticationState = .readingChallenge
+        
+        // Set timeout for authentication
+        authTimeout?.invalidate()
+        authTimeout = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { [weak self] _ in
+            print("❌ BLE: Authentication timeout")
+            self?.authenticationState = .failed("Connection timeout")
+            self?.authCompletion?(false, "Connection timeout")
+            self?.authCompletion = nil
+        }
         
         // Read challenge characteristic
         if let characteristic = challengeCharacteristic {
+            print("🔐 BLE: Reading challenge...")
             peripheral.readValue(for: characteristic)
         } else {
+            print("❌ BLE: Challenge characteristic not found")
+            authTimeout?.invalidate()
             completion(false, "Challenge characteristic not found")
         }
     }
@@ -153,6 +173,8 @@ class BLEManager: NSObject, ObservableObject {
     // MARK: - Private Methods
     
     private func resetState() {
+        authTimeout?.invalidate()
+        authTimeout = nil
         currentPeripheral = nil
         challengeCharacteristic = nil
         authCharacteristic = nil
@@ -243,6 +265,7 @@ extension BLEManager: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("✅ BLE: Connected to \(peripheral.name ?? "unknown")")
         peripheral.delegate = self
         
         // Update connected device
@@ -253,16 +276,19 @@ extension BLEManager: CBCentralManagerDelegate {
         }
         
         // Discover services
+        print("🔍 BLE: Discovering services...")
         peripheral.discoverServices([CyberdeckBLE.serviceUUID])
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        print("❌ BLE: Failed to connect: \(error?.localizedDescription ?? "unknown")")
         authenticationState = .failed(error?.localizedDescription ?? "Connection failed")
         authCompletion?(false, error?.localizedDescription)
         resetState()
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        print("📡 BLE: Disconnected: \(error?.localizedDescription ?? "clean disconnect")")
         if authenticationState != .success {
             authenticationState = error != nil ? .failed(error!.localizedDescription) : .idle
         }
@@ -274,14 +300,32 @@ extension BLEManager: CBCentralManagerDelegate {
 
 extension BLEManager: CBPeripheralDelegate {
     
+    func peripheral(_ peripheral: CBPeripheral, didModifyServices invalidatedServices: [CBService]) {
+        print("⚠️ BLE: Services modified/invalidated: \(invalidatedServices.map { $0.uuid })")
+        
+        // Check if our service was invalidated
+        if invalidatedServices.contains(where: { $0.uuid == CyberdeckBLE.serviceUUID }) {
+            print("❌ BLE: Cyberdeck service lost, disconnecting...")
+            authTimeout?.invalidate()
+            authTimeout = nil
+            authenticationState = .failed("Service disconnected")
+            authCompletion?(false, "Service disconnected")
+            authCompletion = nil
+            centralManager.cancelPeripheralConnection(peripheral)
+        }
+    }
+    
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        print("🔍 BLE: Services discovered, error: \(error?.localizedDescription ?? "none")")
         guard error == nil,
               let services = peripheral.services else {
             authCompletion?(false, error?.localizedDescription ?? "No services found")
             return
         }
         
+        print("🔍 BLE: Found \(services.count) services")
         for service in services {
+            print("   - \(service.uuid)")
             if service.uuid == CyberdeckBLE.serviceUUID {
                 peripheral.discoverCharacteristics([
                     CyberdeckBLE.challengeCharUUID,
@@ -293,23 +337,35 @@ extension BLEManager: CBPeripheralDelegate {
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        print("🔍 BLE: Characteristics discovered, error: \(error?.localizedDescription ?? "none")")
         guard error == nil,
               let characteristics = service.characteristics else {
             authCompletion?(false, error?.localizedDescription ?? "No characteristics found")
             return
         }
         
+        print("🔍 BLE: Found \(characteristics.count) characteristics")
         for characteristic in characteristics {
+            print("   - \(characteristic.uuid)")
             switch characteristic.uuid {
             case CyberdeckBLE.challengeCharUUID:
                 challengeCharacteristic = characteristic
+                print("   ✓ Challenge characteristic saved")
             case CyberdeckBLE.authCharUUID:
                 authCharacteristic = characteristic
+                print("   ✓ Auth characteristic saved")
             case CyberdeckBLE.registerCharUUID:
                 registerCharacteristic = characteristic
+                print("   ✓ Register characteristic saved")
             default:
                 break
             }
+        }
+        
+        // Update state to ready
+        if authenticationState == .connecting {
+            authenticationState = .idle
+            print("✅ BLE: Ready for authentication")
         }
     }
     
@@ -327,6 +383,8 @@ extension BLEManager: CBPeripheralDelegate {
     
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         if characteristic.uuid == CyberdeckBLE.authCharUUID {
+            authTimeout?.invalidate()
+            authTimeout = nil
             if let error = error {
                 authenticationState = .failed(error.localizedDescription)
                 authCompletion?(false, error.localizedDescription)

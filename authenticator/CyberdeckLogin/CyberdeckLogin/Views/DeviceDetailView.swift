@@ -3,11 +3,13 @@ import SwiftUI
 struct DeviceDetailView: View {
     @EnvironmentObject var bleManager: BLEManager
     @EnvironmentObject var cryptoService: CryptoService
+    @Environment(\.dismiss) var dismiss
     
     let device: CyberdeckDevice
     
     @State private var showingError = false
     @State private var errorMessage = ""
+    @State private var userCancelled = false
     
     var body: some View {
         VStack(spacing: 24) {
@@ -34,18 +36,26 @@ struct DeviceDetailView: View {
             VStack(spacing: 16) {
                 if bleManager.authenticationState == .success {
                     successView
+                } else if isAuthenticating {
+                    cancelButton
                 } else {
                     authenticateButton
-                }
-                
-                if bleManager.connectedDevice != nil {
-                    disconnectButton
                 }
             }
             .padding(.bottom, 32)
         }
         .padding()
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(isAuthenticating)
+        .toolbar {
+            if isAuthenticating {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        cancelAuthentication()
+                    }
+                }
+            }
+        }
         .alert("Authentication Error", isPresented: $showingError) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -61,6 +71,28 @@ struct DeviceDetailView: View {
             // Disconnect when leaving
             if bleManager.authenticationState != .success {
                 bleManager.disconnect()
+            }
+        }
+        .onChange(of: bleManager.connectedDevice) { oldValue, newValue in
+            // Auto-reconnect if disconnected while still on this view (unless user cancelled)
+            if oldValue != nil && newValue == nil && !userCancelled && bleManager.authenticationState != .success {
+                print("🔄 Auto-reconnecting after disconnect...")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    if !userCancelled {
+                        bleManager.connect(to: device)
+                    }
+                }
+            }
+        }
+        .onChange(of: bleManager.authenticationState) { oldValue, newValue in
+            // Auto-reconnect on failure (unless user cancelled)
+            if case .failed(_) = newValue, !userCancelled {
+                print("🔄 Auth failed, will reconnect...")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    if !userCancelled {
+                        bleManager.connect(to: device)
+                    }
+                }
             }
         }
     }
@@ -107,11 +139,25 @@ struct DeviceDetailView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(isAuthenticating ? Color.gray : Color.blue)
+            .background(bleManager.connectedDevice == nil ? Color.gray : Color.blue)
             .foregroundColor(.white)
             .cornerRadius(12)
         }
-        .disabled(isAuthenticating || bleManager.connectedDevice == nil)
+        .disabled(bleManager.connectedDevice == nil)
+    }
+    
+    var cancelButton: some View {
+        Button(action: cancelAuthentication) {
+            HStack {
+                Image(systemName: "xmark.circle")
+                Text("Cancel")
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color(.systemGray5))
+            .foregroundColor(.primary)
+            .cornerRadius(12)
+        }
     }
     
     var disconnectButton: some View {
@@ -152,12 +198,20 @@ struct DeviceDetailView: View {
     }
     
     func authenticate() {
+        userCancelled = false
         bleManager.authenticate(using: cryptoService) { success, error in
             if !success {
                 errorMessage = error ?? "Unknown error"
                 showingError = true
             }
         }
+    }
+    
+    func cancelAuthentication() {
+        userCancelled = true
+        bleManager.disconnect()
+        bleManager.connectedDevice = nil
+        dismiss()
     }
 }
 
