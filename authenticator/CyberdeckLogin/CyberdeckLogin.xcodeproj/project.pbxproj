@@ -396,7 +396,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CyberdeckLogin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cyberdeck Login";
+				INFOPLIST_KEY_CFBundleDisplayName = Cyberdeck;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Cyberdeck Login uses Bluetooth to discover and authenticate with your devices.";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Cyberdeck Login uses Bluetooth to register with your devices.";
@@ -432,7 +432,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CyberdeckLogin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cyberdeck Login";
+				INFOPLIST_KEY_CFBundleDisplayName = Cyberdeck;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Cyberdeck Login uses Bluetooth to discover and authenticate with your devices.";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Cyberdeck Login uses Bluetooth to register with your devices.";
@@ -466,7 +466,7 @@
 				DEVELOPMENT_TEAM = ADHV5U8CDC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = CyberdeckLoginWatch;
+				INFOPLIST_KEY_CFBundleDisplayName = Cyberdeck;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.gouldtechconsulting.CyberdeckLogin;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -496,7 +496,7 @@
 				DEVELOPMENT_TEAM = ADHV5U8CDC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = CyberdeckLoginWatch;
+				INFOPLIST_KEY_CFBundleDisplayName = Cyberdeck;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.gouldtechconsulting.CyberdeckLogin;
 				LD_RUNPATH_SEARCH_PATHS = (
