@@ -74,7 +74,7 @@ Register devices in Apple Developer Portal:
 1. Select **Any iOS Device** as build target
 2. Product → Archive
 3. When archive completes, click **Distribute App**
-4. Select **Ad Hoc**
+4. Select **Release Testing** (adhoc)
 5. Choose options:
    - App Thinning: None (or All compatible device variants)
    - Include manifest for over-the-air installation: ✓ (optional)
