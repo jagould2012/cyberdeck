@@ -1,21 +1,31 @@
 import WidgetKit
 import SwiftUI
 
+@main
+struct CyberdeckWidgetBundle: WidgetBundle {
+    var body: some Widget {
+        CyberdeckComplication()
+    }
+}
+
 struct CyberdeckComplication: Widget {
     let kind: String = "CyberdeckComplication"
     
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             ComplicationView(entry: entry)
+                .containerBackground(.clear, for: .widget)
         }
         .configurationDisplayName("Cyberdeck")
         .description("Quick unlock your devices")
+        #if os(watchOS)
         .supportedFamilies([
             .accessoryCircular,
             .accessoryCorner,
             .accessoryRectangular,
             .accessoryInline
         ])
+        #endif
     }
 }
 
@@ -49,13 +59,11 @@ struct ComplicationView: View {
             ZStack {
                 AccessoryWidgetBackground()
                 Image(systemName: "lock.open.fill")
-                    .font(.title2)
-                    .foregroundColor(.green)
+                    .font(.system(size: 24))
             }
         case .accessoryCorner:
             Image(systemName: "lock.open.fill")
-                .font(.title2)
-                .foregroundColor(.green)
+                .font(.system(size: 20))
                 .widgetLabel {
                     Text("Unlock")
                 }
@@ -63,26 +71,17 @@ struct ComplicationView: View {
             HStack {
                 Image(systemName: "lock.open.fill")
                     .font(.title2)
-                    .foregroundColor(.green)
                 VStack(alignment: .leading) {
                     Text("Cyberdeck")
                         .font(.headline)
                     Text("Tap to unlock")
                         .font(.caption)
-                        .foregroundColor(.secondary)
                 }
             }
         case .accessoryInline:
-            Label("Cyberdeck Unlock", systemImage: "lock.open.fill")
+            Label("Unlock", systemImage: "lock.open.fill")
         @unknown default:
             Image(systemName: "lock.open.fill")
-                .foregroundColor(.green)
         }
     }
-}
-
-#Preview(as: .accessoryCircular) {
-    CyberdeckComplication()
-} timeline: {
-    SimpleEntry(date: Date())
 }
