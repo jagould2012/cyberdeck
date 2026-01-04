@@ -1,0 +1,6 @@
+{
+	"computerName": "my-raspberry-pi",
+	"loginUser": "pi",
+	"nonceRotationIntervalMs": 30000,
+	"registeredDevices": []
+}

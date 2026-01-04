@@ -18,6 +18,12 @@ Automated setup for Raspberry Pi devices running Kali Linux with SDR software st
 5. Use rpi-imager to install Kali Linux to the NVMe drive
 6. Remove the SD card and reboot
 
+Recommended at this point to install available updates:
+
+```
+sudo apt-get update && sudo apt upgrade -y && sudo apt dist-upgrade -y && sudo reboot
+```
+
 ### 2. Initial Network Setup
 
 Before running Ansible, ensure the Pi is accessible:

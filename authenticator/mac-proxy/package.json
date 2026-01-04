@@ -1,0 +1,14 @@
+{
+	"name": "cyberdeck-ble-proxy",
+	"version": "1.0.0",
+	"description": "BLE to WebSocket proxy for testing Cyberdeck Login in VMs",
+	"main": "mac-proxy.js",
+	"type": "module",
+	"scripts": {
+		"start": "node mac-proxy.js --server cyberdeck-testvm.local:3100"
+	},
+	"dependencies": {
+		"@abandonware/bleno": "^0.5.1-4",
+		"ws": "^8.14.2"
+	}
+}
