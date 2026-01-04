@@ -11,7 +11,7 @@ struct WatchDeviceDetailView: View {
                 // Device icon and name
                 Image(systemName: "desktopcomputer")
                     .font(.system(size: 36))
-                    .foregroundColor(.blue)
+                    .foregroundColor(.green)
                 
                 Text(device.name)
                     .font(.headline)
@@ -37,7 +37,7 @@ struct WatchDeviceDetailView: View {
                     Text(error)
                         .font(.caption2)
                         .foregroundColor(.red)
-                        .lineLimit(2)
+                        .lineLimit(3)
                 }
             }
             .padding(.horizontal, 4)

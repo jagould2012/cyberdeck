@@ -58,19 +58,24 @@ struct ComplicationView: View {
         case .accessoryCircular:
             ZStack {
                 AccessoryWidgetBackground()
-                Image(systemName: "lock.open.fill")
-                    .font(.system(size: 24))
+                Image("ComplicationIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(6)
             }
         case .accessoryCorner:
-            Image(systemName: "lock.open.fill")
-                .font(.system(size: 20))
+            Image("ComplicationIcon")
+                .resizable()
+                .scaledToFit()
                 .widgetLabel {
                     Text("Unlock")
                 }
         case .accessoryRectangular:
             HStack {
-                Image(systemName: "lock.open.fill")
-                    .font(.title2)
+                Image("ComplicationIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
                 VStack(alignment: .leading) {
                     Text("Cyberdeck")
                         .font(.headline)
@@ -81,7 +86,9 @@ struct ComplicationView: View {
         case .accessoryInline:
             Label("Unlock", systemImage: "lock.open.fill")
         @unknown default:
-            Image(systemName: "lock.open.fill")
+            Image("ComplicationIcon")
+                .resizable()
+                .scaledToFit()
         }
     }
 }
