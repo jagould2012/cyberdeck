@@ -1,90 +1,90 @@
-Quantity,Description,Link,Notes
-,,,
-,Computers,,
-,,,
-2,Raspberry Pi 5 16GB Single Board Computers,https://www.amazon.com/dp/B0DY7MWDF9?linkCode=ll1&tag=jagould2012-20&linkId=0729d799dd504df3d4454b081bc47bf8&language=en_US&ref_=as_li_ss_tl,16GB version to allow for Kubernetes and containers
-2,Patriot M.2 PCIe NVME flash - 256GB,https://www.amazon.com/dp/B082BWY2C2?th=1&linkCode=ll1&tag=jagould2012-20&linkId=7b7f5fd9b6ba912347646656cbd5a0a8&language=en_US&ref_=as_li_ss_tl,"Must be NVME, not SATA"
-1,"GeeekPi 3U 9"" LCD display",https://www.amazon.com/dp/B0FZQGN2FS?coliid=I2SMGGHY26APN1&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=45af344763cc0ff389bafea75b350623&language=en_US&ref_=as_li_ss_tl,
-1,"GeeekPi 1U 6.9"" LCD display",https://www.amazon.com/dp/B0G337KQS6?coliid=I3IXGO8OB1Q1II&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=8b4cbab3c91a4e72b3747fbd775b85ad&language=en_US&ref_=as_li_ss_tl,
-1,BotBlox Gigabit Ethernet Switch,https://botblox.io/products/gigablox-small-gigabit-switch,Necessary if you want Gigabit between Raspberry Pi SBCs
-1,Keyboard with Touchpad,https://amzn.to/456Uwe9,
-,,,
-,Radios,,
-,,,
-1,Waveshare SX1262 LoRaWAN module,https://www.amazon.com/dp/B0C61VK6WQ?linkCode=ll1&tag=jagould2012-20&linkId=bf6145f00626d97987aac0f0b1e21b07&language=en_US&ref_=as_li_ss_tl,
-1,Alfa Network AXE3000 WiFi adapter,https://www.amazon.com/dp/B0BY8GMW32?linkCode=ll1&tag=jagould2012-20&linkId=b222d3e9adbca0991b7ad75ab9622bba&language=en_US&ref_=as_li_ss_tl,
-1,Clifford Heath HackRF One with Mayhem Signature-Edition Portapack H4M,https://opensourcesdrlab.com/products/clifford-heath-hackrf-one-with-portapack-h4m?VariantsId=10177,
-1,RTL-SDR Blog V4 R828D RTL2832U Software Defined Radio ,https://www.amazon.com/RTL-SDR-Blog-RTL2832U-Software-Defined/dp/B0CD7558GT?crid=AEFL7KH87XT1&dib=eyJ2IjoiMSJ9.sfbFJPG624K7g9NEHFje-esjliMDA3Uezj2mX7RxyGwKhZNR3BQUKjZ1aH-J1Te7HgSiyykU7JUXL4fbQ60HgmDJlcon4nvlV4n2QuzDRujdsgMDa7b9obtb9HtdA0Dzh53Ib811JdDkKd8qRcq3dsKZFoudFjioML9PgLk9QN_PdS2kv6OC__GDA9gc1PHCeW5exw6pnlQyFJhuAjm5Fl_ascU4OOrn89OPGVuts4Y.SeH0Y-1jFsRcyr61RajUfKxD9oK59pk1ILuq11CmfJw&dib_tag=se&keywords=rtl+sdr+v4&qid=1766052171&sprefix=rtl%3Ds%2Caps%2C125&sr=8-1&linkCode=ll1&tag=jagould2012-20&linkId=dc96f0e9203818eb76a0b6f7d01c1658&language=en_US&ref_=as_li_ss_tl,
-1,HackRF One clock module,https://opensourcesdrlab.com/products/external-high-precision-tcxo-clock-module-ppm01-for-hackrf,
-1,Great Scott Gadgets Ubertooth One,https://greatscottgadgets.com/ubertoothone/,Unfortunately retired
-1,PepWave MAX BR1 Mini,https://www.amazon.com/Peplink-Redundant-Include-PrimeCare-MAX-BR1-MINI-LTEA-US-T-PRM/dp/B0BJZS95VC?crid=2C9PEX8QKQL22&dib=eyJ2IjoiMSJ9.y6KOuzX1LKSeaYfNTJePhKwlvdnOTEmNqbXa92ZaFQbZykY85zomy-MGywwbekQhSvTZcCN3qEOgr1dZlc2KSOQ4HHkBuBVkQN7ZVHzsT7bWqeejYwfvPTGSpUjFsUoNmUsvZ7O9olrD6p-xt1vX1625yM3JR51rct1fVw_XvEj1NCV4XwcEvxuLyVhNIPdqE0rCE-g1r1wTFGxc_ILbGIardXxPvEGPMVenma08mcCot8OymjExw0Usbsy3pkH8Zfb1wiPi3Zpu7avr4Rbt8cYjBwiIwCs33RYjxawzv1A.Bkf5cZHyuvD_pa1jTKxhDuJ2Djk4N9fBrQHysfhcIXc&dib_tag=se&keywords=pepwave%2Bmax%2Bbr1%2Bmini&qid=1766234653&sprefix=PepWave%2BMAX%2BBR1%2BMini%2Caps%2C166&sr=8-2&th=1&linkCode=ll1&tag=jagould2012-20&linkId=b9a68e8f22d79b1878b4dd22f95237b0&language=en_US&ref_=as_li_ss_tl,
-1,PepWave Wifi-as-WAN license,https://mobilemusthave.com/products/max-br1-mini-wired-wan-wifi-as-wan-license-upgrade,
-,,,
-,Power,,
-,,,
-2,Mean Well RSD-60G-5 DC to DC power supplies,https://www.amazon.com/dp/B07BTK94W2?linkCode=ll1&tag=jagould2012-20&linkId=4942f2dda7032ff47ff2c3d6e985c77a&language=en_US&ref_=as_li_ss_tl,
-1,Mean Well RSD-60G-12 DC to DC power supplies,https://www.amazon.com/dp/B0748MLBYJ?&linkCode=ll1&tag=jagould2012-20&linkId=7f7d304ba9be40efec150acd49fa43d6&language=en_US&ref_=as_li_ss_tl,
-1,Mean Well LRS-350–24 DC power supply,https://www.amazon.com/dp/B07VRK86SP?linkCode=ll1&tag=jagould2012-20&linkId=80ef2383d3ab9bfcb08e79d1e220cccd&language=en_US&ref_=as_li_ss_tl,
-1,Apiele 3 position power selector switch,https://www.amazon.com/dp/B07L5C96K9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=33712ead656fab04a347692eac6e55f0&language=en_US&ref_=as_li_ss_tl,
-1,XT90 panel mount DC input,https://www.amazon.com/dp/B0F6YH61JR?linkCode=ll1&tag=jagould2012-20&linkId=da2184e3afff963d3b9a519059c251fd&language=en_US&ref_=as_li_ss_tl,
-1,24VDC 6 pin DPST NO relay,https://www.amazon.com/dp/B0D9RTDQ5H?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9d9cccd13d026f527c9b52b82b7f68d0&language=en_US&ref_=as_li_ss_tl,
-,,,
-,Case,,
-,,,
-1,Pelican Protector 1500 case,https://www.amazon.com/dp/B0000DYV9H?th=1&linkCode=ll1&tag=jagould2012-20&linkId=000cd1fb6d050174b3d86df524f25cd5&language=en_US&ref_=as_li_ss_tl,
-1,Pelican 1500PF frame,https://www.bhphotovideo.com/c/product/688576-REG/Pelican_1500_300_110_1500PF_Special_Application_Panel.html,
-1,GeeekPi 1U mount for Raspberry Pi,https://www.amazon.com/dp/B0F7XBVV4D?linkCode=ll1&tag=jagould2012-20&linkId=b8ac03b1ecf525a0adfd638ab41b795e&language=en_US&ref_=as_li_ss_tl,
-1,Custom aluminum plate for Pelican 1500,https://www.datapro.net/cgi-bin/plate-designer-pro,
-,,,
-,"Misc Hardware, Cables, and Accessories",,
-,,,
-1,USB mini keyboard with trackpad,https://www.amazon.com/dp/B0DKPHX18V?th=1&linkCode=ll1&tag=jagould2012-20&linkId=dbd6d2a9c0762135fc0b0d7c9ecfa8df&language=en_US&ref_=as_li_ss_tl,
-,,,
-1,1' Female Bulkhead Angle to N Female Pigtail Jumper,https://www.amazon.com/dp/B01HLDSGKE?&linkCode=ll1&tag=jagould2012-20&linkId=f43e39c693549ec98d326b4fad785156&language=en_US&ref_=as_li_ss_tl,Low profile right angle panel mount for LoRa
-1,Ipex-1 to N Male cable,https://www.amazon.com/dp/B07CR866LX?&linkCode=ll1&tag=jagould2012-20&linkId=a951e02d28a61ffb8e1ec5ac5ca9065a&language=en_US&ref_=as_li_ss_tl,Waveshare LoRa to N connector
-1,Ipex-1 to RP-SMA cable,https://www.amazon.com/dp/B0CSSPJ8S2?&linkCode=ll1&tag=jagould2012-20&linkId=438d4e2894662c1cff2a462ebd954d1e&language=en_US&ref_=as_li_ss_tl,For LoRa
-2,"RPI-SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B07MT3VZXZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=0a91d0981ef509d0fd28ccbb86958586&language=en_US&ref_=as_li_ss_tl,For AXE3000 WiFi antenna
-2,"SMA 12"" extension cable - 2 pack",https://www.amazon.com/dp/B08139CQLG?th=1&linkCode=ll1&tag=jagould2012-20&linkId=08997393fe479e61210564a2a0ecdeac&language=en_US&ref_=as_li_ss_tl,For RTL-SDR antenna
-1,SMA right angle adapter - 4 pack,https://www.amazon.com/dp/B07YW3M4GB?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eca363638807b23059ca236a42444385&language=en_US&ref_=as_li_ss_tl,
-1,ANT 500 antenna,https://www.amazon.com/dp/B01CQYZJV2?&linkCode=ll1&tag=jagould2012-20&linkId=e2eaf07828a5be26dfec1e001170f75b&language=en_US&ref_=as_li_ss_tl,For RTL-SDR
-1,Meshtasic 5dBi antenna,https://www.amazon.com/dp/B0FT8HKKBN?&linkCode=ll1&tag=jagould2012-20&linkId=3840764c16c918d228075aa9fc518fd6&language=en_US&ref_=as_li_ss_tl,For LoRa
-,,,
-1,XT90 panel mount cable,https://www.amazon.com/dp/B0F6YH61JR?&linkCode=ll1&tag=jagould2012-20&linkId=6134446057f0f53a3daadad3e1e30464&language=en_US&ref_=as_li_ss_tl,External DC input
-1,XT90 extension cable,https://www.amazon.com/dp/B0BWYTGMJH?th=1&linkCode=ll1&tag=jagould2012-20&linkId=4f4cdd02279c4f3be6feb8295d74396a&language=en_US&ref_=as_li_ss_tl,
-1,XT90 alligator clamps,https://www.amazon.com/dp/B0BJ8VXTWR?&linkCode=ll1&tag=jagould2012-20&linkId=fc10867998fdfe6c6c3cf3c75bfa1f27&language=en_US&ref_=as_li_ss_tl,
-,,,
-1,Heat shrink tubing,https://www.amazon.com/dp/B0BVVMCY86?th=1&linkCode=ll1&tag=jagould2012-20&linkId=2e46068b8e6c4abb1e24180654371b31&language=en_US&ref_=as_li_ss_tl,
-1,Heat shrink terminal kit,https://www.amazon.com/dp/B0C2CBM2YS?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9877c2b1b1108b66da7233dfbe5a4588&language=en_US&ref_=as_li_ss_tl,Used for larger gauge connections to power supplies
-1,Ferrule crimping kit,https://www.amazon.com/dp/B07PJK2VNT?&linkCode=ll1&tag=jagould2012-20&linkId=d0296b791db320e885a5cbd558e99e0b&language=en_US&ref_=as_li_ss_tl,Used on all small gauge power wires to terminal blocks
-,,,
-1,Screw terminal barrier strips,https://www.amazon.com/dp/B0D7VRSH1G?&linkCode=ll1&tag=jagould2012-20&linkId=ef79e244e0a82d01c300dff6fcec04e0&language=en_US&ref_=as_li_ss_tl,5V power distribution
-1,USB-C pigtail power cables - 5 pack,https://www.amazon.com/dp/B0BFHXWCS9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=5a9b90fdd67263b50550c6f52fc52b03&language=en_US&ref_=as_li_ss_tl,
-1,"90 Degree DC Power Pigtails Cable, Right Angle DC 5.5mm x 2.5mm ",https://www.amazon.com/dp/B0B6HSJRVH?&linkCode=ll1&tag=jagould2012-20&linkId=02bf9384a51607daf7369dfebd27d566&language=en_US&ref_=as_li_ss_tl,USB hubs
-,,,
-2,Right angle USB extension,https://www.amazon.com/dp/B0793P8XJK?&linkCode=ll1&tag=jagould2012-20&linkId=e8e6c236726e3d53504d852c3f57c5dc&language=en_US&ref_=as_li_ss_tl,Bring one USB 3.0 port to rear of plate
-2,Coolgear USB 3.2 Powered Hub,https://www.amazon.com/dp/B07G7GP15C?&linkCode=ll1&tag=jagould2012-20&linkId=47bd1e7921d55b1ff99a18a17ed2fc55&language=en_US&ref_=as_li_ss_tl,
-2,Waveshare USB to 2.5Gb Ethernet,https://www.amazon.com/dp/B0D8139N3Z?&linkCode=ll1&tag=jagould2012-20&linkId=616c34a77fc85ccaaefd3e0c492448e2&language=en_US&ref_=as_li_ss_tl,
-1,1' USB-C to USB A - 5 pack,https://www.amazon.com/dp/B08PXWYKTB?th=1&linkCode=ll1&tag=jagould2012-20&linkId=b4dde1596bad16d339235b70a56b5735&language=en_US&ref_=as_li_ss_tl,Touch screen connection to Pi USB
-1,1' USB C flexible cable to USB A,https://www.amazon.com/dp/B0DQS9WR4W?th=1&linkCode=ll1&tag=jagould2012-20&linkId=cee9ec96c272ee831084b332d35c3d24&language=en_US&ref_=as_li_ss_tl,HackRF One
-1,"Right Angle USB C Male to Male Adapter, 90 Degree Type-C to USB A Cable",https://www.amazon.com/dp/B0DCZF24F9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=a8077f041945c77d27396a72c5800c71&language=en_US&ref_=as_li_ss_tl,Touchscreen control to USB hub(s)
-1,"90 Degree USB Type C Cable, Down Angle .25m",https://www.amazon.com/dp/B0BVYPKYW7?th=1&linkCode=ll1&tag=jagould2012-20&linkId=23b64f1632bdca94c0b7987d16b3d258&language=en_US&ref_=as_li_ss_tl,AXE3000 to USB hub
-1,"1' USB SuperSpeed Cable, A Right to B Right",https://www.amazon.com/dp/B07YBQTSG6?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eb4d54f2ca3f985d2f67b06a600eee0b&language=en_US&ref_=as_li_ss_tl,USB hub to Pi
-1,"1' USB SuperSpeed Cable, A Left to B Right",https://www.amazon.com/dp/B07SR71Q67?th=1&linkCode=ll1&tag=jagould2012-20&linkId=ae3f591a806c82cde7fa02b47e764d67&language=en_US&ref_=as_li_ss_tl,USB hub to Pi
-1,Micro HDMI to HDMI 1' Angle Up - 2 pack,https://www.amazon.com/dp/B07DZY2D4D?th=1&linkCode=ll1&tag=jagould2012-20&linkId=a902bb0f5837d3c0dafbdda1832de5d4&language=en_US&ref_=as_li_ss_tl,
-1,Micro HDMI to HDMI 1' Angle Down - 2 pack,https://www.amazon.com/dp/B07FT1Z3PM?th=1&linkCode=ll1&tag=jagould2012-20&linkId=20cb610c81bcf0546a5e8f187c6e658f&language=en_US&ref_=as_li_ss_tl,
-,,,
-1,ML1220 rechargeable battery,https://www.amazon.com/dp/B088KT9HB9?&linkCode=ll1&tag=jagould2012-20&linkId=9cfda5ba75d47e04493bda0ed495a981&language=en_US&ref_=as_li_ss_tl,For Waveshare LoRa radio
-,,,
-1,Assorted M3 button head screws,https://www.amazon.com/dp/B0D5YYH5ZZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=f354e612ee2c74fac6f0b3996b4262c9&language=en_US&ref_=as_li_ss_tl,
-1,Assorted M3 standoff kit,https://www.amazon.com/dp/B0F297R23T?&linkCode=ll1&tag=jagould2012-20&linkId=38ef20a6e39a8115416d2fa35d6c8a26&language=en_US&ref_=as_li_ss_tl,
-1,10-32 rack screws,https://www.amazon.com/dp/B0D5HZ63Y9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=04b6702c01b9d75971e3d1ab6ecfede7&language=en_US&ref_=as_li_ss_tl,
-1,10-32 lock nuts,https://www.amazon.com/dp/B0F8H5QM28?th=1&linkCode=ll1&tag=jagould2012-20&linkId=7ee86ae5b803837a83192ced3454be49&language=en_US&ref_=as_li_ss_tl,
-10,"Threaded Standoff - 2"" x 5/16"" 10-32",https://www.mcmaster.com/products/91780a261/,
-,,,
-1,"1/8"" ABS plastic sheet 8"" x 12"" - 2 pack",https://www.amazon.com/dp/B0FJFFH7Z9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=1029d95ab8f9d28ab42d2653db07312e&language=en_US&ref_=as_li_ss_tl,Custom mounting plates behind aluminum plate
-1,"iCraft 1/2"" x 1/8"" 3D foam tape",https://www.amazon.com/iCraft-5611-Jumbo-Rolls-Black/dp/B093Y43FGF?crid=SSJEDCOKNH7C&dib=eyJ2IjoiMSJ9.d-kk0xkjTN1F3AlRfseXbd-Zi_PKe6-0eLNG6mEqihb-Z_tOjGcDQEU49k8yUG8A3nMPeCp0roDDjHoWQT3D4MkY235Rf6pNgPE9SNApcgz_64tqpFJEW8McQcH_MJsSUETmxfW1_LSILra0XfgEmEHlqIaVuPQuET9mqUeAdBD1JtMcdv7NKdboevBKTDT9HdNLmQH1qZ_YNohLjDJlYWai3PUqQ_JgpMfq5-3tg3cd4c13AhG_tEdZgTKNxnENES4ej074Qg4m5KlvyAqz-Qoi1zq4LfnLvW_IJLcYmDg.FXiE55f1fYRmruWNO2bCYbn1RxThkAtFOu4ot-SdmSs&dib_tag=se&keywords=icraft%2Bfoam%2Btape%2Bblack&qid=1766805695&sprefix=icraft%2Bfoam%2Btape%2Bblack%2Caps%2C166&sr=8-6&th=1&linkCode=ll1&tag=jagould2012-20&linkId=cdeeace2592c34b722d932876637c5b6&language=en_US&ref_=as_li_ss_tl,For mounting power components to ABS panels
-,,,
-2,Neoprene Case,https://www.amazon.com/dp/B01JZ3NEM8?th=1&linkCode=ll1&tag=jagould2012-20&linkId=80bd015303bdc9a928e0defa96a9a1ae&language=en_US&ref_=as_li_ss_tl,For antenna storage
-1,Left-angle IEC power cable,https://www.amazon.com/dp/B003MGB1EI?th=1&linkCode=ll1&tag=jagould2012-20&linkId=c640d6844eaec2f8ba6b8de4bc8c366d&language=en_US&ref_=as_li_ss_tl,
-1,Adhesive neoprene sheets,https://www.amazon.com/dp/B08P1XQMQH?th=1&linkCode=ll1&tag=jagould2012-20&linkId=6299576ea2492a4487798448a1b6fef9&language=en_US&ref_=as_li_ss_tl,Lining for case lid to protect keyboard
-1,Neoprene foam,https://www.amazon.com/dp/B09TXGTD1B?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9bd1273f77f26a978f2a5cf1326310af&language=en_US&ref_=as_li_ss_tl,Protective sheet between keyboard and screens
+Quantity,Description,Each,Total,Link,Notes
+,,,,,
+,Computers,,,,
+,,,,,
+2,Raspberry Pi 5 16GB Single Board Computers,$172.99,$345.98,https://www.amazon.com/dp/B0DY7MWDF9?linkCode=ll1&tag=jagould2012-20&linkId=0729d799dd504df3d4454b081bc47bf8&language=en_US&ref_=as_li_ss_tl,16GB version to allow for Kubernetes and containers
+2,Patriot M.2 PCIe NVME flash - 256GB,$56.99,$113.98,https://www.amazon.com/dp/B082BWY2C2?th=1&linkCode=ll1&tag=jagould2012-20&linkId=7b7f5fd9b6ba912347646656cbd5a0a8&language=en_US&ref_=as_li_ss_tl,"Must be NVME, not SATA"
+1,"GeeekPi 3U 9"" LCD display",$119.99,$119.99,https://www.amazon.com/dp/B0FZQGN2FS?coliid=I2SMGGHY26APN1&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=45af344763cc0ff389bafea75b350623&language=en_US&ref_=as_li_ss_tl,
+1,"GeeekPi 1U 6.9"" LCD display",$89.99,$89.99,https://www.amazon.com/dp/B0G337KQS6?coliid=I3IXGO8OB1Q1II&colid=3QSCT2ZDQCWLU&psc=1&linkCode=ll1&tag=jagould2012-20&linkId=8b4cbab3c91a4e72b3747fbd775b85ad&language=en_US&ref_=as_li_ss_tl,
+1,BotBlox Gigabit Ethernet Switch,$128.00,$128.00,https://botblox.io/products/gigablox-small-gigabit-switch,Necessary if you want Gigabit between Raspberry Pi SBCs
+1,Keyboard with Touchpad,$65.15,$65.15,https://amzn.to/456Uwe9,
+,,,,,
+,Radios,,,,
+,,,,,
+1,Waveshare SX1262 LoRaWAN module,$35.99,$35.99,https://www.amazon.com/dp/B0C61VK6WQ?linkCode=ll1&tag=jagould2012-20&linkId=bf6145f00626d97987aac0f0b1e21b07&language=en_US&ref_=as_li_ss_tl,
+1,Alfa Network AXE3000 WiFi adapter,$76.99,$76.99,https://www.amazon.com/dp/B0BY8GMW32?linkCode=ll1&tag=jagould2012-20&linkId=b222d3e9adbca0991b7ad75ab9622bba&language=en_US&ref_=as_li_ss_tl,
+1,Clifford Heath HackRF One with Mayhem Signature-Edition Portapack H4M,$185.00,$185.00,https://opensourcesdrlab.com/products/clifford-heath-hackrf-one-with-portapack-h4m?VariantsId=10177,
+1,RTL-SDR Blog V4 R828D RTL2832U Software Defined Radio ,49.95,$49.95,https://www.amazon.com/RTL-SDR-Blog-RTL2832U-Software-Defined/dp/B0CD7558GT?crid=AEFL7KH87XT1&dib=eyJ2IjoiMSJ9.sfbFJPG624K7g9NEHFje-esjliMDA3Uezj2mX7RxyGwKhZNR3BQUKjZ1aH-J1Te7HgSiyykU7JUXL4fbQ60HgmDJlcon4nvlV4n2QuzDRujdsgMDa7b9obtb9HtdA0Dzh53Ib811JdDkKd8qRcq3dsKZFoudFjioML9PgLk9QN_PdS2kv6OC__GDA9gc1PHCeW5exw6pnlQyFJhuAjm5Fl_ascU4OOrn89OPGVuts4Y.SeH0Y-1jFsRcyr61RajUfKxD9oK59pk1ILuq11CmfJw&dib_tag=se&keywords=rtl+sdr+v4&qid=1766052171&sprefix=rtl%3Ds%2Caps%2C125&sr=8-1&linkCode=ll1&tag=jagould2012-20&linkId=dc96f0e9203818eb76a0b6f7d01c1658&language=en_US&ref_=as_li_ss_tl,
+1,HackRF One clock module,$5.51,$5.51,https://opensourcesdrlab.com/products/external-high-precision-tcxo-clock-module-ppm01-for-hackrf,
+1,Great Scott Gadgets Ubertooth One,$125.00,$125.00,https://greatscottgadgets.com/ubertoothone/,Unfortunately retired
+1,PepWave MAX BR1 Mini,$399.00,$399.00,https://www.amazon.com/Peplink-Redundant-Include-PrimeCare-MAX-BR1-MINI-LTEA-US-T-PRM/dp/B0BJZS95VC?crid=2C9PEX8QKQL22&dib=eyJ2IjoiMSJ9.y6KOuzX1LKSeaYfNTJePhKwlvdnOTEmNqbXa92ZaFQbZykY85zomy-MGywwbekQhSvTZcCN3qEOgr1dZlc2KSOQ4HHkBuBVkQN7ZVHzsT7bWqeejYwfvPTGSpUjFsUoNmUsvZ7O9olrD6p-xt1vX1625yM3JR51rct1fVw_XvEj1NCV4XwcEvxuLyVhNIPdqE0rCE-g1r1wTFGxc_ILbGIardXxPvEGPMVenma08mcCot8OymjExw0Usbsy3pkH8Zfb1wiPi3Zpu7avr4Rbt8cYjBwiIwCs33RYjxawzv1A.Bkf5cZHyuvD_pa1jTKxhDuJ2Djk4N9fBrQHysfhcIXc&dib_tag=se&keywords=pepwave%2Bmax%2Bbr1%2Bmini&qid=1766234653&sprefix=PepWave%2BMAX%2BBR1%2BMini%2Caps%2C166&sr=8-2&th=1&linkCode=ll1&tag=jagould2012-20&linkId=b9a68e8f22d79b1878b4dd22f95237b0&language=en_US&ref_=as_li_ss_tl,
+1,PepWave Wifi-as-WAN license,$100.00,$100.00,https://mobilemusthave.com/products/max-br1-mini-wired-wan-wifi-as-wan-license-upgrade,
+,,,,,
+,Power,,,,
+,,,,,
+2,Mean Well RSD-60G-5 DC to DC power supplies,$50.57,$101.14,https://www.amazon.com/dp/B07BTK94W2?linkCode=ll1&tag=jagould2012-20&linkId=4942f2dda7032ff47ff2c3d6e985c77a&language=en_US&ref_=as_li_ss_tl,
+1,Mean Well RSD-60G-12 DC to DC power supplies,$43.97,$43.97,https://www.amazon.com/dp/B0748MLBYJ?&linkCode=ll1&tag=jagould2012-20&linkId=7f7d304ba9be40efec150acd49fa43d6&language=en_US&ref_=as_li_ss_tl,
+1,Mean Well LRS-350–24 DC power supply,$35.97,$35.97,https://www.amazon.com/dp/B07VRK86SP?linkCode=ll1&tag=jagould2012-20&linkId=80ef2383d3ab9bfcb08e79d1e220cccd&language=en_US&ref_=as_li_ss_tl,
+1,Apiele 3 position power selector switch,$14.99,$14.99,https://www.amazon.com/dp/B07L5C96K9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=33712ead656fab04a347692eac6e55f0&language=en_US&ref_=as_li_ss_tl,
+1,XT90 panel mount DC input,$14.99,$14.99,https://www.amazon.com/dp/B0F6YH61JR?linkCode=ll1&tag=jagould2012-20&linkId=da2184e3afff963d3b9a519059c251fd&language=en_US&ref_=as_li_ss_tl,
+1,24VDC 6 pin DPST NO relay,$11.51,$11.51,https://www.amazon.com/dp/B0D9RTDQ5H?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9d9cccd13d026f527c9b52b82b7f68d0&language=en_US&ref_=as_li_ss_tl,
+,,,,,
+,Case,,,,
+,,,,,
+1,Pelican Protector 1500 case,$157.56,$157.56,https://www.amazon.com/dp/B0000DYV9H?th=1&linkCode=ll1&tag=jagould2012-20&linkId=000cd1fb6d050174b3d86df524f25cd5&language=en_US&ref_=as_li_ss_tl,
+1,Pelican 1500PF frame,$22.95,$22.95,https://www.bhphotovideo.com/c/product/688576-REG/Pelican_1500_300_110_1500PF_Special_Application_Panel.html,
+1,GeeekPi 1U mount for Raspberry Pi,$53.99,$53.99,https://www.amazon.com/dp/B0F7XBVV4D?linkCode=ll1&tag=jagould2012-20&linkId=b8ac03b1ecf525a0adfd638ab41b795e&language=en_US&ref_=as_li_ss_tl,
+1,Custom aluminum plate for Pelican 1500,$273.33,$273.33,https://www.datapro.net/cgi-bin/plate-designer-pro,
+,,,,,
+,"Misc Hardware, Cables, and Accessories",,,,
+,,,,,
+1,1' Female Bulkhead Angle to N Female Pigtail Jumper,$19.87,$19.87,https://www.amazon.com/dp/B01HLDSGKE?&linkCode=ll1&tag=jagould2012-20&linkId=f43e39c693549ec98d326b4fad785156&language=en_US&ref_=as_li_ss_tl,Low profile right angle panel mount for LoRa
+1,Ipex-1 to N Male cable,$16.82,$16.82,https://www.amazon.com/dp/B07CR866LX?&linkCode=ll1&tag=jagould2012-20&linkId=a951e02d28a61ffb8e1ec5ac5ca9065a&language=en_US&ref_=as_li_ss_tl,Waveshare LoRa to N connector
+1,Ipex-1 to RP-SMA cable,$6.99,$6.99,https://www.amazon.com/dp/B0CSSPJ8S2?&linkCode=ll1&tag=jagould2012-20&linkId=438d4e2894662c1cff2a462ebd954d1e&language=en_US&ref_=as_li_ss_tl,For LoRa
+2,"RPI-SMA 12"" extension cable - 2 pack",$6.99,$13.98,https://www.amazon.com/dp/B07MT3VZXZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=0a91d0981ef509d0fd28ccbb86958586&language=en_US&ref_=as_li_ss_tl,For AXE3000 WiFi antenna
+2,"SMA 12"" extension cable - 2 pack",$7.49,$14.98,https://www.amazon.com/dp/B08139CQLG?th=1&linkCode=ll1&tag=jagould2012-20&linkId=08997393fe479e61210564a2a0ecdeac&language=en_US&ref_=as_li_ss_tl,For RTL-SDR antenna
+1,SMA right angle adapter - 4 pack,$7.58,$7.58,https://www.amazon.com/dp/B07YW3M4GB?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eca363638807b23059ca236a42444385&language=en_US&ref_=as_li_ss_tl,
+2,ANT 500 antenna,$34.95,$69.90,https://www.amazon.com/dp/B01CQYZJV2?&linkCode=ll1&tag=jagould2012-20&linkId=e2eaf07828a5be26dfec1e001170f75b&language=en_US&ref_=as_li_ss_tl,For RTL-SDR and HackRF One
+1,Meshtasic 5dBi antenna,$13.99,$13.99,https://www.amazon.com/dp/B0FT8HKKBN?&linkCode=ll1&tag=jagould2012-20&linkId=3840764c16c918d228075aa9fc518fd6&language=en_US&ref_=as_li_ss_tl,For LoRa
+,,,,,
+1,XT90 extension cable,$21.84,$21.84,https://www.amazon.com/dp/B0BWYTGMJH?th=1&linkCode=ll1&tag=jagould2012-20&linkId=4f4cdd02279c4f3be6feb8295d74396a&language=en_US&ref_=as_li_ss_tl,
+1,XT90 alligator clamps,$12.99,$12.99,https://www.amazon.com/dp/B0BJ8VXTWR?&linkCode=ll1&tag=jagould2012-20&linkId=fc10867998fdfe6c6c3cf3c75bfa1f27&language=en_US&ref_=as_li_ss_tl,
+,,,,,
+1,Heat shrink tubing,$13.99,$13.99,https://www.amazon.com/dp/B0BVVMCY86?th=1&linkCode=ll1&tag=jagould2012-20&linkId=2e46068b8e6c4abb1e24180654371b31&language=en_US&ref_=as_li_ss_tl,
+1,Heat shrink terminal kit,$24.99,$24.99,https://www.amazon.com/dp/B0C2CBM2YS?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9877c2b1b1108b66da7233dfbe5a4588&language=en_US&ref_=as_li_ss_tl,Used for larger gauge connections to power supplies
+1,Ferrule crimping kit,$22.98,$22.98,https://www.amazon.com/dp/B07PJK2VNT?&linkCode=ll1&tag=jagould2012-20&linkId=d0296b791db320e885a5cbd558e99e0b&language=en_US&ref_=as_li_ss_tl,Used on all small gauge power wires to terminal blocks
+,,,,,
+1,18 Gauge Automotive Primary Wire,$34.95,$34.95,https://www.amazon.com/dp/B075X3GM4H?th=1&linkCode=ll1&tag=jagould2012-20&linkId=d6a169070c2cd6730b9875b40cf228ae&language=en_US&ref_=as_li_ss_tl,
+1,Screw terminal barrier strips,$9.99,$9.99,https://www.amazon.com/dp/B0D7VRSH1G?&linkCode=ll1&tag=jagould2012-20&linkId=ef79e244e0a82d01c300dff6fcec04e0&language=en_US&ref_=as_li_ss_tl,5V power distribution
+1,USB-C pigtail power cables - 5 pack,$9.99,$9.99,https://www.amazon.com/dp/B0BFHXWCS9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=5a9b90fdd67263b50550c6f52fc52b03&language=en_US&ref_=as_li_ss_tl,
+1,"90 Degree DC Power Pigtails Cable, Right Angle DC 5.5mm x 2.5mm ",$9.99,$9.99,https://www.amazon.com/dp/B0B6HSJRVH?&linkCode=ll1&tag=jagould2012-20&linkId=02bf9384a51607daf7369dfebd27d566&language=en_US&ref_=as_li_ss_tl,USB hubs
+,,,,,
+1,Right and left angle USB extension - pair,$7.99,$7.99,https://www.amazon.com/dp/B0793P8XJK?&linkCode=ll1&tag=jagould2012-20&linkId=e8e6c236726e3d53504d852c3f57c5dc&language=en_US&ref_=as_li_ss_tl,Bring one USB 3.0 port to rear of plate
+2,Coolgear USB 3.2 Powered Hub,$54.95,$109.90,https://www.amazon.com/dp/B07G7GP15C?&linkCode=ll1&tag=jagould2012-20&linkId=47bd1e7921d55b1ff99a18a17ed2fc55&language=en_US&ref_=as_li_ss_tl,
+2,Waveshare USB to 2.5Gb Ethernet,$25.99,$51.98,https://www.amazon.com/dp/B0D8139N3Z?&linkCode=ll1&tag=jagould2012-20&linkId=616c34a77fc85ccaaefd3e0c492448e2&language=en_US&ref_=as_li_ss_tl,
+1,1' USB-C to USB A - 5 pack,$8.49,$8.49,https://www.amazon.com/dp/B08PXWYKTB?th=1&linkCode=ll1&tag=jagould2012-20&linkId=b4dde1596bad16d339235b70a56b5735&language=en_US&ref_=as_li_ss_tl,Touch screen connection to Pi USB
+1,1' USB C flexible cable to USB A,$8.99,$8.99,https://www.amazon.com/dp/B0DQS9WR4W?th=1&linkCode=ll1&tag=jagould2012-20&linkId=cee9ec96c272ee831084b332d35c3d24&language=en_US&ref_=as_li_ss_tl,HackRF One
+1,"Right Angle USB C Male to Male Adapter, 90 Degree Type-C to USB A Cable",$11.99,$11.99,https://www.amazon.com/dp/B0DCZF24F9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=a8077f041945c77d27396a72c5800c71&language=en_US&ref_=as_li_ss_tl,Touchscreen control to USB hub(s)
+1,"90 Degree USB Type C Cable, Down Angle .25m",$8.98,$8.98,https://www.amazon.com/dp/B0BVYPKYW7?th=1&linkCode=ll1&tag=jagould2012-20&linkId=23b64f1632bdca94c0b7987d16b3d258&language=en_US&ref_=as_li_ss_tl,AXE3000 to USB hub
+1,"1' USB SuperSpeed Cable, A Right to B Right",$8.09,$8.09,https://www.amazon.com/dp/B07YBQTSG6?th=1&linkCode=ll1&tag=jagould2012-20&linkId=eb4d54f2ca3f985d2f67b06a600eee0b&language=en_US&ref_=as_li_ss_tl,USB hub to Pi
+1,"1' USB SuperSpeed Cable, A Left to B Right",$8.09,$8.09,https://www.amazon.com/dp/B07SR71Q67?th=1&linkCode=ll1&tag=jagould2012-20&linkId=ae3f591a806c82cde7fa02b47e764d67&language=en_US&ref_=as_li_ss_tl,USB hub to Pi
+1,Micro HDMI to HDMI 1' Angle Up - 2 pack,$10.29,$10.29,https://www.amazon.com/dp/B07DZY2D4D?th=1&linkCode=ll1&tag=jagould2012-20&linkId=a902bb0f5837d3c0dafbdda1832de5d4&language=en_US&ref_=as_li_ss_tl,
+1,Micro HDMI to HDMI 1' Angle Down - 2 pack,$10.29,$10.29,https://www.amazon.com/dp/B07FT1Z3PM?th=1&linkCode=ll1&tag=jagould2012-20&linkId=20cb610c81bcf0546a5e8f187c6e658f&language=en_US&ref_=as_li_ss_tl,
+,,,,,
+1,ML1220 rechargeable battery,$11.99,$11.99,https://www.amazon.com/dp/B088KT9HB9?&linkCode=ll1&tag=jagould2012-20&linkId=9cfda5ba75d47e04493bda0ed495a981&language=en_US&ref_=as_li_ss_tl,For Waveshare LoRa radio
+,,,,,
+1,Assorted M3 button head screws,$8.99,$8.99,https://www.amazon.com/dp/B0D5YYH5ZZ?th=1&linkCode=ll1&tag=jagould2012-20&linkId=f354e612ee2c74fac6f0b3996b4262c9&language=en_US&ref_=as_li_ss_tl,
+1,Assorted M3 standoff kit,$7.99,$7.99,https://www.amazon.com/dp/B0F297R23T?&linkCode=ll1&tag=jagould2012-20&linkId=38ef20a6e39a8115416d2fa35d6c8a26&language=en_US&ref_=as_li_ss_tl,
+1,10-32 rack screws,$8.99,$8.99,https://www.amazon.com/dp/B0D5HZ63Y9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=04b6702c01b9d75971e3d1ab6ecfede7&language=en_US&ref_=as_li_ss_tl,
+1,10-32 lock nuts,$7.55,$7.55,https://www.amazon.com/dp/B0F8H5QM28?th=1&linkCode=ll1&tag=jagould2012-20&linkId=7ee86ae5b803837a83192ced3454be49&language=en_US&ref_=as_li_ss_tl,
+10,"Threaded Standoff - 2"" x 5/16"" 10-32",$1.78,$17.80,https://www.mcmaster.com/products/91780a261/,
+,,,,,
+1,"1/8"" ABS plastic sheet 8"" x 12"" - 2 pack",$11.54,$11.54,https://www.amazon.com/dp/B0FJFFH7Z9?th=1&linkCode=ll1&tag=jagould2012-20&linkId=1029d95ab8f9d28ab42d2653db07312e&language=en_US&ref_=as_li_ss_tl,Custom mounting plates behind aluminum plate
+1,"iCraft 1/2"" x 1/8"" 3D foam tape",$24.17,$24.17,https://www.amazon.com/iCraft-5611-Jumbo-Rolls-Black/dp/B093Y43FGF?crid=SSJEDCOKNH7C&dib=eyJ2IjoiMSJ9.d-kk0xkjTN1F3AlRfseXbd-Zi_PKe6-0eLNG6mEqihb-Z_tOjGcDQEU49k8yUG8A3nMPeCp0roDDjHoWQT3D4MkY235Rf6pNgPE9SNApcgz_64tqpFJEW8McQcH_MJsSUETmxfW1_LSILra0XfgEmEHlqIaVuPQuET9mqUeAdBD1JtMcdv7NKdboevBKTDT9HdNLmQH1qZ_YNohLjDJlYWai3PUqQ_JgpMfq5-3tg3cd4c13AhG_tEdZgTKNxnENES4ej074Qg4m5KlvyAqz-Qoi1zq4LfnLvW_IJLcYmDg.FXiE55f1fYRmruWNO2bCYbn1RxThkAtFOu4ot-SdmSs&dib_tag=se&keywords=icraft%2Bfoam%2Btape%2Bblack&qid=1766805695&sprefix=icraft%2Bfoam%2Btape%2Bblack%2Caps%2C166&sr=8-6&th=1&linkCode=ll1&tag=jagould2012-20&linkId=cdeeace2592c34b722d932876637c5b6&language=en_US&ref_=as_li_ss_tl,For mounting power components to ABS panels
+,,,,,
+2,Neoprene Case,$7.99,$15.98,https://www.amazon.com/dp/B01JZ3NEM8?th=1&linkCode=ll1&tag=jagould2012-20&linkId=80bd015303bdc9a928e0defa96a9a1ae&language=en_US&ref_=as_li_ss_tl,For antenna storage
+1,Left-angle IEC power cable,$9.13,$9.13,https://www.amazon.com/dp/B003MGB1EI?th=1&linkCode=ll1&tag=jagould2012-20&linkId=c640d6844eaec2f8ba6b8de4bc8c366d&language=en_US&ref_=as_li_ss_tl,
+1,Adhesive neoprene sheets,$12.99,$12.99,https://www.amazon.com/dp/B08P1XQMQH?th=1&linkCode=ll1&tag=jagould2012-20&linkId=6299576ea2492a4487798448a1b6fef9&language=en_US&ref_=as_li_ss_tl,Lining for case lid to protect keyboard
+1,Neoprene foam,$9.55,$9.55,https://www.amazon.com/dp/B09TXGTD1B?th=1&linkCode=ll1&tag=jagould2012-20&linkId=9bd1273f77f26a978f2a5cf1326310af&language=en_US&ref_=as_li_ss_tl,Protective sheet between keyboard and screens
+,,,,,
+,,,"$3,288.50",,
