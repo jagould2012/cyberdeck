@@ -1,0 +1,59 @@
+root {
+	--cover-color: #000;
+	/* Change the text color on the cover page */
+	--cover-bg-overlay: rgba(255, 255, 255, 0.5);
+	/* Adjust the overlay color/opacity */
+}
+
+/* Or disable the mask entirely if needed */
+.mask {
+	display: none;
+}
+
+.cover,
+.cover .anchor span {
+	color: white;
+}
+
+.cover img {
+	max-width: 800px;
+}
+
+.cover {
+	background: url(/_media/bg.png) center center / contain !important;
+}
+
+a.anchor {
+	color: white;
+}
+
+img {
+	max-width: 70%;
+	margin: 30px 0;
+}
+
+img[data-orientation="portrait"] {
+	max-width: 50%; 
+}
+
+body {
+	font-size: 18px;
+}
+
+.sidebar ul li a {
+	font-size: 16px;
+}
+
+.todo {
+	margin: 30px 0;
+	padding: 20px;
+	border: 1px solid #888;
+	background-color: #f2f2f2;
+}
+
+.todo .title {
+	text-transform: uppercase;
+	font-size: 12px;
+	color: #888;
+	margin-bottom: 10px;
+}
