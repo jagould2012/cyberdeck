@@ -1,6 +1,9 @@
 # cyberdeck
 A custom build of Kali Linux Raspberry Pi’s, fun little radios, all packaged in a portable Pelican case.
 
+### Documentation
+
+Documentation site can be found at [https://jagould2012.github.io/cyberdeck](https://jagould2012.github.io/cyberdeck)
 
 ### Bill of Materials
 
