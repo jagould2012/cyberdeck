@@ -1,0 +1,37 @@
+root {
+	--cover-color: #000;
+	/* Change the text color on the cover page */
+	--cover-bg-overlay: rgba(255, 255, 255, 0.5);
+	/* Adjust the overlay color/opacity */
+}
+
+/* Or disable the mask entirely if needed */
+.mask {
+	display: none;
+}
+
+.cover,
+.cover .anchor span {
+	color: white;
+}
+
+.cover img {
+	max-width: 800px;
+}
+
+.cover {
+	background: url(/_media/bg.png) center center / contain !important;
+}
+
+a.anchor {
+	color: white;
+}
+
+img {
+	max-width: 70%;
+	margin: 30px 0;
+}
+
+img[data-orientation="portrait"] {
+	max-width: 50%; 
+}
