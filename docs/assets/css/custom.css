@@ -20,7 +20,7 @@ root {
 }
 
 .cover {
-	background: url(/_media/bg.png) center center / contain !important;
+	background: url(_media/bg.png) center center / contain !important;
 }
 
 a.anchor {
