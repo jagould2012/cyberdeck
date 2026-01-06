@@ -15,7 +15,7 @@ While many people would have varying uses for a project like this, here's a few 
 
 * It's a lot of fun on the weekends to sit and listen to various radio traffic out there - Fire, EMS, Police, Air Traffic, etc.
 
-* In a natural disaster, civil unrest, etc where we could possible lose cellular and internet - it could become quite useful to get comms up with the outside world.
+* In a natural disaster, civil unrest, etc where we could possibly lose cellular and internet access - it could become quite useful to get comms up with the outside world.
 
 * Lets face it, between the radios in the project and capabilities of Kali Linux, this is a giant rabbit hole of learning. I love to learn new things, and this will bring years of enjoyment.
 
