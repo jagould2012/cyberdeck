@@ -8,8 +8,8 @@ SMA-025 hole,-2.000,4.750,,,0.250,,Cellular Wifi
 SMA-025 hole,0.000,4.750,,,0.250,,Cellular B
 SMA-025 hole,2.000,4.750,,,0.250,,Wifi B
 SMA-025 hole,7.000,4.000,,,0.250,,SDR
-SMA-025 hole,7.000,2.000,,,0.250,,LoRa
-N Hole,7.000,0.000,,,0.250,,Bluetooth
+SMA-025 hole,7.000,2.000,,,0.250,,Bluetooth
+N Hole,7.000,0.000,,,0.250,,LoRa
 ,,,,,,,
 "10"" Rack",,,,,,,
 ,,,,,,,

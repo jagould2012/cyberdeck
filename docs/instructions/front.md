@@ -1,6 +1,6 @@
 # Front Plate
 
-1. Prep the front panel. We had to add some holes post manufacturing, but if you follow the included drawings and drill positions, your plate will arrive from DataPro compeletely ready.
+1. Prep the front panel. We had to add some holes post manufacturing, due to design changes, but if you follow the included [drawings](https://github.com/jagould2012/cyberdeck/blob/main/dxf/Panel.dxf) and drill [positions](https://github.com/jagould2012/cyberdeck/blob/main/plate_drill.csv), your plate will arrive from DataPro compeletely ready.
 
 ![holes](../_media/front1.jpeg)
 
