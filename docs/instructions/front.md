@@ -27,7 +27,7 @@
 7. While working on the panel, we recommend installing a piece of foam over touchscreens to prevent them from being scratched.
 
 ![foam](../_media/front7.jpeg)
-<div class="caption">Note: Right angle USB connector shown in this picture was later upgraded to more compact flex cable. See bill of materials.</div>
+<div class="caption">Note: Right angle USB connector shown in this picture was later upgraded to more compact flex cable, shown in picture below. See bill of materials.</div>
 
 
 8. Install the Mayham Portapak, right angle slim USB cable, and GPS antenna. Color ring stickers were cut on a vinyl cutter to color code the antenna connectors and a corresponding color strip was wrapped around the antenna.
