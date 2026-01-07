@@ -13,39 +13,72 @@
 
 <body>
 	<div id="app"></div>
+	<script src="//cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
 	<script>
 		window.$docsify = {
 			name: 'Cyberdeck',
 			repo: 'jagould2012/cyberdeck',
 			loadSidebar: true,
-			coverpage: true
-    }
-
-	window.addEventListener('load', () => {
-		const images = document.querySelectorAll('img');
-		images.forEach(image => {
-		// Ensure image is loaded before checking dimensions
-		if (image.complete && image.naturalWidth !== 0) {
-			setImageOrientation(image);
-		} else {
-			image.addEventListener('load', () => setImageOrientation(image));
+			coverpage: true,
+			executeScript: true,
+			vueGlobalOptions: {
+				data() {
+					return {
+						galleryImages: {},
+						loading: true
+					}
+				},
+				async mounted() {
+					try {
+						const res = await fetch('gallery.json');
+						const data = await res.json();
+						this.galleryImages = data.images || {};
+					} catch (err) {
+						console.error('Failed to load gallery:', err);
+					} finally {
+						this.loading = false;
+						this.$nextTick(() => {
+							mediumZoom('.gallery-item');
+						});
+					}
+				},
+				methods: {
+					formatTitle(prefix) {
+						return prefix.charAt(0).toUpperCase() + prefix.slice(1).replace(/-/g, ' ');
+					}
+				}
+			},
+			vueComponents: {
+				// Define any custom components here if needed
+			}
 		}
+
+		window.addEventListener('load', () => {
+			const images = document.querySelectorAll('img');
+			images.forEach(image => {
+				// Ensure image is loaded before checking dimensions
+				if (image.complete && image.naturalWidth !== 0) {
+					setImageOrientation(image);
+				} else {
+					image.addEventListener('load', () => setImageOrientation(image));
+				}
+			});
+
+			function setImageOrientation(image) {
+				const aspectRatio = image.naturalWidth / image.naturalHeight;
+				if (aspectRatio > 1) {
+					image.setAttribute('data-orientation', 'landscape');
+				} else if (aspectRatio < 1) {
+					image.setAttribute('data-orientation', 'portrait');
+				} else {
+					image.setAttribute('data-orientation', 'square');
+				}
+			}
 		});
-
-		function setImageOrientation(image) {
-		const aspectRatio = image.naturalWidth / image.naturalHeight;
-		if (aspectRatio > 1) {
-			image.setAttribute('data-orientation', 'landscape');
-		} else if (aspectRatio < 1) {
-			image.setAttribute('data-orientation', 'portrait');
-		} else {
-			image.setAttribute('data-orientation', 'square');
-		}
-		}
-	});
 	</script>
-	<!-- Docsify v4 -->
-	<script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+	<script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
 </body>
 
 </html>

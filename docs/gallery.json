@@ -1,0 +1,69 @@
+{
+  "images": {
+    "case": {
+      "title": "Pelican Case",
+      "files": [
+        "_media/case1.jpeg",
+        "_media/case2.jpeg",
+        "_media/case3.jpeg"
+      ]
+    },
+    "power": {
+      "title": "Power Board",
+      "files": [
+        "_media/power1.jpeg",
+        "_media/power2.jpeg",
+        "_media/power3.jpeg",
+        "_media/power4.jpeg",
+        "_media/power5.jpeg",
+        "_media/power6.jpeg",
+        "_media/power7.jpeg",
+        "_media/power8.jpeg",
+        "_media/power9.jpeg",
+        "_media/power10.jpeg",
+        "_media/power11.jpeg",
+        "_media/power12.jpeg",
+        "_media/power13.jpeg",
+        "_media/power14.jpeg",
+        "_media/power15.jpeg"
+      ]
+    },
+    "usb": {
+      "title": "USB Board",
+      "files": [
+        "_media/usb1.jpeg",
+        "_media/usb2.1.jpeg",
+        "_media/usb2.jpeg"
+      ]
+    },
+    "front": {
+      "title": "Front Plate",
+      "files": [
+        "_media/front1.jpeg",
+        "_media/front2.jpeg",
+        "_media/front3.jpeg",
+        "_media/front4.jpeg",
+        "_media/front5.jpeg",
+        "_media/front6.jpeg",
+        "_media/front7.jpeg",
+        "_media/front8.jpeg"
+      ]
+    },
+    "assembly": {
+      "title": "Assembly and Power Up",
+      "files": [
+        "_media/assembly5.jpeg",
+        "_media/assembly6.jpeg",
+        "_media/assembly7.jpeg"
+      ]
+    },
+    "software": {
+      "title": "Software",
+      "files": []
+    },
+    "gallery": {
+      "title": "Gallery",
+      "files": []
+    }
+  }
+}

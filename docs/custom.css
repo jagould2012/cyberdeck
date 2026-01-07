@@ -57,3 +57,27 @@ body {
 	color: #888;
 	margin-bottom: 10px;
 }
+
+.gallery-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 200px);
+	gap: 10px;
+	margin-bottom: 2rem;
+}
+
+.gallery-item {
+	width: 200px !important;
+	height: 200px !important;
+	max-width: none !important;
+	object-fit: cover;
+	border-radius: 0;
+	cursor: pointer;
+	transition: transform 0.2s;
+	display: block;
+	margin: 0 !important;
+	padding: 0;
+}
+
+.gallery-item:hover {
+	transform: scale(1.02);
+}
