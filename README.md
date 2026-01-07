@@ -21,11 +21,15 @@ Dxf file is available [here](https://github.com/jagould2012/cyberdeck/blob/main/
 
 ### Power
 
-Wiring diagram for the power supplies, switches, and relays can be found [here](https://github.com/jagould2012/cyberdeck/blob/main/images/power.png).
+Wiring diagram for the power supplies, switches, and relays can be downloaded [here](https://github.com/jagould2012/cyberdeck/blob/main/images/power.png).
+
+![](./images/power.png)
 
 ### Internal Panels
 
 Power supplies and USB devices are mounted to 1/8" ABS panels. Dxf files for the panels can be found [here](https://github.com/jagould2012/cyberdeck/blob/main/dxf/).
+
+![](./images/power_usb_drawing.png)
 
 ### Assembly
 
