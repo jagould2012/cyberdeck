@@ -15,6 +15,8 @@
 4. Prepare all the cables for the installation of the sub-assemblies.
 
 ![rf](../_media/front4.jpeg)
+<div class="caption">Note: N-connector shown in this picture was later replaced with right angle connector due to clearance issues. See bill of materials.</div>
+
 
 5. Wire the HDMI cables up to the Raspberry Pi and secure them with small cable ties. HDMI 0 goes to the LCD touchscreens and HDMI 1 goes to the plate mounted HDMI pass through.
 
@@ -23,6 +25,7 @@
 6. Plug in HDMI and USB cables to the touchscreens before installing other panels.
 
 ![hdmi](../_media/front6.jpeg)
+<div class="caption">Note: N-connector shown in this picture was later replaced with right angle connector due to clearance issues. See bill of materials.</div>
 
 7. While working on the panel, we recommend installing a piece of foam over touchscreens to prevent them from being scratched.
 
