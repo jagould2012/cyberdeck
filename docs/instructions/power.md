@@ -46,14 +46,22 @@
 
 ![dc](../_media/power11.jpeg)
 
-12. Run a pair of wires from the output of the relay NO contacts (terminals 4 red, terminal 8 black) to the input of the first 5v supply. Continue wiring around the outside of the panel connecting a small set of jumpers from the input of the first 5vdc supply, to the input of the second 5vdc supply. 
+12. Daisy chain the power input from the relay through the 5vdc power supplies and to the DC input via the switch. The DC input feeds from one end of the circuit, and the 24vdc power supply from the other, however they cannot be live at the same time due to the switch and relay. See schematic below.
 
-Connect the positive (red) of the second 5vdc supply input to a 3 way connection - one feeding a set of jumpers over to the 12vdc supply on the USB panel, and the other to the second output on the switch (terminal 24). Connect the negative (black) of the second 5vdc supply input to a 3 way connection - one feeding a set the jumpers over to the 12vdc supply on the USB panel, and the other to black of the XT90 input. 
+* Run a pair of wires from the output of the relay NO contacts (terminals 4 red, terminal 8 black) to the input of the first 5v supply. 
 
-Finally, connect a wire from the positive of the XT90 connector to the seconf input of the switch (terminal 23).
+* Continue wiring around the outside of the panel connecting a small set of jumpers from the input of the first 5vdc supply, to the input of the second 5vdc supply. 
+
+* Connect the positive (red) of the second 5vdc supply input to a 3 way connection - one feeding a set of jumpers over to the 12vdc supply on the USB panel, and the other to the second output on the switch (terminal 24). We recommend using a spade terminal for the USB panel feed side of the connection so the boards can be disconnected if necessary.
+
+* Connect the negative (black) of the second 5vdc supply input to a 3 way connection - one feeding a set the jumpers over to the 12vdc supply on the USB panel, and the other to black of the XT90 input. 
+
+* Finally, connect a wire from the positive of the XT90 connector to the seconf input of the switch (terminal 23).
 
 ![wiring2](../_media/power12.jpeg)
 <div class="caption">Note: relay in photo is not inverted. Photo was taken before modification added in step 13</div>
+
+![wiring2](../_media/power12.1.jpeg)
 
 
 13. To make it easer to slide the assembly in and out of the case, invert the relay and notch the panel to allow the screw terminals to recess through the board. The terminals can now be connected from the inside of the panel facing out, so they don't catch on the case frame.
