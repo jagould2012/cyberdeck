@@ -19,6 +19,8 @@
 5. Mount the supplies using double sided tape, short standoffs, and M3 bolts and nuts. The 5v supplies will hang off the panel about 1", and will extend under the USB panel. This is by design. Orient the output side of the supply towards the USB panel, and the input side towards the case.
 
 ![supplies](../_media/power5.jpeg)
+<div class="caption">Note: relay in photo is not inverted. Photo was taken before modification added in step 13</div>
+
 
 6. The double sided foam tape and standoffs will allow room for the screws that mount the 24vdc supply, which go into the threaded inserts on the bottom of the supply.
 
@@ -51,6 +53,8 @@ Connect the positive (red) of the second 5vdc supply input to a 3 way connection
 Finally, connect a wire from the positive of the XT90 connector to the seconf input of the switch (terminal 23).
 
 ![wiring2](../_media/power12.jpeg)
+<div class="caption">Note: relay in photo is not inverted. Photo was taken before modification added in step 13</div>
+
 
 13. To make it easer to slide the assembly in and out of the case, invert the relay and notch the panel to allow the screw terminals to recess through the board. The terminals can now be connected from the inside of the panel facing out, so they don't catch on the case frame.
 
