@@ -56,7 +56,7 @@
 
 * Connect the negative (black) of the second 5vdc supply input to a 3 way connection - one feeding a set the jumpers over to the 12vdc supply on the USB panel, and the other to black of the XT90 input. 
 
-* Finally, connect a wire from the positive of the XT90 connector to the seconf input of the switch (terminal 23).
+* Finally, connect a wire from the positive of the XT90 connector to the second input of the switch (terminal 23).
 
 ![wiring2](../_media/power12.jpeg)
 <div class="caption">Note: relay in photo is not inverted. Photo was taken before modification added in step 13</div>
