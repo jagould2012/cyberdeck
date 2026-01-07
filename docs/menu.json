@@ -1,0 +1,15 @@
+{
+		"home": { "title": "Home", "prefix": null },
+		"instructions": {
+			"title": "Instructions",
+			"children": [
+				{ "title": "Pelican Case", "prefix": "case" },
+				{ "title": "Power Board", "prefix": "power" },
+				{ "title": "USB Board", "prefix": "usb" },
+				{ "title": "Front Plate", "prefix": "front" },
+				{ "title": "Assembly and Power Up", "prefix": "assembly" },
+				{ "title": "Software", "prefix": "software" }
+			]
+		},
+		"gallery": { "title": "Gallery", "prefix": "gallery" }
+  }
